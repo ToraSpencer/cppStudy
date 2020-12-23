@@ -1,0 +1,95 @@
+/*
+**	使用一些老的不安全的函数会报错：
+**			项目属性-> C/C++ ->预处理器->预处理器定义->加入宏_CRT_SECURE_NO_WARNINGS
+**
+**
+*/
+
+
+// 暂时不知道如何归类的笔记
+#define DEBUG
+	该宏可以控制调试程序的运行。
+	可以把调试用的代码块放在#ifdef DEBUG和#endif之间。
+	VC中DEBUG和NDEBUG这两个宏是定义好的，release版本里面定义了NDEBUG，debug版本里面定义了DEBUG
+
+
+
+
+
+// 注释模板：
+//  模板函数：accumulate
+/*. BC------------------------------------------------------------------------
+**  模板函数：accumulate
+**
+**  描述：
+**          计算给定值和容器中给定范围内所有元素的和。             
+**             
+**
+**  重载1：
+**          (C++20 前) template< class InputIt, class T >
+**          T accumulate(   InputIt first,                  确定容器中范围的第一个迭代器
+**                                      InputIt last,                 确定容器中范围的第二个迭代器
+**                                      T init );                        给定元素
+**          返回值： T   给定元素init和容器中给定范围所有元素的和。
+**          注意：C++20起，返回值改为constexpr
+**         
+**  重载2：
+**        (C++20 前) template< class InputIt, class T, class BinaryOperation >
+**        T accumulate( InputIt first,                                  确定容器中范围的第一个迭代器
+**                                  InputIt last,                                确定容器中范围的第二个迭代器
+**                                  T init,                                         给定元素
+**                                  BinaryOperation op );               
+**          返回值：
+**          注意：C++20起，返回值改为constexpr
+**
+**
+*. EC------------------------------------------------------------------------
+*/
+
+
+
+
+
+// factorial————计算阶乘num!
+/*. BC------------------------------------------------------------------------
+**	factorial————计算阶乘num!
+**
+**	描述：
+**			尾递归实现。
+**
+**	函数原型：
+**			static unsigned long factorial(	unsigned int num				需要计算阶乘的正整数
+**															)
+**			返回值： unsigned long														阶乘计算结果
+**
+*. EC------------------------------------------------------------------------
+*/
+
+
+
+
+
+
+功能.cpp文件中添加void testX(void)：
+		void start_XXXX(void)的函数实现内增加内容：
+					要在三级界面的打印界面中添加testX的标题打印语句。
+					三级界面的输入响应switch case中增加case X
+
+
+
+
+
+
+添加.cpp文件：
+		main.cpp中增加内容：
+					extern void set_fun_XXXX(void);
+					extern void start_XXXX(void);
+		一级循环界面中：
+					若需要新增章节，则在打印界面增添打印语句。
+					若需要新增章节，则在一级界面的输入响应switch case部分中增加case
+		二级循环界面中：
+					二级界面的打印界面中增加添加的小节的打印语句。
+					二级界面的输入值响应switch case部分中增加case
+		CMakeLists.txt中：
+					添加新增的源文件
+
