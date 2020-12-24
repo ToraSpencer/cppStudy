@@ -222,7 +222,7 @@ static void test2(void)
 
 
 	// 有参数，有返回值的lambda表达式
-	auto functor2 = [](const string& a, const string& b) -> bool				// 尾返回指示返回值的类型。
+	auto functor2 = [](const string& a, const string& b) -> bool    // 尾返回指示返回值的类型。
 	{
 		return a.size() < b.size(); 
 	};
