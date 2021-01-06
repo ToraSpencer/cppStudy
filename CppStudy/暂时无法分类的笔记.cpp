@@ -91,7 +91,7 @@ static void test0()
 // test: ！！！不要发生有符号数和无符号数比较情形，否则会将有符号数隐式转换为无符号数操作
 static void test2()
 {
-	vector<int> vec;
+	std::vector<int> vec;
 
 	unsigned int num = 0;
 
@@ -107,7 +107,7 @@ static void test2()
 
 	for (const auto& elem : vec)
 	{
-		cout << elem << ",  ";
+		std::cout << elem << ",  ";
 	}
 
 }
