@@ -421,49 +421,55 @@ namespace PROXY_FACTORY
 
 
 
-// test0: 代理模式(proxy pattern)应用场景1——代理类管理不同玩家的游戏权限。
-static void test0()
+namespace PROXY_PATTERN 
 {
-	PROXY_PATTERN_AS1::play* player123456 = nullptr;
-	PROXY_PATTERN_AS1::play* player999988 = nullptr;
-	PROXY_PATTERN_AS1::play* player112087 = nullptr;
-	PROXY_PATTERN_AS1::play* player078990 = nullptr;
-	PROXY_PATTERN_AS1::play* player098056 = nullptr;
+	// test0: 代理模式(proxy pattern)应用场景1——代理类管理不同玩家的游戏权限。
+	void test0()
+	{
+		PROXY_PATTERN_AS1::play* player123456 = nullptr;
+		PROXY_PATTERN_AS1::play* player999988 = nullptr;
+		PROXY_PATTERN_AS1::play* player112087 = nullptr;
+		PROXY_PATTERN_AS1::play* player078990 = nullptr;
+		PROXY_PATTERN_AS1::play* player098056 = nullptr;
 
-	player123456 = new PROXY_PATTERN_AS1::proxyOrdinaryPlayer();
-	player999988 = new PROXY_PATTERN_AS1::proxyOrdinaryPlayer();
-	player112087 = new PROXY_PATTERN_AS1::proxyVIPplayer();
-	player078990 = new PROXY_PATTERN_AS1::proxyVIPplayer();
-	player098056 = new PROXY_PATTERN_AS1::proxyPlatinicVIPplayer();
+		player123456 = new PROXY_PATTERN_AS1::proxyOrdinaryPlayer();
+		player999988 = new PROXY_PATTERN_AS1::proxyOrdinaryPlayer();
+		player112087 = new PROXY_PATTERN_AS1::proxyVIPplayer();
+		player078990 = new PROXY_PATTERN_AS1::proxyVIPplayer();
+		player098056 = new PROXY_PATTERN_AS1::proxyPlatinicVIPplayer();
 
-	player123456->play1();
-	player123456->play2();
-	player123456->play3();
-	player112087->play1();
-	player112087->play2();
-	player112087->play3();
-	player098056->play3();
+		player123456->play1();
+		player123456->play2();
+		player123456->play3();
+		player112087->play1();
+		player112087->play2();
+		player112087->play3();
+		player098056->play3();
 
 
+
+
+	}
+
+
+	// test1:代理模式和工厂模式的结合——工作项目中的应用
+	void test1()
+	{
+		using namespace PROXY_FACTORY;
+
+		NMALG_OBJECTCONTAINERPROXY::VCProxy proxyObj;
+		proxyObj.Initialize();
+
+
+		// 代理工厂实例化一个功能类对象：
+		auto obj = reinterpret_cast<NMALG_MESHRAYINTERSECTION::IVMeshRayIntersection*>(proxyObj.CreateObj(NMALG_OBJECTCONTAINER::OBJ_MESHRAYINTERSECTION_GEN_E));
+
+		obj->Build();
+
+
+
+	}
 
 
 }
 
-
-// test1:代理模式和工厂模式的结合——工作项目中的应用
-static void test1() 
-{
-	using namespace PROXY_FACTORY;
-
-	NMALG_OBJECTCONTAINERPROXY::VCProxy proxyObj;
-	proxyObj.Initialize();
-
-
-	// 代理工厂实例化一个功能类对象：
-	auto obj = reinterpret_cast<NMALG_MESHRAYINTERSECTION::IVMeshRayIntersection*>(proxyObj.CreateObj(NMALG_OBJECTCONTAINER::OBJ_MESHRAYINTERSECTION_GEN_E));
-
-	obj->Build();
-
-
-
-}

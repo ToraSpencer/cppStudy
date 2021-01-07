@@ -26,7 +26,6 @@ namespace STRATEGY_PATTERN_AS1
 		virtual void welcome() = 0;
 	};
 
-
 	class welcomeEng : public welcomeScreen				// 展示英文欢迎屏幕——策略功能类
 	{
 		virtual void welcome() override
@@ -43,8 +42,6 @@ namespace STRATEGY_PATTERN_AS1
 			cout << "哈哈" << endl;
 		}
 	};
-
-
 
 	class television		
 	{
@@ -88,8 +85,9 @@ namespace STRATEGY_PATTERN_AS1
 }
 
 
-// test0：测试策略模式应用场景1
-static void test0() 
+
+// test1：测试策略模式应用场景1
+static void test1() 
 {
 	using namespace STRATEGY_PATTERN_AS1;
 

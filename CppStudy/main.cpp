@@ -141,9 +141,9 @@ int main(int argc, char** argv)
 	inputTag = 0;
 	interfaceLevel = 1;
 
-
 	reset_pfun();
 
+#if 0
 	// 主界面循环——选择章节
 	while (1 == interfaceLevel)
 	{
@@ -158,7 +158,8 @@ int main(int argc, char** argv)
 		cout << "6. 底层原理" << endl;
 		cout << "7. 函数" << endl;
 		cout << "8. 异常处理" << endl;
-		cout << "9. 暂时不知道如何分类的内容" << endl;
+		cout << "9. 设计模式" << endl;
+		cout << "10. 暂时不知道如何分类的内容" << endl;
 		cout << "-1. Quit" << endl;
 
 
@@ -782,7 +783,57 @@ int main(int argc, char** argv)
 		}
 		
 
-		case 9:								// 9. 暂时不知道如何分类的内容
+		case 9:								// 9. 设计模式
+		{
+			// 界面层级符置为2，进入二级界面：
+			interfaceLevel = 2;
+			while (2 == interfaceLevel)
+			{
+				cout << "\n\n\n\n" << endl;
+				cout << "**************************设计模式**********************" << endl;
+				cout << "Please input a number to choose a function setting plan:" << endl;
+				cout << "-1. Back to the previous interface" << endl;
+				cout << "0. 策略模式" << endl;
+				cout << "1. 代理模式" << endl;
+				cout << "2. 单例模式" << endl;
+				cout << "3. 工厂模式" << endl;
+
+
+				inputTag = scanf("%d", &inputNum);
+
+				// 若输入值不是整数，重新输入。
+				if (0 == inputTag)
+				{
+					cout << "Invalid input. Please input again:" << endl;
+					setbuf(stdin, NULL);			// stdin输入流由默认缓冲区转为无缓冲区，这样就清空了缓冲区中的内容。
+															// 不要用fflush来清空缓存区，该函数很多编译器支持得不好。
+					continue;
+				}
+
+				// 对二级界面输入值的响应：
+				switch (inputNum)
+				{
+				case -1:
+					interfaceLevel = 1;
+					break;
+				case 0:
+					reset_pfun();
+
+					break;
+
+
+				default:
+					cout << "Invalid input. Please input again:" << endl;
+					break;
+				}
+
+
+			}
+			break;
+		}
+
+
+		case 10:								// 9. 暂时不知道如何分类的内容
 		{
 			// 界面层级符置为2，进入二级界面：
 			interfaceLevel = 2;
@@ -803,7 +854,7 @@ int main(int argc, char** argv)
 				{
 					cout << "Invalid input. Please input again:" << endl;
 					setbuf(stdin, NULL);			// stdin输入流由默认缓冲区转为无缓冲区，这样就清空了缓冲区中的内容。
-															// 不要用fflush来清空缓存区，该函数很多编译器支持得不好。
+													// 不要用fflush来清空缓存区，该函数很多编译器支持得不好。
 					continue;
 				}
 
@@ -840,7 +891,8 @@ int main(int argc, char** argv)
 
 	}
 
-
+#endif
+ 
 
 	return 0;
 
