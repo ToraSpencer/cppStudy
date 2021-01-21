@@ -142,11 +142,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="basicTools.h" />
     <ClInclude Include="example.h" />
     <ClInclude Include="shapes.h" />
     <ClInclude Include="testManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="basicTools.cpp" />
     <ClCompile Include="dataType_c风格字符串、string、wstring.cpp" />
     <ClCompile Include="dataType_内置类型.cpp" />
     <ClCompile Include="dataType_函数指针.cpp" />

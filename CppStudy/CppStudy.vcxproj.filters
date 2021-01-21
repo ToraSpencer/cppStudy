@@ -24,6 +24,9 @@
     <ClInclude Include="testManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="basicTools.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dataType_对、元祖.cpp">
@@ -168,6 +171,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="dataType_c风格字符串、string、wstring.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="basicTools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

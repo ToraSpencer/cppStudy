@@ -38,5 +38,11 @@
     <ClInclude Include="..\CppStudy\testManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\CppStudy\basicTools.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="chap_designPattern.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

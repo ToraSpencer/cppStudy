@@ -142,7 +142,9 @@
     <ClCompile Include="designPattern_策略模式.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\CppStudy\basicTools.h" />
     <ClInclude Include="..\CppStudy\testManager.h" />
+    <ClInclude Include="chap_designPattern.h" />
     <ClInclude Include="testDesignPattern.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
