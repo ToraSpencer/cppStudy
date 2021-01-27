@@ -7,6 +7,64 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppStudy", "CppStudy\CppStu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "designPattern", "designPattern\designPattern.vcxproj", "{3DF3AB45-F134-4329-B811-AAF5595ED914}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "basicTools", "basicTools\basicTools.vcxproj", "{8F4DDECD-F7A6-4A3A-A615-468E1846DB90}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "暂时未整理的源文件", "暂时未整理的源文件", "{B1CC251D-5E75-43D2-B0E0-71371870096F}"
+	ProjectSection(SolutionItems) = preProject
+		CppStudy\basicTools.h = CppStudy\basicTools.h
+		CppStudy\dataType_c风格字符串、string、wstring.cpp = CppStudy\dataType_c风格字符串、string、wstring.cpp
+		CppStudy\dataType_内置类型.cpp = CppStudy\dataType_内置类型.cpp
+		CppStudy\dataType_函数指针.cpp = CppStudy\dataType_函数指针.cpp
+		CppStudy\dataType_对、元祖.cpp = CppStudy\dataType_对、元祖.cpp
+		CppStudy\dataType_引用.cpp = CppStudy\dataType_引用.cpp
+		CppStudy\dataType_指针、智能指针、内存泄漏问题.cpp = CppStudy\dataType_指针、智能指针、内存泄漏问题.cpp
+		CppStudy\dataType_数组.cpp = CppStudy\dataType_数组.cpp
+		CppStudy\dataType_枚举、共用体、结构体.cpp = CppStudy\dataType_枚举、共用体、结构体.cpp
+		CppStudy\DSA_图.cpp = CppStudy\DSA_图.cpp
+		CppStudy\example.cpp = CppStudy\example.cpp
+		CppStudy\example.h = CppStudy\example.h
+		CppStudy\exception_基本异常处理.cpp = CppStudy\exception_基本异常处理.cpp
+		CppStudy\exception_标准异常.cpp = CppStudy\exception_标准异常.cpp
+		CppStudy\function_内联函数.cpp = CppStudy\function_内联函数.cpp
+		CppStudy\function_函数模板.cpp = CppStudy\function_函数模板.cpp
+		CppStudy\function_可变参数函数.cpp = CppStudy\function_可变参数函数.cpp
+		CppStudy\function_基本知识.cpp = CppStudy\function_基本知识.cpp
+		CppStudy\main.cpp = CppStudy\main.cpp
+		CppStudy\OOP_函数对象.cpp = CppStudy\OOP_函数对象.cpp
+		CppStudy\OOP_多态、虚函数、抽象类.cpp = CppStudy\OOP_多态、虚函数、抽象类.cpp
+		CppStudy\OOP_类、对象.cpp = CppStudy\OOP_类、对象.cpp
+		CppStudy\OOP_类模板.cpp = CppStudy\OOP_类模板.cpp
+		CppStudy\practice.cpp = CppStudy\practice.cpp
+		CppStudy\practice_面试题.cpp = CppStudy\practice_面试题.cpp
+		CppStudy\set_funcs.cpp = CppStudy\set_funcs.cpp
+		CppStudy\shapes.h = CppStudy\shapes.h
+		CppStudy\stdlib_IO库.cpp = CppStudy\stdlib_IO库.cpp
+		CppStudy\stdlib_工具库.cpp = CppStudy\stdlib_工具库.cpp
+		CppStudy\stdlib_数值库.cpp = CppStudy\stdlib_数值库.cpp
+		CppStudy\stdlib_正则表达式.cpp = CppStudy\stdlib_正则表达式.cpp
+		CppStudy\stdlib_类型支持库.cpp = CppStudy\stdlib_类型支持库.cpp
+		CppStudy\stdlib_线程支持库.cpp = CppStudy\stdlib_线程支持库.cpp
+		CppStudy\STL_iterator迭代器.cpp = CppStudy\STL_iterator迭代器.cpp
+		CppStudy\STL_list双向链表.cpp = CppStudy\STL_list双向链表.cpp
+		CppStudy\STL_map键值对集合.cpp = CppStudy\STL_map键值对集合.cpp
+		CppStudy\STL_set键集合.cpp = CppStudy\STL_set键集合.cpp
+		CppStudy\STL_容器适配器.cpp = CppStudy\STL_容器适配器.cpp
+		CppStudy\STL_算法库.cpp = CppStudy\STL_算法库.cpp
+		CppStudy\STL_线性容器.cpp = CppStudy\STL_线性容器.cpp
+		CppStudy\syntax_关键字.cpp = CppStudy\syntax_关键字.cpp
+		CppStudy\syntax_几个特殊运算符.cpp = CppStudy\syntax_几个特殊运算符.cpp
+		CppStudy\syntax_基本语句_新增语句.cpp = CppStudy\syntax_基本语句_新增语句.cpp
+		CppStudy\syntax_类型转换.cpp = CppStudy\syntax_类型转换.cpp
+		CppStudy\syntax_表达式.cpp = CppStudy\syntax_表达式.cpp
+		CppStudy\syntax_重载运算符.cpp = CppStudy\syntax_重载运算符.cpp
+		CppStudy\testManager.h = CppStudy\testManager.h
+		CppStudy\UP_内存管理.cpp = CppStudy\UP_内存管理.cpp
+		CppStudy\UP_动态库、静态库.cpp = CppStudy\UP_动态库、静态库.cpp
+		CppStudy\UP_断言.cpp = CppStudy\UP_断言.cpp
+		CppStudy\UP_预处理指令.cpp = CppStudy\UP_预处理指令.cpp
+		CppStudy\暂时无法分类的笔记.cpp = CppStudy\暂时无法分类的笔记.cpp
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +89,14 @@ Global
 		{3DF3AB45-F134-4329-B811-AAF5595ED914}.Release|x64.Build.0 = Release|x64
 		{3DF3AB45-F134-4329-B811-AAF5595ED914}.Release|x86.ActiveCfg = Release|Win32
 		{3DF3AB45-F134-4329-B811-AAF5595ED914}.Release|x86.Build.0 = Release|Win32
+		{8F4DDECD-F7A6-4A3A-A615-468E1846DB90}.Debug|x64.ActiveCfg = Debug|x64
+		{8F4DDECD-F7A6-4A3A-A615-468E1846DB90}.Debug|x64.Build.0 = Debug|x64
+		{8F4DDECD-F7A6-4A3A-A615-468E1846DB90}.Debug|x86.ActiveCfg = Debug|Win32
+		{8F4DDECD-F7A6-4A3A-A615-468E1846DB90}.Debug|x86.Build.0 = Debug|Win32
+		{8F4DDECD-F7A6-4A3A-A615-468E1846DB90}.Release|x64.ActiveCfg = Release|x64
+		{8F4DDECD-F7A6-4A3A-A615-468E1846DB90}.Release|x64.Build.0 = Release|x64
+		{8F4DDECD-F7A6-4A3A-A615-468E1846DB90}.Release|x86.ActiveCfg = Release|Win32
+		{8F4DDECD-F7A6-4A3A-A615-468E1846DB90}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -15,169 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="example.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="shapes.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="testManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="basicTools.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="dataType_对、元祖.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="dataType_函数指针.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="dataType_枚举、共用体、结构体.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="dataType_内置类型.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="dataType_数组.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="dataType_引用.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="dataType_指针、智能指针、内存泄漏问题.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="exception_标准异常.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="exception_基本异常处理.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="function_函数模板.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="function_基本知识.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="function_可变参数函数.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="function_内联函数.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="OOP_多态、虚函数、抽象类.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="OOP_函数对象.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="OOP_类、对象.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="OOP_类模板.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="practice.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="practice_面试题.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="set_funcs.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="stdlib_IO库.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="stdlib_工具库.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="stdlib_数值库.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="stdlib_线程支持库.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="stdlib_正则表达式.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="STL_iterator迭代器.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="STL_list双向链表.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="STL_map键值对集合.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="STL_set键集合.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="STL_容器适配器.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="STL_算法库.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="STL_线性容器.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="syntax_表达式.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="syntax_关键字.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="syntax_基本语句_新增语句.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="syntax_几个特殊运算符.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="syntax_类型转换.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="syntax_重载运算符.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="UP_动态库、静态库.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="UP_断言.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="UP_内存管理.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="UP_预处理指令.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="暂时无法分类的笔记.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="stdlib_类型支持库.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="example.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="DSA_图.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="dataType_c风格字符串、string、wstring.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="basicTools.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="test.xxx" />
     <None Include="test1.xxx" />
     <None Include="test2.xxx" />
@@ -187,5 +24,18 @@
     <Text Include="CMakeLists.txt" />
     <Text Include="general_notifications.txt" />
     <Text Include="工作计划.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="reader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="reader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

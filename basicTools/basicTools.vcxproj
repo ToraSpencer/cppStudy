@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{3DF3AB45-F134-4329-B811-AAF5595ED914}</ProjectGuid>
+    <ProjectGuid>{8F4DDECD-F7A6-4A3A-A615-468E1846DB90}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>设计模式</RootNamespace>
+    <RootNamespace>basicTools</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -69,9 +69,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)/cppStudy;$(IncludePath)</IncludePath>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>
@@ -136,15 +134,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="designPattern_代理模式.cpp" />
-    <ClCompile Include="designPattern_单例模式.cpp" />
-    <ClCompile Include="designPattern_工厂模式.cpp" />
-    <ClCompile Include="designPattern_策略模式.cpp" />
+    <ClCompile Include="basicTools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\CppStudy\testManager.h" />
-    <ClInclude Include="chap_designPattern.h" />
-    <ClInclude Include="testDesignPattern.h" />
+    <ClInclude Include="basicTools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

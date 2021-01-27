@@ -18,27 +18,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="designPattern_策略模式.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="designPattern_代理模式.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="designPattern_单例模式.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="designPattern_工厂模式.cpp">
+    <ClCompile Include="basicTools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="testDesignPattern.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CppStudy\testManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="chap_designPattern.h">
+    <ClInclude Include="basicTools.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

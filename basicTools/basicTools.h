@@ -1,9 +1,8 @@
 #pragma once
+#pragma once
 #include "iostream"
 
 // 前置声明
- 
-
 
 
 
@@ -39,35 +38,5 @@ public:
 	virtual void selectModule(const int molEnum) = 0;
 	virtual void runTest(const unsigned testID);
 };
-
-
-enum CHAP_ENUM
-{
-	CHAP_DATA_TYPE = 1,
-	CHAP_DESIGN_PATTERN,
-};
-
-
-struct reader  
-{
-private:
-	virtualChap* pc;		// 当前查看的章节。
-
-	reader();
-
-public:
-	static reader* getInstance();
-
-	~reader() noexcept;
-
-	void showChapList();
-
-	void selectChap(const CHAP_ENUM ch);
-
-	void selectMol(const int molEnum);
-
-	void runTest(const unsigned testID);
-};
-
 
 
