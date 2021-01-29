@@ -7,6 +7,9 @@ void virtualModule::run(unsigned testID)
 {
 	switch (testID)
 	{
+	case 0:
+		test0();
+		break;
 	case 1:
 		test1();
 		break;
@@ -36,7 +39,7 @@ virtualChap* virtualChap::p_chapIns = nullptr;
 
 virtualChap::~virtualChap()
 {
-	std::cout << "调用了chap系列类的的析构函数" << std::endl;
+	// std::cout << "调用了chap系列类的的析构函数" << std::endl;
 	if (this->pm != nullptr)
 	{
 		delete this->pm;

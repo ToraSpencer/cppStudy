@@ -1,4 +1,9 @@
-﻿  designPattern_代理模式.cpp
-  main.cpp
-main.cpp(139): error C2653: “PROXY_PATTERN”: 不是类或命名空间名称
-main.cpp(899): error C2653: “PROXY_PATTERN”: 不是类或命名空间名称
+﻿  main.cpp
+  reader.cpp
+  正在生成代码
+  2 of 24 functions ( 8.3%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  已完成代码的生成
+  CppStudy.vcxproj -> D:\workstation\gitRepositories\cppStudy\Release\CppStudy.exe
+  CppStudy.vcxproj -> D:\workstation\gitRepositories\cppStudy\Release\CppStudy.pdb (Full PDB)

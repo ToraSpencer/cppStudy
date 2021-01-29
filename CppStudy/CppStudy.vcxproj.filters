@@ -15,17 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="test.xxx" />
-    <None Include="test1.xxx" />
-    <None Include="test2.xxx" />
-    <None Include="ClassDiagram.cd" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="CMakeLists.txt" />
-    <Text Include="general_notifications.txt" />
-    <Text Include="工作计划.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="reader.h">
       <Filter>头文件</Filter>
     </ClInclude>
