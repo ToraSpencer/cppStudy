@@ -1,14 +1,19 @@
 #include "chap_STL.h"
+ 
 
 
 void chap_STL::showModuleList()
 {
+	std::cout << "************STL**************" << std::endl;
 	std::cout << "1.STL——线性容器" << std::endl;
 	std::cout << "2.STL——容器适配器" << std::endl;
 	std::cout << "3.STL——set键结合" << std::endl;
 	std::cout << "4.STL——map键值对集合" << std::endl;
 	std::cout << "5.STL——iterator迭代器" << std::endl;
 	std::cout << "6.STL——算法库" << std::endl;
+	std::cout << "-1. 退出" << std::endl;
+	std::cout << std::endl << std::endl;
+
 }
 
 

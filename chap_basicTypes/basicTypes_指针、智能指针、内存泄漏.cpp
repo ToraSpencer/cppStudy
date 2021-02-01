@@ -9,9 +9,7 @@
 
 #include <cstdio>
 
-
-
-using namespace std;
+#include "basicTypes_指针、智能指针、内存泄漏.h"
 
 #define EPS 1e-10					//定义非常小的一个量EPSilon，当浮点数不大于这个值时，视为0
 #define PI 3.14159
@@ -112,10 +110,17 @@ using namespace std;
 
 			9. 内存泄漏的修复途径
 
+
+			10. 函数指针
+					函数指针的声明语法————和函数声明格式类似，只是函数名变成了*pf
+
+					对于某函数foo()，可以用foo或&foo表示其指针。
+
+					回调函数
+								如果一个函数并不会被显式地直接调用，而是将其函数指针传给一个caller函数，由caller函数调用，这个函数就被成为回调函数。
+
+
 */
-
-
-
 
 
 // make_shared<T>()————创建一个shared_ptr指针
@@ -143,180 +148,60 @@ using namespace std;
  
 *. EC------------------------------------------------------------------------
 */
+ 
 
 
-
-
-
-
-
-/***************************************************************************
-***************************************************************************/
-// 全局变量、类型定义
-class Foo
+virtualModule* basicTypes_pointers_module::getInstance()		// 线程不安全的单例模式
 {
-private:
-
-public:
-
-
-};
-
-
-
-
-/***************************************************************************
-***************************************************************************/
-// extern变量
-extern void(*pfun[100])(void);
-extern int inputTag, inputNum, interfaceLevel;
-
-
-
-/***************************************************************************
-***************************************************************************/
-// 函数声明
-void set_fun_dataType_pointer(void);
-void start_dataType_pointer(void);
-
-static void test0(void);
-static void test1(void);
-static void test2(void);
-static void test3(void);
-static void test4(void);
-
-
-/***************************************************************************
-***************************************************************************/
-// extern函数
-void traverse_pfun(void);
-
-
-/***************************************************************************
-***************************************************************************/
-// 自定义类的实现
-
-
-/***************************************************************************
-***************************************************************************/
-// 函数定义
-
-void set_fun_dataType_pointer(void)
-{
-	pfun[0] = test0;
-	pfun[1] = test1;
-	pfun[2] = test2;
-	pfun[3] = test3;
-}
-
-
-
-void start_dataType_pointer(void)
-{
-	// 界面层级符置为3，进入三级界面：
-	interfaceLevel = 3;
-	while (3 == interfaceLevel)
+	if (nullptr != p_moduleIns)
 	{
-		cout << "\n\n\n\n" << endl;
-		cout << "**************************MENU: dataType_pointer**********************" << endl;
-		cout << "Please choose a demon function to run:" << endl;
-		cout << "-2: Run all existed demon function." << endl;
-		cout << "-1: Back to the previous interface." << endl;
-		cout << "0. test0: 使用关键字new和delete直接管理内存。" << endl;
-		cout << "1. test1：智能指针shared_ptr, unique_ptr的基本使用" << endl;
-		cout << "2. test2：自定义类型使用智能指针shared_ptr, unique_ptr" << endl;
-		cout << "3. test3: 空指针" << endl;
-
-
-		inputTag = scanf("%d", &inputNum);
-
-		// 若输入值不是整数，重新输入。
-		if (inputTag != 1)
-		{
-			printf("Invalid input. Please input again:\n");
-			setbuf(stdin, NULL);
-			continue;
-		}
-
-		// 对三级界面输入值的响应。
-		switch (inputNum)
-		{
-		case -2:
-			traverse_pfun();
-			break;
-
-		case -1:
-			interfaceLevel = 2;
-			break;
-
-		case 0:
-			(*pfun[0])();
-			break;
-
-		case 1:
-			(*pfun[1])();
-			break;
-
-		case 2:
-			(*pfun[2])();
-			break;
-
-		case 3:
-			(*pfun[3])();
-			break;
-
-		default:
-			printf("Invalid input. Please input again:\n");
-			break;
-		}
-
-
+		delete p_moduleIns;
 	}
+	p_moduleIns = new basicTypes_pointers_module;
+	return p_moduleIns;
 }
-
 
 
 // test0: 使用关键字new和delete直接管理内存。
-static void test0(void) 
+void basicTypes_pointers_module::test0(void)
 {
-	cout << "\n\n\n\n" << endl;
-	cout << "test0: 使用关键字new和delete直接管理内存。" << endl;
+	std::cout << "\n\n\n\n" << std::endl;
+	std::cout << "test0: 使用关键字new和delete直接管理内存。" << std::endl;
  
 	int *p1 = new int; 							// 若开辟内存失败则抛出std::bad_alloc
-	int *p2 = new (nothrow) int; 		// 若开辟内存失败则返回一个空指针
-	int i0;                   
+	int *p2 = new (std::nothrow) int; 		// 若开辟内存失败则返回一个空指针              
 	int *p0 = new int;        
 	                         
 	delete p0;   
 
 	int i(1024);              
-	string s(10, '9');       
+	std::string s(10, '9');
 
 
 	// 未命名，但是已初始化了的数据对象
 	int *pi = new int(1024);  
-	string *ps = new string(10, '9');    
+	std::string *ps = new std::string(10, '9');
  
  
 
-	vector<int> *pv = new vector<int>; 	// empty vector
+	std::vector<int> *pv = new std::vector<int>; 	// empty vector
 	for (int i = 0; i != 10; ++i)
 	{
 		pv->push_back(i);              // add elements to the allocated vector
 	}
 
 
-	cout << "*pi: " << *pi
-	     << "\ti: " << i << endl
+	std::cout << "*pi: " << *pi
+	     << "\ti: " << i << std::endl
 	     << "*ps: " << *ps
-	     << "\ts: " << s << endl;
+	     << "\ts: " << s << std::endl;
 	
 	for (auto b = pv->begin(); b != pv->end(); ++b)
 	{
-		cout << *b << " ";
+		std::cout << *b << " ";
 	}
 	
-	cout << endl;
+	std::cout << std::endl;
 
 
 	// 内存使用完毕以后，需要删除其对应的指针，否则会造成内存泄漏
@@ -336,34 +221,33 @@ static void test0(void)
 
 
 
-
 // test1：智能指针shared_ptr, unique_ptr的基本使用
-static void test1(void) 
+void basicTypes_pointers_module::test1(void)
 {
 	float f1 = 1.10;
-	shared_ptr<float> pf1;						// 默认构造函数，构造一个空的shared_ptr指针 
-	shared_ptr<float> pf2(&f1);					// 传递普通指针构造shared_ptr指针
-	shared_ptr<float> pf3(new float(1.11));		// 传递普通指针构造，配合关键字new
-	shared_ptr<int> pi1;
-	shared_ptr<int> pi2 = make_shared<int>(12);	// 使用make_shared函数生成shared_ptr指针
+	std::shared_ptr<float> pf1;						// 默认构造函数，构造一个空的shared_ptr指针 
+	std::shared_ptr<float> pf2(&f1);					// 传递普通指针构造shared_ptr指针
+	std::shared_ptr<float> pf3(new float(1.11));		// 传递普通指针构造，配合关键字new
+	std::shared_ptr<int> pi1;
+	std::shared_ptr<int> pi2 = std::make_shared<int>(12);	// 使用make_shared函数生成shared_ptr指针
 
-	cout << "\n\n\n\n" << endl;
-	cout << "test1：智能指针shared_ptr, unique_ptr" << endl;
+	std::cout << "\n\n\n\n" << std::endl;
+	std::cout << "test1：智能指针shared_ptr, unique_ptr" << std::endl;
 
-	cout << "\tpi1.use_count() == " << pi2.use_count() << endl;
-	cout << "\tpi1.unique() == " << pi2.unique() << endl;
+	std::cout << "\tpi1.use_count() == " << pi2.use_count() << std::endl;
+	std::cout << "\tpi1.unique() == " << pi2.unique() << std::endl;
 
 	pi1 = pi2;
-	cout << "pi1 = pi2; → pi1,pi2共享同一个数据对象：" << endl;
-	cout << "\tpi1.use_count() == " << pi2.use_count() << endl;
-	cout << "\tpi1.unique() == " << pi2.unique() << endl;
+	std::cout << "pi1 = pi2; → pi1,pi2共享同一个数据对象：" << std::endl;
+	std::cout << "\tpi1.use_count() == " << pi2.use_count() << std::endl;
+	std::cout << "\tpi1.unique() == " << pi2.unique() << std::endl;
 
 }
 
 
 
 // test2: 自定义类型使用智能指针shared_ptr, unique_ptr
-static void test2(void)
+void basicTypes_pointers_module::test2(void)
 {
 
 	// 智能指针默认使用delete来释放对象内存。自定义类型的，需要有删除器才可以使用delete
@@ -373,10 +257,10 @@ static void test2(void)
 
 
 // test3: 空指针
-static void test3(void)
+void basicTypes_pointers_module::test3(void)
 {
-	cout << "\n\n\n\n" << endl;
-	cout << "test3：空指针" << endl;
+	std::cout << "\n\n\n\n" << std::endl;
+	std::cout << "test3：空指针" << std::endl;
 
 	// 使用空指针来访问不存在的内存空间，会引发空指针异常，从而程序崩溃
 	// 可以使用p==NULL表达式返回的bool值来判断是否是空指针
@@ -385,11 +269,11 @@ static void test3(void)
 
 	if (pi1 == NULL && pi1 == NULL && pi2 == NULL && pi2 == NULL)
 	{
-		cout << "pi1和pi2都是空指针。写成NULL或nullptr都可以。" << endl;
+		std::cout << "pi1和pi2都是空指针。写成NULL或nullptr都可以。" << std::endl;
 	}
 
-	cout << "(int)(pi1 == NULL) == " << (int)(pi1 == NULL) << endl;
-	cout << "(int)(pi1 == NULL)" << (int)(pi2 == NULL) << endl;
+	std::cout << "(int)(pi1 == NULL) == " << (int)(pi1 == NULL) << std::endl;
+	std::cout << "(int)(pi1 == NULL)" << (int)(pi2 == NULL) << std::endl;
 
 
 
@@ -397,10 +281,115 @@ static void test3(void)
 
 
 
+// test4: 函数指针、函数指针数组
+namespace FUNC_POINTER 
+{
+	void foo(void) 
+	{
+		std::cout << "function foo is called." << std::endl;
+	}
+
+	void goo(void) 
+	{
+		std::cout << "function goo is called." << std::endl;
+	}
+
+}
 
 
-// test4: 
-static void test4(void) 
+void basicTypes_pointers_module::test4(void)
+{
+	using namespace FUNC_POINTER;
+
+	// 1. 声明函数指针数组
+	void(*pfv[10])(void) = { NULL };
+
+	// 2. 二级指针
+	void(**ppfv)(void) = NULL;
+
+	printf("\n\n\n\n");
+	printf("\ttest1: 函数指针数组、二级函数指针\n");
+
+
+	// 3. 
+	ppfv = &pfv[0];
+	*ppfv = foo;
+	ppfv++;
+	*ppfv = goo;
+
+
+	// 4.  
+	ppfv = &pfv[0];
+	(**ppfv)();
+	ppfv++;
+	(**ppfv)();
+}
+
+
+// test5: 回调函数：
+namespace CALLBACK_FUNC 
+{
+
+	namespace MY_CALCULATOR
+	{
+		// 有回调函数时使用别名指代相关函数指针类型，这样可以将caller函数的参数列表写的更简洁。
+		using unaryOP = float(*)(const float& num);				// 一元运算函数指针类型		
+		using binaryOP = float(*)(const float& num1, const float& num2);	// 二元运算函数指针类型。
+
+		float add(const float& num1, const float& num2)
+		{
+			return num1 + num2;
+		}
+
+		float minus(const float& num1, const float& num2)
+		{
+			return num1 - num2;
+		}
+
+		float sqrt(const float& num)
+		{
+			return std::sqrt(num);
+		}
+
+
+		// 重载1——进行一元运算：
+		float calculate(unaryOP pfunc, const float& num)
+		{
+			float number = num;
+			return (*pfunc)(number);
+		}
+
+
+		// 重载2——进行二元运算
+		float calculate(binaryOP pfunc, const float& num1, const float& num2)
+		{
+			float number1 = num1;
+			float number2 = num2;
+			return (*pfunc)(number1, number2);
+		}
+
+	}
+
+}
+
+
+
+void basicTypes_pointers_module::test5(void)
+{
+	using namespace CALLBACK_FUNC;
+
+	printf("\n\n\n\n");
+	printf("test5: 回调函数");
+
+	std::cout << MY_CALCULATOR::calculate((MY_CALCULATOR::add), 1.0f, 2.0f) << std::endl;
+	std::cout << MY_CALCULATOR::calculate((MY_CALCULATOR::add), 3.0f, 1.0f) << std::endl;
+	std::cout << MY_CALCULATOR::calculate((MY_CALCULATOR::sqrt), 3.0f) << std::endl;
+
+}
+
+
+
+void basicTypes_pointers_module::test6(void)
 {
 
 

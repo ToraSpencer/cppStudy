@@ -3,20 +3,19 @@
 #include <typeinfo>
 #include <vector>
 #include <list>
-#include <stack>					// stack容器适配器
-#include <queue>					// queue, priority_queue容器适配器
+#include <stack>					// std::stack容器适配器
+#include <queue>					// std::queue, priority_queue容器适配器
 
 #include <cstdio>
 
-
-using namespace std;
+#include "STL_容器适配器.h"
 
 #define EPS 1e-10					//定义非常小的一个量EPSilon，当浮点数不大于这个值时，视为0
 #define PI 3.14159
 
 
 
-// STL——容器适配器：stack, queue, priority_queue,
+// STL——容器适配器：std::stack, std::queue, priority_queue,
 /*
 	 适配器的作用：
 				使用一套新的接口，覆盖掉原有程序的接口。
@@ -30,7 +29,7 @@ using namespace std;
 
 
 
-// stack——栈模板类
+// std::stack——栈模板类
 /*
 	默认容器：deque
 
@@ -44,8 +43,8 @@ using namespace std;
 			const_reference		Container::const_reference
 
 	成员函数：
-			stack<int> s;									// 使用默认的容器deque实现栈对象s。
-			stack<int, vector<int> > stk;  		// 使用容器vector实现栈对象stk!!!注意空格
+			std::stack<int> s;									// 使用默认的容器deque实现栈对象s。
+			std::stack<int, vector<int> > stk;  		// 使用容器vector实现栈对象stk!!!注意空格
 
 			operator=										// 赋值运算符重载
 
@@ -56,13 +55,13 @@ using namespace std;
 
 			bool empty()									// 检查底层的容器是否为空	
 			size_type size()									// 返回容纳的元素数
-			void swap(stack& s)						// 交换容器内容		
+			void swap(std::stack& s)						// 交换容器内容		
 
 
 */
 
 
-// queue——队列模板类
+// std::queue——队列模板类
 /*
 	默认容器：deque
 	其他可用容器：list
@@ -75,8 +74,8 @@ using namespace std;
 
 
 	成员函数：
-			queue<T>
-			queue<T,container<T>>
+			std::queue<T>
+			std::queue<T,container<T>>
 
 			operator=										// 赋值运算符重载
 
@@ -90,7 +89,7 @@ using namespace std;
 			
 			bool empty()									// 检查底层的容器是否为空
 			size_type size()									// 返回容纳的元素数
-			void swap(queue& q)						// 交换容器内容
+			void swap(std::queue& q)						// 交换容器内容
 
 
 */
@@ -106,121 +105,33 @@ using namespace std;
 
 
 
-/***************************************************************************
-***************************************************************************/
-// 全局变量、类型定义
-
-
-
-
-/***************************************************************************
-***************************************************************************/
-// extern变量
-extern void(*pfun[100])(void);
-extern int inputTag, inputNum, interfaceLevel;
-
-
-
-/***************************************************************************
-***************************************************************************/
-// 函数声明
-void set_fun_STL_adapter(void);
-void start_STL_adapter(void);
-
-static void test0(void);
-static void test1(void);
-static void test2(void);
-static void test3(void);
-static void test4(void);
-
-
-/***************************************************************************
-***************************************************************************/
-// extern函数
-void traverse_pfun(void);
-
-
-/***************************************************************************
-***************************************************************************/
-// 自定义类的实现
-
-
-/***************************************************************************
-***************************************************************************/
-// 函数定义
-void set_fun_STL_adapter(void)
+virtualModule* STL_adapter_module::getInstance()		// 线程不安全的单例模式
 {
-	pfun[0] = test0;
-	pfun[1] = test1;
-}
-
-
-
-void start_STL_adapter(void)
-{
-	// 界面层级符置为3，进入三级界面：
-	interfaceLevel = 3;
-	while (3 == interfaceLevel)
+	if (nullptr != p_moduleIns)
 	{
-		cout << "\n\n\n\n" << endl;
-		cout << "**************************MENU: STL_adapter**********************" << endl;
-		cout << "Please choose a demon function to run:" << endl;
-		cout << "-2: Run all existed demon function." << endl;
-		cout << "-1: Back to the previous interface." << endl;
-		cout << "0. test0:  stack类模板的成员" << endl;
-		cout << "1. test1：queue类模板的成员  " << endl;
-
-
-		inputTag = scanf("%d", &inputNum);
-
-		// 若输入值不是整数，重新输入。
-		if (inputTag != 1)
-		{
-			printf("Invalid input. Please input again:\n");
-			setbuf(stdin, NULL);
-			continue;
-		}
-
-		// 对三级界面输入值的响应。
-		switch (inputNum)
-		{
-		case -2:
-			traverse_pfun();
-			break;
-
-		case -1:
-			interfaceLevel = 2;
-			break;
-
-		case 0:
-			(*pfun[0])();
-
-
-		case 1:
-			(*pfun[1])();
-
-
-		default:
-			printf("Invalid input. Please input again:\n");
-			break;
-		}
-
-
+		delete p_moduleIns;
 	}
+	p_moduleIns = new STL_adapter_module;
+	return p_moduleIns;
 }
 
 
 
-// test0:  stack类模板的成员
-static void test0(void) 
+
+
+
+
+
+// test0:  std::stack类模板的成员
+void STL_adapter_module::test0(void)
 {
-	stack<char> stc1;										// 默认情况下用deque构造stack
-	stack<int, vector<int>> sti1;						// 指定使用vector来构造stack
-	stack<float, list<float>> stf1;
+	std::stack<char> stc1;										// 默认情况下用deque构造std::stack
+	std::stack<int, std::vector<int>> sti1;						// 指定使用vector来构造std::stack
+	std::stack<float, std::list<float>> stf1;
 
 
-	cout << "\n\n\n\n" << endl;
-	cout << "test0:  stack类模板的成员" << endl;
+	std::cout << "\n\n\n\n" << std::endl;
+	std::cout << "test0:  std::stack类模板的成员" << std::endl;
 
 	stc1.push('a');																			// 压栈操作
 	stc1.push('b');
@@ -229,33 +140,48 @@ static void test0(void)
 	stc1.push('e');
  
 
-	cout << "\tstc1.empty() = " << stc1.empty() << endl;				// 查看是否为空
-	cout << "\tstc1.size() = " << stc1.size() << endl;						// 查看当前元素数
+	std::cout << "\tstc1.empty() = " << stc1.empty() << std::endl;				// 查看是否为空
+	std::cout << "\tstc1.size() = " << stc1.size() << std::endl;						// 查看当前元素数
 
 	stc1.pop();																					// 出栈操作
-	cout << "\tstc1.top() = " << stc1.top() << endl;						// 访问栈顶元素
-	cout << endl;
+	std::cout << "\tstc1.top() = " << stc1.top() << std::endl;						// 访问栈顶元素
+	std::cout << std::endl;
 	
 }
 
 
-// test1：queue类模板的成员 
-static void test1(void)
+// test1：std::queue类模板的成员 
+void STL_adapter_module::test1(void)
 {
-	queue<int> qi1;
-	queue<double, list<double>> qd1;
+	std::queue<int> qi1;
+	std::queue<double, std::list<double>> qd1;
 
-	cout << "\n\n\n\n" << endl;
-	cout << "test1：queue类模板的成员 " << endl;
+	std::cout << "\n\n\n\n" << std::endl;
+	std::cout << "test1：std::queue类模板的成员 " << std::endl;
 
 	qi1.push(0);						
 	qi1.push(1);
 	qi1.push(2);
 
-	cout << "\tqi1.front() = " << qi1.front() << endl;
-	cout << "\tqi1.back() = " << qi1.back() << endl;
+	std::cout << "\tqi1.front() = " << qi1.front() << std::endl;
+	std::cout << "\tqi1.back() = " << qi1.back() << std::endl;
 
 	
 
 
 }
+
+
+void STL_adapter_module::test2(void) {}
+
+
+void STL_adapter_module::test3(void) {}
+
+
+void STL_adapter_module::test4(void) {}
+
+
+void STL_adapter_module::test5(void) {}
+
+
+void STL_adapter_module::test6(void) {}

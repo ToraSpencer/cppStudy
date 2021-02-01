@@ -10,7 +10,7 @@
 #include <cstdio>
 
 
-#include "example.h" 
+#include "STL_set键集合.h" 
 using namespace std;
 
 #define EPS 1e-10					//定义非常小的一个量EPSilon，当浮点数不大于这个值时，视为0
@@ -84,125 +84,22 @@ using namespace std;
 */
 
 
-
-
-
-
-
-
-
-/***************************************************************************
-***************************************************************************/
-// 全局变量、类型定义
-
-
-
-
-/***************************************************************************
-***************************************************************************/
-// extern变量
-extern void(*pfun[100])(void);
-extern int inputTag, inputNum, interfaceLevel;
-
-
-
-/***************************************************************************
-***************************************************************************/
-// 函数声明
-void set_fun_STL_set(void);
-void start_STL_set(void);
-
-static void test0(void);
-static void test1(void);
-static void test2(void);
-static void test3(void);
-static void test4(void);
-
-
-/***************************************************************************
-***************************************************************************/
-// extern函数
-void traverse_pfun(void);
-
-
-/***************************************************************************
-***************************************************************************/
-// 自定义类的实现
-
-
-
-
-/***************************************************************************
-***************************************************************************/
-// 函数定义
-
-void set_fun_STL_set (void)
+virtualModule* STL_set_module::getInstance()		// 线程不安全的单例模式
 {
-	pfun[0] = test0;
-	pfun[1] = test1;
-}
-
-
-
-void start_STL_set(void)
-{
-	// 界面层级符置为3，进入三级界面：
-	interfaceLevel = 3;
-	while (3 == interfaceLevel)
+	if (nullptr != p_moduleIns)
 	{
-		cout << "\n\n\n\n" << endl;
-		cout << "**************************MENU: STL_set**********************" << endl;
-		cout << "Please choose a demon function to run:" << endl;
-		cout << "-2: Run all existed demon function." << endl;
-		cout << "-1: Back to the previous interface." << endl;
-		cout << "0. test0: set的基本使用方法、API" << endl;
-		cout << "1. test1: set的查找接口" << endl;
-
-
-		inputTag = scanf("%d", &inputNum);
-
-
-		// 若输入值不是整数，重新输入。
-		if (inputTag != 1)
-		{
-			printf("Invalid input. Please input again:\n");
-			setbuf(stdin, NULL);
-			continue;
-		}
-
-		// 对三级界面输入值的响应。
-		switch (inputNum)
-		{
-		case -2:
-			traverse_pfun();
-			break;
-
-		case -1:
-			interfaceLevel = 2;
-			break;
-
-		case 0:
-			(*pfun[0])();
-			break;
-
-
-		case 1:
-			(*pfun[1])();
-			break;
-
-		default:
-			printf("Invalid input. Please input again:\n");
-			break;
-		}
-
-
+		delete p_moduleIns;
 	}
+	p_moduleIns = new STL_set_module;
+	return p_moduleIns;
 }
+
+
 
 
 
 // test0: set的基本使用方法、API
-static void test0(void) 
+void STL_set_module::test0(void) 
 {
 	cout << "\n\n\n\n" << endl;
 	cout << "test0: set的基本使用方法、API" << endl;
@@ -232,14 +129,13 @@ static void test0(void)
 
 
 // test1: set的查找接口
-static void test1(void) 
+void STL_set_module::test1(void)
 {
 	cout << "\n\n\n\n" << endl;
 	cout << "test1: set的查找接口" << endl;
 
 	set<int> seti1;									// 构造方法1
 	set<int>::iterator iter_i1;
-	baseTypePrinter btp;
 	pair<set<int>::iterator, set<int>::iterator> pi1;
 
 	seti1.insert(1);
@@ -305,3 +201,18 @@ static void test1(void)
 
 
 }
+
+
+void STL_set_module::test2(void) {}
+
+
+void STL_set_module::test3(void) {}
+
+
+void STL_set_module::test4(void) {}
+
+
+void STL_set_module::test5(void) {}
+
+
+void STL_set_module::test6(void) {}

@@ -44,5 +44,4 @@ public:
 extern "C"
 {
 	DLL_API void* getChap();
-
 }

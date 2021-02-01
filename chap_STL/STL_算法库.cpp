@@ -8,16 +8,22 @@
 #include <string>
 #include <typeinfo>
 
-
-#include "example.h"
-
+ 
 #include <cstdio>
 
 
-using namespace std;
+#include "STL_算法库.h"
+
+ 
 
 #define EPS 1e-10					//定义非常小的一个量EPSilon，当浮点数不大于这个值时，视为0
 #define PI 3.14159
+
+
+
+
+
+
 
 
 
@@ -276,237 +282,101 @@ using namespace std;
 
 
 
-/***************************************************************************
-***************************************************************************/
-// 全局变量、类型定义
-
-
-
-
-
-
-
-
-
-/***************************************************************************
-***************************************************************************/
-// extern变量
-extern void(*pfun[100])(void);
-extern int inputTag, inputNum, interfaceLevel;
-
-
-
-/***************************************************************************
-***************************************************************************/
-// 函数声明
-void set_fun_STL_algorithm_lib(void);
-void start_STL_algorithm_lib(void);
-
-static void test0(void);
-static void test1(void);
-static void test2(void);
-static void test3(void);
-static void test4(void);
-static void test5(void);
-
-
-/***************************************************************************
-***************************************************************************/
-// extern函数
-extern void traverse_pfun(void);
-
-
-
-
-/***************************************************************************
-***************************************************************************/
-// 自定义类的实现
-
-
-
-
-/***************************************************************************
-***************************************************************************/
-// 函数定义
-
-
-
-void set_fun_STL_algorithm_lib(void)
+virtualModule* STL_algorithm_module::getInstance()		// 线程不安全的单例模式
 {
-	pfun[0] = test0;
-	pfun[1] = test1;
-    pfun[2] = test2;
-    pfun[3] = test3;
-    pfun[4] = test4;
-    pfun[5] = test5;
-
+	if (nullptr != p_moduleIns)
+	{
+		delete p_moduleIns;
+	}
+	p_moduleIns = new STL_algorithm_module;
+	return p_moduleIns;
 }
 
-
-void start_STL_algorithm_lib(void) 
-{
-    // 界面层级符置为3，进入三级界面：
-    interfaceLevel = 3;
-    while (3 == interfaceLevel)
-    {
-        cout << "\n\n\n\n" << endl;
-        cout << "**************************MENU: stdlib_algorithm_lib**********************" << endl;
-        cout << "Please choose a demon function to run:" << endl;
-        cout << "-2: Run all existed demon function." << endl;
-        cout << "-1: Back to the previous interface." << endl;
-        cout << "0. test0: algorithm中一些常用的只读算法" << endl;
-        cout << "1. test1: algorithm中常用的非只读算法" << endl;
-
-        inputTag = scanf("%d", &inputNum);
-
-
-        // 若输入值不是整数，重新输入。
-        if (inputTag != 1)
-        {
-            printf("Invalid input. Please input again:\n");
-            setbuf(stdin, NULL);
-            continue;
-        }
-
-        // 对三级界面输入值的响应。
-        switch (inputNum)
-        {
-        case -2:
-            traverse_pfun();
-            break;
-
-        case -1:
-            interfaceLevel = 2;
-            break;
-
-        case 0:
-            (*pfun[0])();
-            break;
-
-        case 1:
-            (*pfun[1])();
-            break;
-
-        case 2:
-            (*pfun[2])();
-            break;
-
-        case 3:
-            (*pfun[3])();
-            break;
-
-        case 4:
-            (*pfun[4])();
-            break;
-
-        case 5:
-            (*pfun[5])();
-            break;
-
-
-        default:
-            printf("Invalid input. Please input again:\n");
-            break;
-        }
-
-
-    }
-}
+ 
+ 
 
 
 
 // test0：algorithm中一些常用的只读算法——find(), accumulate(), equal(), for_each(), max_element()
-static void test0(void)
+void STL_algorithm_module::test0(void)
 {
-    vector<int> vi = {1,2,5,6,1,3,-1,-9};
-    vector<string> vs = {"dog","cat","panda"};
+	std::vector<int> vi = {1,2,5,6,1,3,-1,-9};
+	std::vector<std::string> vs = {"dog","cat","panda"};
     int iarr[] = {1,-3,5,4,5,-6,4,-4,6};
     int* pi = NULL;
     int sum;
-    vector<int>::iterator iti;
+	std::vector<int>::iterator iti;
     const char* sarr[] = {"dog","cat","duck"};
     bool flag;
 
 
-    cout << "\n\n\n\n" << endl;
-    cout << "test0：algorithm中一些常用的只读算法" << endl;
+    std::cout << "\n\n\n\n" << std::endl;
+    std::cout << "test0：algorithm中一些常用的只读算法" << std::endl;
 
 
 
     // find()——容器中查找元素。
-    pi = find(begin(iarr), end(iarr), 5);                                        // 返回查找元素的迭代器。
+    pi = std::find(std::begin(iarr), std::end(iarr), 5);                                        // 返回查找元素的迭代器。
   
     if (pi)         // 若没找到相符元素，返回的指针是NULL
     {
-        cout << "\tthe number 5 is present in the int array iarr."<< endl;
+        std::cout << "\tthe number 5 is present in the int array iarr."<< std::endl;
     }
     else 
     {
-        cout << "\tthe number 5 is not present in the int array iarr" << endl;
+        std::cout << "\tthe number 5 is not present in the int array iarr" << std::endl;
     }
 
     iti = find(begin(vi), end(vi), 99);
     if (iti != vi.end())      // vec.end()表示vec最后一个元素后一个位置，可以认为是空位置。
     {
-        cout << "\tthe number -4 is present in the int vector vi." << endl;
+        std::cout << "\tthe number -4 is present in the int vector vi." << std::endl;
     }
     else
     {
-        cout << "\tthe number -4 is not present in the int vector vi." << endl;
+        std::cout << "\tthe number -4 is not present in the int vector vi." << std::endl;
     }
-    cout << endl;
+    std::cout << std::endl;
 
 
     // accumulate——容器元素求和
     sum = accumulate(vi.cbegin(),vi.cend(),0);    // 参数列表第三项表示额外加上的量。
-    cout << sum << endl;
-    sum = accumulate(begin(iarr), end(iarr), 0);			// 对数组也可用，不只是STL容器。
-    cout << sum << endl;
-    cout << endl;
+    std::cout << sum << std::endl;
+    sum = std::accumulate(std::begin(iarr), std::end(iarr), 0);			// 对数组也可用，不只是STL容器。
+    std::cout << sum << std::endl;
+    std::cout << std::endl;
 
 
     // equal——比较容器中的元素
-    flag = equal(vs.begin(),vs.end(),begin(sarr));
+    flag = equal(vs.begin(),vs.end(), std::begin(sarr));
     if (flag)
     {
-        cout << "\telements from two containers are the same. " << endl;
+        std::cout << "\telements from two containers are the same. " << std::endl;
     }
     else 
     {
-        cout << "\telements from two containers are not the same." << endl;
+        std::cout << "\telements from two containers are not the same." << std::endl;
     }
-    cout << endl;
+    std::cout << std::endl;
 
 
     // for_each——遍历容器中的元素:
-    cout << "for_each——遍历容器中的元素:" << endl;
-    vector<classFoo> vf;
-    classFoo f1;
-    classFoo f2("xiaoming", 12);
-    classFoo f3("xiaohong", 23);
-    classFoo f4("laowang", 87);
-    FooPrinter ffoo;
+    std::cout << "for_each——遍历容器中的元素:" << std::endl;
  
-    vf.push_back(f1);
-    vf.push_back(f2);
-    vf.push_back(f2);
-    vf.push_back(f3);
-    vf.push_back(f4);
 
-    cout << "传递函数遍历：" << endl;
-    for_each(vf.begin(), vf.end(), printFoo);
+    std::cout << "传递函数遍历：" << std::endl;
+ 
 
-    cout << "传递函数子遍历：" << endl;
-    auto ffoo1 = for_each(vf.begin(), vf.end(), ffoo);
-    cout << endl;
-    cout << "functor ffoo has been called for " << ffoo1.getCount() << " times." << endl;
-
+    std::cout << "传递函数子遍历：" << std::endl;
+ 
+    std::cout << std::endl;
+ 
 
 	// max_element(), min_element()——返回容器中的最值元素的迭代器或指针。
-	iti = max_element(vi.begin(), vi.end());
-	pi = min_element(begin(iarr), end(iarr));
-	cout << *iti << endl;
-	cout << *pi << endl;
+	iti = std::max_element(vi.begin(), vi.end());
+	pi = std::min_element(std::begin(iarr), std::end(iarr));
+	std::cout << *iti << std::endl;
+	std::cout << *pi << std::endl;
 	
    
 }
@@ -515,32 +385,32 @@ static void test0(void)
 
 
 // test1: algorithm中常用的非只读算法——random_shuffle()
-static void test1(void) 
+void STL_algorithm_module::test1(void)
 {
-    cout << "\n\n\n\n" << endl;
-    cout << "test1: algorithm中常用的非只读算法" << endl;
+    std::cout << "\n\n\n\n" << std::endl;
+    std::cout << "test1: algorithm中常用的非只读算法" << std::endl;
 
     // random_shuffle(iterBegin, iterEnd)————将一个元素序列随机打乱
     //      作用于STL线性容器
-    vector<int> arri1 = {1,2,3,4,5,6,7,8,9,10};
-    random_shuffle(arri1.begin(), arri1.end());
-    for (vector<int>::iterator iter = arri1.begin(); iter != arri1.end(); iter++)
+	std::vector<int> arri1 = {1,2,3,4,5,6,7,8,9,10};
+	std::random_shuffle(arri1.begin(), arri1.end());
+    for (std::vector<int>::iterator iter = arri1.begin(); iter != arri1.end(); iter++)
     {
-        cout << "\t" << *iter;
+        std::cout << "\t" << *iter;
     }
-    cout << endl;
+    std::cout << std::endl;
 
 
 
 
     //      作用于数组
     int arri2[] = { 1,2,3,4,5,6,7,8,9,10 };
-    random_shuffle(begin(arri2), end(arri2));
+	std::random_shuffle(std::begin(arri2), std::end(arri2));
     for (int num : arri2)
     {
-        cout << "\t" << num;
+        std::cout << "\t" << num;
     }
-    cout << endl;
+    std::cout << std::endl;
 
  
 
@@ -551,25 +421,25 @@ static void test1(void)
 
 
 // test2: 算法应用举例
-static void test2() 
+void STL_algorithm_module::test2()
 {
     // 
-    cout << "\n\n\n\n" << endl;
-    cout << "test2: 算法应用举例" << endl;
+    std::cout << "\n\n\n\n" << std::endl;
+    std::cout << "test2: 算法应用举例" << std::endl;
 
     // 去掉一个最高分，一个最低分，取平均作为最后得分：
-    deque<float> df1 = {};
+    std::deque<float> df1 = {};
 
 }
 
 
-static void test3()
-{}
+void STL_algorithm_module::test3(){}
 
 
-static void test4()
-{}
+void STL_algorithm_module::test4() {}
 
 
-static void test5()
-{}
+void STL_algorithm_module::test5() {}
+
+
+void STL_algorithm_module::test6() {}

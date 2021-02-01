@@ -3,10 +3,13 @@
 
 void chap_designPattern::showModuleList()
 {
+	std::cout << "**********设计模式DESIGN_PATTERN**************" << std::endl;
 	std::cout << "1.设计模式——策略模式" << std::endl;
 	std::cout << "2.设计模式——工厂模式" << std::endl;
 	std::cout << "3.设计模式——单例模式" << std::endl;
 	std::cout << "4.设计模式——代理模式" << std::endl;
+	std::cout << "-1. 退出" << std::endl;
+	std::cout << std::endl << std::endl;
 }
 
 

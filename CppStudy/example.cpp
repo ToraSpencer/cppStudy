@@ -338,7 +338,7 @@ myString::myString(const myString& str)                                // ！！！
 	int size = strlen(cStr) + 1;
 
 	this->p_data = new char[size];
-	strcpy(p_data, cStr);
+	strcpy_s(p_data, cStr);
 }
 
 myString::~myString()                                               // 析构函数应写成虚函数，否则子类对象析构时会有内存泄露。

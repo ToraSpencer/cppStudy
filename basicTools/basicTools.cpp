@@ -58,3 +58,28 @@ void virtualChap::runTest(const unsigned testID)
 	this->pm->run(testID);
 }
 
+
+bool virtualChap::isNullModule() const
+{
+	if (nullptr == this->pm) 
+	{
+		return true;
+	}
+	else 
+	{
+		return false;
+	}
+}
+
+
+myString::myString(const myString& str)                                // ！！！类数据中有指针式，应该自己实现拷贝构造函数、重载赋值运算符，以实现深拷贝。否则系统分配浅拷贝的拷贝构造函数。
+{
+	const char* cStr = str.c_str();
+	int size = strlen(cStr) + 1;
+
+	char* tempStr = new char[size];
+	strcpy_s(tempStr, size ,cStr);
+	this->pc = tempStr;
+}
+
+ 

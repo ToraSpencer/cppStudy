@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="chap_basicTypes.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="basicTypes_指针、智能指针、内存泄漏.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="basicTypes_引用.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="basicTypes_数组.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="basicTypes_内置类型.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="basicTypes_枚举、共用体、结构体.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="basicTypes_对、元祖.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="basicTypes_c风格字符串、string、wstring.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="chap_basicTypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="basicTypes_指针、智能指针、内存泄漏.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="basicTypes_引用.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="basicTypes_数组.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="basicTypes_内置类型.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="basicTypes_枚举、共用体、结构体.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="basicTypes_对、元祖.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="basicTypes_c风格字符串、string、wstring.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

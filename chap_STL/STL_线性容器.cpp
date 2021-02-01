@@ -2,13 +2,11 @@
 #include <iostream>
 #include <fstream>
 #include <vector>						//vector类模板在头文件<vector>中
-
+#include <list>
+#include <deque>
 #include <cstdio>
 
-
-using namespace std;
-
-
+#include "STL_线性容器.h"
 
 
 // 知识点
@@ -60,259 +58,40 @@ using namespace std;
 
 
 
+virtualModule* STL_linear_container_module::getInstance()		// 线程不安全的单例模式
+{
+	if (nullptr != p_moduleIns)
+	{
+		delete p_moduleIns;
+	}
+	p_moduleIns = new STL_linear_container_module;
+	return p_moduleIns;
+}
+
 
  
 
-
-/***************************************************************************
-***************************************************************************/
-// 全局变量、类型定义
-class Complex					// 自定义复数类
-{
-private:
-	float real;
-	float imag;
-public:
-	// 构造、析构函数
-	Complex();
-	Complex(float x, float y);
-
-	// get/set方法
-	double getReal()	const;
-	double getImag()	const;
-
-	// 普通方法
-	string toString();
-
-	// 重载运算符
-	Complex operator+(Complex& cc);					//重载加号运算符，使其可以做复数的加法运算。
-	operator double();								//重载运算符double()，当复数虚部为0时，可以用此运算符将复数转换为double类型数据。
-
-};
-
-
-
-/***************************************************************************
-***************************************************************************/
-// extern变量
-extern void(*pfun[100])(void);
-extern int inputTag, inputNum, interfaceLevel;
-
-
-/***************************************************************************
-***************************************************************************/
-// 函数声明
-template <typename T>
-void traverse_vector(const vector<T>&, void(*pVisit)(const T&));			// 遍历向量的操作。
-
-template <typename T>
-void print(const T&);													// 只读操作：打印出元素的值。
-
-void set_fun_STL_linear_container(void);
-void start_STL_linear_container(void);
-
-
-static void test0(void);
-static void test1(void);
-static void test2(void);
-static void test3(void);
-static void test4(void);
-static void test5(void);
-static void test6(void);
-static void test7(void);
-static void test8(void);
-static void test9(void);
-static void test10(void);
-static void test11(void);
-
-
-/***************************************************************************
-***************************************************************************/
-// extern函数
-extern void traverse_pfun(void);
-
-
-
-/***************************************************************************
-***************************************************************************/
-// 自定义类的实现
-
-
-
-/***************************************************************************
-***************************************************************************/
-// 函数定义
-template <typename T>
-void traverse_vector(const vector<T>& v, void(*pVisit)(const T&))		// 遍历向量的操作。
-{
-	for (auto elem : v)
-	{
-		(*pVisit)(elem);
-	}
-}
-
-
-
-template <typename T>
-void print(const T& elem)															// 只读操作：打印出元素的值。
-{
-	cout << "\t" << elem << endl;
-}
-
-
-
-void set_fun_STL_linear_container(void)
-{
-	pfun[0] = test0;
-	pfun[1] = test1;
-	pfun[2] = test2;
-	pfun[3] = test3;
-	pfun[4] = test4;
-	pfun[5] = test5;
-
-}
-
-
-
-void start_STL_linear_container(void)
-{
-	// 界面层级符置为3，进入三级界面：
-	interfaceLevel = 3;
-	while (3 == interfaceLevel)
-	{
-		cout << "\n\n\n\n" << endl;
-		cout << "**************************MENU: STL_linear_container**********************" << endl;
-		cout << "Please choose a demon function to run:" << endl;
-		cout << "-2: Run all existed demon function." << endl;
-		cout << "-1: Back to the previous interface." << endl;
-		cout << "0. test0(): vector与其他线性容器相比特有的特点" << endl;
-		cout << "1. test1(): 向量构造函数、初始化方法" << endl;
-		cout << "2. test2(): vector访问、操作单个元素的成员方法" << endl;
-		cout << "3. test3(): vector的迭代器" << endl;
-		cout << "4. test4(): vector的其他成员方法" << endl;
-		cout << "5. test5(): vector迭代器失效问题" << endl;
-		cout << "6. test6(): 元素放入线性容器的拷贝过程" << endl;
-		cout << "7. test7(): 一个应用场景。" << endl;
-
-		inputTag = scanf("%d", &inputNum);
-
-		// 若输入值不是整数，重新输入。
-		if (inputTag != 1)
-		{
-			printf("Invalid input. Please input again:\n");
-			setbuf(stdin, NULL);
-			continue;
-		}
-
-		// 对三级界面输入值的响应。
-		switch (inputNum)
-		{
-		case -2:
-			traverse_pfun();
-			break;
-
-		case -1:
-			interfaceLevel = 2;
-			break;
-
-		case 0:
-			(*pfun[0])();
-			break;
-
-		case 1:
-			(*pfun[1])();
-			break;
-
-		case 2:
-			(*pfun[2])();
-			break;
-
-		case 3:
-			(*pfun[3])();
-			break;
-
-		case 4:
-			(*pfun[4])();
-			break;
-
-		case 5:
-			(*pfun[5])();
-			break;
-
-		case 6:
-			(*pfun[6])();
-			break;
-
-
-		case 7:
-			(*pfun[7])();
-			break;
+ 
  
 
-		default:
-			printf("Invalid input. Please input again:\n");
-			break;
-		}
-
-
-	}
-}
-
-
-
-// test0(): vector与其他线性容器相比特有的特点：
-static void test0(void)
+// test0():向量构造函数、初始化方法。
+void STL_linear_container_module::test0(void)
 {
-	vector<int>vi;
-	vector<int>::iterator iter_i;
-	vector<int>::const_iterator citer_i;
-
-	vi.push_back(1);
-	vi.push_back(2);
-	vi.push_back(3);
-	vi.push_back(4);
-	vi.push_back(5);
-	vi.push_back(6);
-
-	cout << "\n\n\n\n" << endl;
-	cout << "test0(): vector与其他线性容器相比特有的特点：" << endl << endl;
+	std::vector<int> vi1;												// 构造一个空向量。
 
 
-	// 1. vector, string, array可以使用下标v[i]直接访问元素：
-	for (int i = 0; i <= vi.size() - 1; i++)
-	{
-		cout << "\t" << vi[i] ;
-	}
-	cout << endl;
+	std::cout << "\n\n\n\n" << std::endl;
+	std::cout << "test0(): 向量构造函数、初始化方法。" << std::endl << std::endl;
 
-}
-
-
-
-
-
-// test1():向量构造函数、初始化方法。
-static void test1(void)
-{
-	vector<int> vi1;												// 构造一个空向量。
-
-
-
-
-
-
-	cout << "\n\n\n\n" << endl;
-	cout << "test1(): 向量构造函数、初始化方法。" << endl << endl;
-
-	cout << "\tvi1.empty == " << vi1.empty() << endl;
-	cout << endl;
+	std::cout << "\tvi1.empty == " << vi1.empty() << std::endl;
+	std::cout << std::endl;
 
 
 	// 1. 指定向量的容量。
-	vector<int> vi2(3);			
-	cout << "vi2.capacity() ==  " << vi2.capacity() << endl;
-	traverse_vector(vi2, print);
-	cout << endl;
+	std::vector<int> vi2(3);
+	std::cout << "vi2.capacity() ==  " << vi2.capacity() << std::endl;
+	traverseSTL(vi2, disp<int>);
+	std::cout << std::endl;
 
 	vi2.push_back(1);
 	vi2.push_back(2);
@@ -320,53 +99,101 @@ static void test1(void)
 	vi2.push_back(4);
 
 	// 	1.1 push_back进去四个元素之后，vi2会自动扩容：
-	cout << "vi2.size() == " << vi2.size() << endl;
-	traverse_vector(vi2, print);
-	cout << endl << endl;
+	std::cout << "vi2.size() == " << vi2.size() << std::endl;
+	traverseSTL(vi2, disp<int>);
+	std::cout << std::endl << std::endl;
 
 
 	// 2. 指定向量的容量和元素统一初始值。
-	vector<int> vi3(3, 10); 		
-	traverse_vector(vi3, print);
-	cout << endl;
+	std::vector<int> vi3(3, 10); 		
+	traverseSTL(vi3, disp<int>);
+	std::cout << std::endl;
 
 	// 3. 使用初始化列表初始化vector和数组
-	vector<int> vi4 = {1,2,3,4};										// 上下两种实例化对象的语句是等效的。
+	std::vector<int> vi4 = {1,2,3,4};										// 上下两种实例化对象的语句是等效的。
 	int arr[] = { 1, 2, 3 };
 
 
 	// 4. 输入数组来构造向量。
-	vector<int> vi5(arr, arr + 3);									
+	std::vector<int> vi5(arr, arr + 3);									
+}
 
 
 
+// test1(): 线性容器的增删查改
+void STL_linear_container_module::test1(void)
+{
+	std::cout << "\n\n\ntest1():线性容器的增删查改" << std::endl << std::endl;
 
+	// lambda——执行条件判断的函数子
+	auto badValue = [](const int& num) -> bool
+	{
+		if (num == 4)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	};
+
+	std::vector<int> vi1{ 1,2,3,4,5,4,6,7,8,9,4 };
+	std::list<int> li1{ 1,2,3,4,5,4,6,7,8,9,4 };
+	std::deque<int> di1{ 1,2,3,4,5,4,6,7,8,9,4 };
+
+	// 增：
+	
+	//		数组区间拷贝到顺序表STL容器——vector中
+	int arri[] = { 1,2,3,4,5,6,77,88,999 };
+	std::vector<int> vi2(9);
+	memcpy(&vi2[0], &arri[0], sizeof(int) * 9);
+	traverseSTL(vi2, disp<decltype(vi1[0])>);
+
+
+
+	// 删除元素：
+
+	//		earase()重载1——删除迭代器指定的元素
+	vi1.erase(vi1.begin());
+	traverseSTL(vi1, disp<decltype(vi1[0])>);
+
+	//		erase()重载2——删除一对迭代器指定范围的元素
+	li1.erase(++li1.begin(), --li1.end());	// list的迭代器是双向迭代器，不是vector那样的随机访问迭代器，不支持常数加减功能,++可以。
+	traverseSTL(li1, disp<decltype(*li1.begin())>);
+
+	//		erase()方法和remove_if()接口配合成特殊的操作，条件删除STL线性容器中的元素
+	vi1.erase(remove_if(vi1.begin(), vi1.end(), badValue), vi1.end());
+	traverseSTL(vi1, disp<decltype(vi1[0])>);
+
+	//		erase()方法返回值的应用——返回值是被删除元素下一个元素的迭代器
+	for (std::deque<int>::iterator iter = di1.begin(); iter != di1.end();)
+	{
+		// 条件删除元素，并且在删除的时候打印字符串。
+		if (badValue(*iter))
+		{
+			std::cout << "删除了一个元素。" << std::endl;
+			iter = di1.erase(iter);		// 获得被删除元素下一个元素的迭代器
+		}
+		else
+		{
+			++iter;
+		}
+	}
+	traverseSTL(di1, disp<decltype(*di1.begin())>);
 
 }
 
 
 
-
-// test2(): 线性容器的增删查改
-static void test2(void)
+// test2():vector的迭代器
+void STL_linear_container_module::test2(void)
 {
-	cout << "\n\n\ntest2():线性容器的增删查改" << endl << endl;
+	std::cout << "\n\n\ntest3():vector的迭代器" << std::endl << std::endl;
 
-
-
-
-}
-
-
-
-// test3():vector的迭代器
-static void test3(void)
-{
-	cout << "\n\n\ntest3():vector的迭代器" << endl << endl;
-
-	vector<int>vi;
-	vector<int>::iterator iter_i;
-	vector<int>::const_iterator citer_i;
+	std::vector<int>vi;
+	std::vector<int>::iterator iter_i;
+	std::vector<int>::const_iterator citer_i;
 
 	vi.push_back(1);
 	vi.push_back(2);
@@ -376,43 +203,43 @@ static void test3(void)
 	vi.push_back(6);
 
 	// 使用const_iterator来遍历vector中所有元素。
-	cout << "use const_iterator to traverse all the items on the vector container:" << endl;
+	std::cout << "use const_iterator to traverse all the items on the vector container:" << std::endl;
 	for (citer_i = vi.begin(); citer_i != vi.end(); citer_i++)
 	{
-		cout << *citer_i << endl;
+		std::cout << *citer_i << std::endl;
 	}							//const_iterator只能访问元素，不可以修改元素。
-	cout << endl;
+	std::cout << std::endl;
 
 
 	// 使用iterator来修改vector中的元素。
-	cout << "use iterator to change the vector's item's value: " << endl;
+	std::cout << "use iterator to change the vector's item's value: " << std::endl;
 	iter_i = vi.begin();								//迭代器指向第一个元素。
 	*iter_i = -1;
-	cout << "vi[0] == " << *iter_i << endl;
+	std::cout << "vi[0] == " << *iter_i << std::endl;
 	iter_i++;
 	*iter_i = -2;
-	cout << "vi[1] == " << *iter_i << endl;
+	std::cout << "vi[1] == " << *iter_i << std::endl;
 	iter_i += 1;
 	*iter_i = -3;
-	cout << "vi[2] == " << *iter_i << endl;
-	cout << endl;
+	std::cout << "vi[2] == " << *iter_i << std::endl;
+	std::cout << std::endl;
 
 
 	// vector的迭代器失效问题：
-	vector<int> vec;
+	std::vector<int> vec;
 	vec.push_back(1);
 	vec.push_back(2);
 	vec.push_back(3);
 	vec.push_back(4);
 
 
-	vector<int>::iterator  iter1 = vec.begin();
-	vector<int>::iterator  iter2 = iter1;
+	std::vector<int>::iterator  iter1 = vec.begin();
+	std::vector<int>::iterator  iter2 = iter1;
 	iter2++;
 
 
-	cout << "*iter1 == " << *iter1 << endl;			// 貌似插入操作之后，即使是插入点之前的iterator也失效了。
-	cout << "*iter2 == " << *iter2 << endl;
+	std::cout << "*iter1 == " << *iter1 << std::endl;			// 貌似插入操作之后，即使是插入点之前的iterator也失效了。
+	std::cout << "*iter2 == " << *iter2 << std::endl;
 
 
 	vec.insert(iter2, 999);
@@ -420,78 +247,49 @@ static void test3(void)
 
 	for (const auto& elem : vec)
 	{
-		cout << elem << ",  ";
+		std::cout << elem << ",  ";
 	}
-	cout << endl;
+	std::cout << std::endl;
 
-	cout << "*iter1 == " << *iter1 << endl;			// 貌似插入操作之后，即使是插入点之前的iterator也失效了。
-	cout << "*iter2 == " << *iter2 << endl;
+	std::cout << "*iter1 == " << *iter1 << std::endl;			// 貌似插入操作之后，即使是插入点之前的iterator也失效了。
+	std::cout << "*iter2 == " << *iter2 << std::endl;
 
-	vector<int>::iterator iter = vec.begin() + 3;
-	cout << "*iter == " << *iter << endl;
+	std::vector<int>::iterator iter = vec.begin() + 3;
+	std::cout << "*iter == " << *iter << std::endl;
 
-	cout << distance(vec.begin(), iter) << endl;
+	std::cout << std::distance(vec.begin(), iter) << std::endl;
 
 }
 
 
 
-// test4():vector的其他成员方法。
-static void test4(void)
+// test3(): 优先使用容器操作区间的方法，而不是操作单个元素的方法——effective STL
+void STL_linear_container_module::test3(void)
 {
-	//clear()：清空vector
-	//reverse()
-	//swap()：两个vector对象之间的元素交换。
+	// assign()——范围性地初始化本容器。
+	std::vector<int> vi1, vi2;
+	vi1.assign(6, 999);				// 用六个999初始化vi1容器
 
-	vector<int> vi;
-	vi.push_back(1);
-	vi.push_back(2);
-	vi.push_back(3);
+	auto iter1 = vi1.begin();
+	auto iter2 = vi1.end();
+	iter1 += 3;
+	vi2.assign(iter1, iter2);		// 用迭代器iter1,iter2指示的vi2中的区间初始化vi1;
 
-
-	cout << "\n\n\ntest4():vector的其他成员方法" << endl << endl;
-
-	//empty()：返回bool值表示向量是否为空。
-	cout << "vi.empty() = " << vi.empty() << endl;
-	cout << endl;
-
-
-	//size():返回vector现有元素数。
-	cout << "vi.size() = " << vi.size() << endl;
-	cout << endl;
-
-
-	//capacity():返回vector当前容量，当vector超容时，容量会自动扩张为原来的两倍。容量对应于开辟的内存空间。
-	cout << "vi.capacity() = " << vi.capacity() << endl;
-	cout << endl;
-
-
-	//reverse():设定vector的容量即capacity
-	cout << "" << endl;
-	vi.reserve(8);
-	cout << "vi.capacity() = " << vi.capacity() << endl;
-
-
-	//max_size():返回STL规定的vector最大能容纳的元素数。
-	cout << "vi.max_size() =  " << vi.max_size() << endl;
-	cout << endl;
-	
-
-	//at(int 索引)：返回元素的引用。
-	cout << " vi.at(1) = " << vi.at(1) << endl;
-	cout << endl;
+	traverseSTL(vi1, disp<decltype(vi1[0])>);
+	traverseSTL(vi2, disp<decltype(vi2[0])>);
+ 
 }
 
 
 
 
-// test5()——vector迭代器失效问题
-static void test5(void)
+// test4()——vector迭代器失效问题
+void STL_linear_container_module::test4(void)
 {
-	vector<int> v1 = {1,2,3};		// 初始时v1容量为3，可以使用v1.capacity()查看。
+	std::vector<int> v1 = {1,2,3};		// 初始时v1容量为3，可以使用v1.capacity()查看。
 	auto iter1 = v1.begin();
 	v1.push_back(4);				// 此时v1容量发生改变，内存重新分配，所有迭代器失效。
-	cout << *iter1 << endl;			// 此时程序会崩溃出错，因为迭代器已经失效。
+	std::cout << *iter1 << std::endl;			// 此时程序会崩溃出错，因为迭代器已经失效。
 
 	// 执行插入操作的时候同理。
 
@@ -503,8 +301,8 @@ static void test5(void)
 
 
 
-// test6()——元素放入线性容器中的拷贝过程
-static void test6(void) 
+// test5()——元素放入线性容器中的拷贝过程
+void STL_linear_container_module::test5(void)
 {
 	// 指针、或行为像指针的类对象被存入vector时，发生的是浅拷贝
 	int num1 = 999;
@@ -514,16 +312,16 @@ static void test6(void)
 	int* p2 = &num2;
 	int* p3 = &num3;
 
-	vector<int*> vec;
+	std::vector<int*> vec;
 	vec.push_back(p1);
 	vec.push_back(p2);
 	vec.push_back(p3);
 
 	for (const auto& elem : vec)
 	{
-		cout << *elem << ", ";
+		std::cout << *elem << ", ";
 	}
-	cout << endl;
+	std::cout << std::endl;
 
 	*p1 = 111;
 	*p2 = 222;
@@ -531,28 +329,28 @@ static void test6(void)
 
 	for (const auto& elem : vec)
 	{
-		cout << *elem << ", ";
+		std::cout << *elem << ", ";
 	}
-	cout << endl;
+	std::cout << std::endl;
 
 }
 
 
 
 
-// test7()——应用场景
-static void test7(void)
+// test6()——应用场景
+void STL_linear_container_module::test6(void)
 {
 	// 应用场景——处理string对象，然后通过该对象生成相应的文件句柄。
 	//		处理下面的string对象，希望在文件名后面添加后缀"_x", "_y"，表示x和y坐标的向量数据。
-	string str = "data.dat";
+	std::string str = "data.dat";
 
 
 	// 查——find()函数；线性容器本身没有find方法
 	auto iter = find(str.begin(), str.end(), 'x');
 	if (iter == str.end())
 	{
-		cout << "error" << endl;
+		std::cout << "error" << std::endl;
 	}
 	auto dis = distance(str.begin(), iter);
 
@@ -564,8 +362,8 @@ static void test7(void)
 								);
 	*/
 	str.insert(dis, "_x");
-	cout << str << endl;
-	fstream file(str, ios::out);
+	std::cout << str << std::endl;
+	std::fstream file(str, std::ios::out);
 	file.close();
 
 }
