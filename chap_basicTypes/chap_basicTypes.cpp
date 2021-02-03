@@ -28,7 +28,7 @@ virtualChap* chap_basicTypes::getInstance()
 
 
 
-void chap_basicTypes::selectModule(const int molEnum)
+bool chap_basicTypes::selectModule(const int molEnum)
 {
 	switch (molEnum)
 	{
@@ -54,8 +54,9 @@ void chap_basicTypes::selectModule(const int molEnum)
 		this->pm = basicTypes_enum_union_struct_module::getInstance();
 		break;
 	default:
-		break;
+		return false;
 	}
+	return true;
 
 }
 

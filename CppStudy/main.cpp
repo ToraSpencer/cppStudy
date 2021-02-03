@@ -40,7 +40,11 @@ int main()
 			break;
 		}
 
-		pr->selectChap(static_cast<CHAP_ENUM>(inputNum));
+		if(!pr->selectChap(static_cast<CHAP_ENUM>(inputNum))) 
+		{
+			std::cout << "请输入一个有效选项。" << std::endl;
+			continue;
+		}
 		
 
 		if (!pr->isNullChap()) 
@@ -69,7 +73,12 @@ int main()
 				break;
 			}
 
-			pr->selectMol(inputNum);
+			if(!pr->selectMol(inputNum)) 
+			{
+				std::cout << "请输入一个有效选项。" << std::endl;
+				continue;
+			}
+
 			if (!pr->isNullModule()) 
 			{
 				interfaceLevel = 3;

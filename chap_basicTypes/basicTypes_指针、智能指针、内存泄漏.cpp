@@ -111,20 +111,12 @@
 			9. 内存泄漏的修复途径
 
 
-			10. 函数指针
-					函数指针的声明语法————和函数声明格式类似，只是函数名变成了*pf
-
-					对于某函数foo()，可以用foo或&foo表示其指针。
-
-					回调函数
-								如果一个函数并不会被显式地直接调用，而是将其函数指针传给一个caller函数，由caller函数调用，这个函数就被成为回调函数。
-
 
 */
 
 
 // make_shared<T>()————创建一个shared_ptr指针
-/*. BC------------------------------------------------------------------------
+/* 
 描述：  
 	开辟动态内存空间，返回shared_ptr对象
 	源于头文件<memory>
@@ -145,8 +137,7 @@
 		返回值：
 			同上。
 								 
- 
-*. EC------------------------------------------------------------------------
+  
 */
  
 
@@ -280,112 +271,10 @@ void basicTypes_pointers_module::test3(void)
 }
 
 
-
-// test4: 函数指针、函数指针数组
-namespace FUNC_POINTER 
-{
-	void foo(void) 
-	{
-		std::cout << "function foo is called." << std::endl;
-	}
-
-	void goo(void) 
-	{
-		std::cout << "function goo is called." << std::endl;
-	}
-
-}
-
-
-void basicTypes_pointers_module::test4(void)
-{
-	using namespace FUNC_POINTER;
-
-	// 1. 声明函数指针数组
-	void(*pfv[10])(void) = { NULL };
-
-	// 2. 二级指针
-	void(**ppfv)(void) = NULL;
-
-	printf("\n\n\n\n");
-	printf("\ttest1: 函数指针数组、二级函数指针\n");
-
-
-	// 3. 
-	ppfv = &pfv[0];
-	*ppfv = foo;
-	ppfv++;
-	*ppfv = goo;
-
-
-	// 4.  
-	ppfv = &pfv[0];
-	(**ppfv)();
-	ppfv++;
-	(**ppfv)();
-}
-
-
-// test5: 回调函数：
-namespace CALLBACK_FUNC 
-{
-
-	namespace MY_CALCULATOR
-	{
-		// 有回调函数时使用别名指代相关函数指针类型，这样可以将caller函数的参数列表写的更简洁。
-		using unaryOP = float(*)(const float& num);				// 一元运算函数指针类型		
-		using binaryOP = float(*)(const float& num1, const float& num2);	// 二元运算函数指针类型。
-
-		float add(const float& num1, const float& num2)
-		{
-			return num1 + num2;
-		}
-
-		float minus(const float& num1, const float& num2)
-		{
-			return num1 - num2;
-		}
-
-		float sqrt(const float& num)
-		{
-			return std::sqrt(num);
-		}
-
-
-		// 重载1——进行一元运算：
-		float calculate(unaryOP pfunc, const float& num)
-		{
-			float number = num;
-			return (*pfunc)(number);
-		}
-
-
-		// 重载2——进行二元运算
-		float calculate(binaryOP pfunc, const float& num1, const float& num2)
-		{
-			float number1 = num1;
-			float number2 = num2;
-			return (*pfunc)(number1, number2);
-		}
-
-	}
-
-}
-
-
-
-void basicTypes_pointers_module::test5(void)
-{
-	using namespace CALLBACK_FUNC;
-
-	printf("\n\n\n\n");
-	printf("test5: 回调函数");
-
-	std::cout << MY_CALCULATOR::calculate((MY_CALCULATOR::add), 1.0f, 2.0f) << std::endl;
-	std::cout << MY_CALCULATOR::calculate((MY_CALCULATOR::add), 3.0f, 1.0f) << std::endl;
-	std::cout << MY_CALCULATOR::calculate((MY_CALCULATOR::sqrt), 3.0f) << std::endl;
-
-}
+void basicTypes_pointers_module::test4(void) {}
+ 
+ 
+void basicTypes_pointers_module::test5(void) {}
 
 
 

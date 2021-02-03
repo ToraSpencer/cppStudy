@@ -24,7 +24,7 @@ virtualChap* chap_designPattern::getInstance()
 }
 
 
-void chap_designPattern::selectModule(const int molEnum)
+bool chap_designPattern::selectModule(const int molEnum)
 {
 	switch (molEnum)
 	{
@@ -41,9 +41,9 @@ void chap_designPattern::selectModule(const int molEnum)
 		this->pm = designPattern_proxy_module::getInstance();
 		break;
 	default:
-		break;
+		return false;
 	}
-
+	return true;
 }
 
 

@@ -6,6 +6,10 @@
 #include "chap_basicTypes/chap_basicTypes.h"
 #include "chap_designPattern/chap_designPattern.h"
 #include "chap_STL/chap_STL.h"
+#include "chap_syntax/chap_syntax.h"
+#include "chap_function/chap_function.h"
+#include "chap_stdlib/chap_stdlib.h"
+#include "chap_exception/chap_exception.h"
 
 
 
@@ -16,17 +20,18 @@ using VOIDP = void*;
 using pVV = VOIDP(*)(void);
 
 
-// 一大坨枚举常量
+
 enum CHAP_ENUM
 {
 	NO_CHAP = 0,
 	CHAP_BASIC_TYPES = 1,
 	CHAP_DESIGN_PATTERN,
 	CHAP_STL,
+	CHAP_SYNTAX,
+	CHAP_FUNCTION,
+	CHAP_STDLIB,
+	CHAP_EXCEPTION,
 };
-
-
-
 
 
 struct reader
@@ -45,9 +50,9 @@ public:
 
 	void showModuleList();
 
-	void selectChap(const CHAP_ENUM ch);
+	bool selectChap(const CHAP_ENUM ch);
 
-	void selectMol(const int molEnum);
+	bool selectMol(const int molEnum);
 
 	void runTest(const unsigned testID);
 

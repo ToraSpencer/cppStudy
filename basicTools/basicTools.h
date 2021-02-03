@@ -37,7 +37,7 @@ public:
 	virtual ~virtualChap();
 
 	virtual void showModuleList() = 0;
-	virtual void selectModule(const int molEnum) = 0;
+	virtual bool selectModule(const int molEnum) = 0;
 	virtual void runTest(const unsigned testID);
 	bool isNullModule() const;
 };

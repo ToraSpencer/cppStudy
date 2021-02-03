@@ -28,7 +28,7 @@ virtualChap* chap_STL::getInstance()
 }
 
 
-void chap_STL::selectModule(const int molEnum)
+bool chap_STL::selectModule(const int molEnum)
 {
 	switch (molEnum)
 	{
@@ -51,8 +51,9 @@ void chap_STL::selectModule(const int molEnum)
 		this->pm = STL_algorithm_module::getInstance();
 		break;
 	default:
-		break;
+		return false;
 	}
+	return true;
 
 }
 

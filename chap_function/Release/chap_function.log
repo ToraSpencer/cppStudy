@@ -1,0 +1,10 @@
+﻿  function_函数模板.cpp
+function_函数模板.cpp(50): warning C4838: 从“double”转换到“float”需要收缩转换
+function_函数模板.cpp(50): warning C4305: “初始化”: 从“double”到“float”截断
+  dllmain.cpp
+    正在创建库 D:\workstation\gitRepositories\cppStudy\Release\chap_function.lib 和对象 D:\workstation\gitRepositories\cppStudy\Release\chap_function.exp
+  正在生成代码
+  All 114 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  chap_function.vcxproj -> D:\workstation\gitRepositories\cppStudy\Release\chap_function.dll
+  chap_function.vcxproj -> D:\workstation\gitRepositories\cppStudy\Release\chap_function.pdb (Full PDB)

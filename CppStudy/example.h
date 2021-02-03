@@ -35,7 +35,6 @@ public:
 	classFoo(const std::string& str1, const int& age1);
 	~classFoo();
 	void setAge(int age1);
-
 };
 
 

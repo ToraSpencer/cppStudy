@@ -36,7 +36,7 @@ protected:
 public:
 	void showModuleList();
 	static virtualChap* getInstance();
-	void selectModule(const int molEnum);
+	bool selectModule(const int molEnum);
 };
 
 
