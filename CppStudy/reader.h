@@ -10,6 +10,7 @@
 #include "chap_function/chap_function.h"
 #include "chap_stdlib/chap_stdlib.h"
 #include "chap_exception/chap_exception.h"
+#include "chap_DSA/chap_DSA.h"
 
 
 
@@ -31,6 +32,7 @@ enum CHAP_ENUM
 	CHAP_FUNCTION,
 	CHAP_STDLIB,
 	CHAP_EXCEPTION,
+	CHAP_DSA,
 };
 
 

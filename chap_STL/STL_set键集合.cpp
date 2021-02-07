@@ -19,34 +19,35 @@ using namespace std;
 
 // 知识点
 /*
-	1. 所有关联容器：set, map, multiset, multimap底层都是红黑树
+	所有关联容器：set, map, multiset, multimap底层都是红黑树
 	
-	2. 特点是插入、删除效率高。
+	特点是插入、删除效率高。
 				插入的时候只需要稍做变换，然后把节点的指针指向新的节点就可以了。
 				删除的时候类似，稍做变换后把指向删除节点的指针指向其他节点也OK了。
 				这里的一切操作就是指针换来换去，和内存移动没有关系，所以不会引发迭代器失效的问题。
 
-	3. 常用方法
+	常用方法
 	 			begin() end() rbegin rend() 返回迭代器
 				clear()   　 清空容器。
 				empty() 　　　判断set容器是否为空
 				max_size() 　 返回set容器可能包含的元素最大个数
 				size() 　　　　 返回当前set容器中的元素个数
 
-	4. 和map的区别是map中的元素有key和value两个数据，set中的元素只有key一个数据。
+	和map的区别是map中的元素有key和value两个数据，set中的元素只有key一个数据。
 
-	5. 放入set中的元素都会自动排序。按照元素的<运算符升序排列。
+	放入set中的元素都会自动排序。按照元素的<运算符升序排列。
 
-	6. set的迭代器天生就是const的，只能读不能写，因为改动set的元素有可能会造成乱序，这是不允许的。
+	set的迭代器天生就是const的，只能读不能写，因为改动set的元素有可能会造成乱序，这是不允许的。
+
+
+	等价：
+		关联容器中不允许存在等价的两个元素，等价和operator==无关，和比较器有关。
+		a和b等价的本质是——若(a,b)和(b,a)比较器返回值都是false，则a和b等价。
+		默认情形下，STL关联容器的比较器是less<>函数子类模板的实例；即set<string>的默认比较器是less<string>
+		less<>函数子的operator()本质上是调用了operator<，若被比较的俩参数前者小于后者，则返回true;
+		所以可以说默认比较器本质上取决于operator<
 
 */
-
-
-
-
-
-
-
 
 
 
@@ -65,7 +66,6 @@ using namespace std;
 		不可以直接修改元素，只能先删后插
 		都含有比较器value_compare，是一个函数子，用来规定集合中键的排序的规则
 */
-
 
 
 
@@ -93,8 +93,6 @@ virtualModule* STL_set_module::getInstance()		// 线程不安全的单例模式
 	p_moduleIns = new STL_set_module;
 	return p_moduleIns;
 }
-
-
 
 
 
@@ -203,10 +201,92 @@ void STL_set_module::test1(void)
 }
 
 
-void STL_set_module::test2(void) {}
+// test2: 使用自定义比较器的set:
+namespace COMPARER1
+{
+	// 自定义浮点数比较器。
+	struct floatComparer
+	{
+	public:
+		bool operator()(const float num1, const float num2) const
+		{
+			int i1 = static_cast<int>(num1);
+			int i2 = static_cast<int>(num2);
+			if (i1<i2)
+			{
+				return true;	// 返回true表示认为num1小于num2;
+			}
+			else
+			{
+				return false;
+			}
+		};
+	};
+
+	// 自定义指针比较器
+	struct intPtrComparer
+	{
+	public:
+		bool operator()(const int* pi1, const int* pi2)
+		{
+			if (*pi1 < *pi2)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	};
+
+}
 
 
-void STL_set_module::test3(void) {}
+void STL_set_module::test2(void) 
+{
+	using namespace COMPARER1;
+
+	set<float, floatComparer> fSet;
+	fSet.insert(0.5);
+	fSet.insert(1);
+	fSet.insert(1.1);		// 在自定义比较器下，1和1.1是等价的，set中不允许存在等价的元素，所以此行操作插入不成功。
+	traverseSTL(fSet, disp<float>);
+}
+
+
+// test3: 存放指针的set————《effective STL》
+/*
+	若关联容器中存放的元素是指针，则应该自定义一个比较指针指向元素的比较器。
+	否则使用默认比较器比较的将是指针的值。
+
+*/
+void STL_set_module::test3(void) 
+{
+	using namespace COMPARER1;
+	using IPTR = int*;
+	IPTR ipArr[5];
+	set<IPTR> s1;
+	set<IPTR, intPtrComparer> s2;
+	for (unsigned i = 0; i<5; ++i)
+	{
+		ipArr[i] = new int(i + 1);
+		s1.insert(ipArr[i]);
+		s2.insert(ipArr[i]);
+	}
+
+	for (const auto& elem : s1)		// s1中的排序很可能是错误的，因为排序依据的是指针的值
+	{
+		cout << *elem << ", ";
+	}
+	cout << endl;
+
+	for (const auto& elem : s2)		// s2使用了自定义比较器，排序是正确的。
+	{
+		cout << *elem << ", ";
+	}
+	cout << endl;
+}
 
 
 void STL_set_module::test4(void) {}

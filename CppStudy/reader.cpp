@@ -35,7 +35,7 @@ void reader::showChapList()
 	std::cout << "5. 函数" << std::endl;
 	std::cout << "6. C++标准库" << std::endl;
 	std::cout << "7. 异常" << std::endl;
-
+	std::cout << "8. 数据结构与算法" << std::endl;
 	std::cout << std::endl << std::endl;
 }
 
@@ -191,12 +191,28 @@ bool reader::selectChap(const CHAP_ENUM ch)
 		this->currentChap = CHAP_ENUM::CHAP_EXCEPTION;
 		break;
 
+	case CHAP_DSA:
+		Hdll = LoadLibrary(L"chap_DSA.dll");
+		if (Hdll == nullptr)
+		{
+			std::cout << "动态库加载失败" << std::endl;
+			return false;
+		}
+		pfunc = (pVV)(GetProcAddress(Hdll, "getChap"));
+		if (pfunc == nullptr)
+		{
+			std::cout << "动态库函数获取失败" << std::endl;
+			return false;
+		}
+		this->pc = reinterpret_cast<chap_DSA*>((*pfunc)());
+		this->currentChap = CHAP_ENUM::CHAP_DSA;
+		break;
+
 
 	default:
 		return false;
 	}
 	return true;
-
 }
 
 
