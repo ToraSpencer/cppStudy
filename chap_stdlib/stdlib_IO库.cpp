@@ -263,7 +263,6 @@ void stdlib_io_module::test1(void)
 	//		std::ios_base::binary 指定打开模式为二进制，不指定的话默认为文本模式
 	//		std::ios_base::out——输出模式，没有文件则创建文件，有文件则清空文件数据。
 	//		std::ios_base::app——追加模式，即append，写时不清空原有数据，从末尾开始写。
-
 	using namespace TEST_FILESTREAM;
 
 	std::ofstream writeFile1("test1.xxx");
@@ -271,7 +270,6 @@ void stdlib_io_module::test1(void)
 	std::ofstream writeTextFile("myText.txt", std::ios_base::out);
 	std::ifstream readFile1("test1.xxx");
 	std::ifstream readFile2("test2.xxx", std::ios_base::in|std::ios_base::binary);
-
 
 	std::string str1 = "hello world";
 	std::string str11;
@@ -282,13 +280,23 @@ void stdlib_io_module::test1(void)
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test1: 使用ifstream, ofstream读写文件	" << std::endl;
 
+	// 1. fstream重载了!运算符，返回一个bool，用来判断文件句柄是否打开成功：
+	std::fstream testFile("E:/asdfasdfasdf.yuiu", std::ios_base::in);
+	if (!testFile) 
+	{
+		std::cout << "文件句柄testFile打开失败。" << std::endl;
+	}
 
-	// 写二进制文件，基本类型变量——可以用write()方法写入，也可以用输出流运算符。
+
+	// 2. 写二进制文件
+
+	//			2.1 基本类型变量——可以用write()方法写入，或使用重载的输出流运算符。
 	writeFile1 << str1 << inum1 << fnum1 << std::endl;
 	writeFile1.close();					// ！！操作完之后要关闭文件流
 
 
-	// 写二进制文件，自定义类型变量——write()方法写入，或使用重载的输出流运算符。
+	//			2.2 自定义类型变量——write()方法写入，或使用重载的输出流运算符。
+
 	// write()方法
 	/*
 		basic_ostream& write( const char_type* s,		待写入的数据的头部指针，强转为char*
@@ -302,15 +310,14 @@ void stdlib_io_module::test1(void)
 	writeFile2.close();
 
 	
-	// 写文本文件
+	// 3. 写文本文件
 	writeTextFile<< str1<<inum1<<fnum1;
 	
 
-	
 
+	// 4. 读文件：
 
-	// 读文件：
-	// getline()方法——从流对象中读取数据存储到字符串。
+	//		4.1 getline()方法——从流对象中读取数据存储到字符串。
 	/*
 		basic_istream& getline( char_type* s, 
 							std::streamsize count 
@@ -324,8 +331,7 @@ void stdlib_io_module::test1(void)
 	readFile1.close();
 
 
-	// 读文件
-	// read()方法————二进制文件中读取数据。
+	//		4.2 read()方法————二进制文件中读取数据。
 	/*
 		basic_istream& read( char_type* s,					接收读取数据的变量的头部指针，强转为char*	
 						   std::streamsize count			读取输入的字节数。
@@ -335,7 +341,6 @@ void stdlib_io_module::test1(void)
 	readFile2.read(reinterpret_cast<char*>(&dt_input), sizeof(dt_input));
 	std::cout << "日期是"<< dt_input.year << "-" << dt_input.month << "-"<< dt_input.day << std::endl;
 	readFile2.close();
-
 
 }	
 

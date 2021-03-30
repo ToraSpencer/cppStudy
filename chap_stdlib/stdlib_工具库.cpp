@@ -58,7 +58,7 @@ void stdlib_tools_module::test0()
 	// windows系统提供的计时接口——GetTickCount();
 	DWORD start = GetTickCount();			// typedef unsigned long DWORD
 
-											// C语言标准库中的计时接口——clock()——程序开始到此刻处理器时钟所记录的时间，单位为毫秒
+	// C语言标准库中的计时接口——clock()——程序开始到此刻处理器时钟所记录的时间，单位为毫秒
 	clock_t start_c = clock();
 	Sleep(2000);
 	clock_t end_c = clock();
