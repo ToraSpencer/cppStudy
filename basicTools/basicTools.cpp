@@ -1,5 +1,33 @@
 #include "basicTools.h"
 
+
+// 从输入流inStream中跳过空格及制表符获取一字符
+char GetChar(std::istream &inStream)
+{
+	char ch;
+	while ((ch = (inStream).peek()) != EOF	// 文件结束符(peek()函数从输入流中接受1字符,流的当前位置不变)
+		&& ((ch = (inStream).get()) == ' '	// 空格( get()函数从输入流中接受1字符,流的当前位置向后移1个位置)
+			|| ch == '\t'));
+	return ch;
+}
+
+
+
+
+// 由mes构构通用异常对象
+Error::Error(const char *mes)
+{
+	strcpy_s(message, mes);				// 复制异常信息
+}
+
+
+//  显示异常信息
+void Error::Show()const
+{
+	std::cout << message << std::endl;			// 显示异常信息	
+}
+
+
 virtualModule* virtualModule::p_moduleIns = nullptr;
 
 

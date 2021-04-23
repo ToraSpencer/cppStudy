@@ -1,11 +1,27 @@
-﻿  basicTypes_指针、智能指针、内存泄漏.cpp
+﻿  basicTypes_c风格字符串、string、wstring.cpp
+  basicTypes_内置类型.cpp
+  basicTypes_对、元祖.cpp
+  basicTypes_引用.cpp
+  basicTypes_指针、智能指针、内存泄漏.cpp
 basicTypes_指针、智能指针、内存泄漏.cpp(218): warning C4305: “初始化”: 从“double”到“float”截断
 basicTypes_指针、智能指针、内存泄漏.cpp(221): warning C4305: “初始化”: 从“double”到“float”截断
+  basicTypes_数组.cpp
+basicTypes_数组.cpp(78): warning C4101: “arrf1”: 未引用的局部变量
+basicTypes_数组.cpp(74): warning C4101: “arri1”: 未引用的局部变量
+basicTypes_数组.cpp(79): warning C4101: “arrf2”: 未引用的局部变量
+basicTypes_数组.cpp(106): warning C4101: “arr1”: 未引用的局部变量
+basicTypes_数组.cpp(107): warning C4101: “arr2”: 未引用的局部变量
+  basicTypes_枚举、共用体、结构体.cpp
+basicTypes_枚举、共用体、结构体.cpp(224): warning C4305: “=”: 从“double”到“float”截断
+  chap_basicTypes.cpp
+chap_basicTypes.cpp(65): warning C4273: “getChap”: dll 链接不一致
+  d:\workstation\gitrepositories\cppstudy\chap_basictypes\chap_basicTypes.h(48): note: 参见“getChap”的前一个定义
+  dllmain.cpp
     正在创建库 D:\workstation\gitRepositories\cppStudy\Release\chap_basicTypes.lib 和对象 D:\workstation\gitRepositories\cppStudy\Release\chap_basicTypes.exp
   正在生成代码
-  14 of 494 functions ( 2.8%) were compiled, the rest were copied from previous compilation.
+  16 of 494 functions ( 3.2%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    22 functions had inline decision re-evaluated but remain unchanged
+    9 functions had inline decision re-evaluated but remain unchanged
   已完成代码的生成
   chap_basicTypes.vcxproj -> D:\workstation\gitRepositories\cppStudy\Release\chap_basicTypes.dll
   chap_basicTypes.vcxproj -> D:\workstation\gitRepositories\cppStudy\Release\chap_basicTypes.pdb (Full PDB)
