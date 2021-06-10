@@ -60,6 +60,7 @@ bool reader::selectChap(const CHAP_ENUM ch)
 
 	if (pc != nullptr && Hdll != nullptr)
 	{
+
 		delete this->pc;
 		this->pc = nullptr;
 		FreeLibrary(Hdll);

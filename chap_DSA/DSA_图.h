@@ -120,12 +120,12 @@ public:
 };
 
 
-// 有向图顶点类模板（邻接表表示）
+// 有向图顶点类模板（邻接表表示）————类似于一个链表节点
 template <class ElemType>
 struct AdjListGraphVex
 {
-	ElemType data;						// 数据元素值
-	AdjListGraphArc* firstarc;			// 指向邻接链表边结点的指针
+	ElemType data;						// 顶点的值
+	AdjListGraphArc* firstArc;			// 指向邻接链表边结点的指针
 
 	AdjListGraphVex();
 	AdjListGraphVex(ElemType val, AdjListGraphArc *adj = NULL);
@@ -137,12 +137,11 @@ struct AdjListGraphVex
 struct AdjListGraphArc
 {
 	// 数据成员:
-	int adjVex;								// 弧头顶点序号
-	AdjListGraphArc *nextArc; // 下一条边结点的指针 
-							  // 构造函数:
+	int adjVex;							// 该有向边指向的顶点的索引。
+	AdjListGraphArc *nextArc;			// 下一条相邻边结点的指针，一条边链表表示了某一个顶点的所有邻边。
+							  
 	AdjListGraphArc();					// 无参数的构造函数
 	AdjListGraphArc(int v, AdjListGraphArc * next = NULL);
-	// 构造邻接点为v，权为w的邻接边
 };
 
 
@@ -150,9 +149,10 @@ struct AdjListGraphArc
 template <class ElemType>
 class AdjListDirGraph
 {
-protected:
+//protected:
+public:
 	int vexNum, vexMaxNum, arcNum;			// 顶点数目、允许的顶点最大数目和边数
-	AdjListGraphVex<ElemType> *vexTable;	// 顶点表
+	AdjListGraphVex<ElemType> *vexTable;	// 顶点表——一维数组，每个数组元素实际上是一条链表
 	mutable Status *tag;			        // 标志数组				
 
 public:
@@ -161,23 +161,29 @@ public:
 	AdjListDirGraph(const AdjListDirGraph<ElemType> &g);
 	~AdjListDirGraph();
 
-	void Clear();
+
 	bool IsEmpty();
-	int GetOrder(ElemType &e) const;            // 求顶点e的序号	
+	int GetOrder(ElemType &e) const;            // 求顶点e的索引	
 	Status GetElem(int v, ElemType &e) const;
-	Status SetElem(int v, const ElemType &e);
-	int GetVexNum() const;						// 求有向图的顶点个数			 
+	int GetVexNum() const;						 	 
 	int GetArcNum() const;						// 求有向图的边数个数			 
-	int FirstAdjVex(int v) const;				// 求有向图中顶点v的第一个邻接点			 
-	int NextAdjVex(int v1, int v2) const;		// 求有向图中顶点v1的相对于v2的下一个邻接点			 
+	int FirstAdjVex(int v) const;				// 返回索引为v的顶点的第一个邻接点		 
+	int NextAdjVex(int v1, int v2) const;		// 求有向图中顶点v1的相对于v2的下一个邻接点		
+	Status GetTag(int v) const;				    // 求顶点v的标志	
+	Status GetRevAdjList(AdjListDirGraph<ElemType>& list) const;		// 得到此邻接表的逆邻接表
+
 	Status InsertVex(const ElemType &e);		// 插入元素值为e的顶点		 
 	void InsertArc(int v1, int v2);				// 插入从顶点v1到v2的边			 
 	void DeleteVex(const ElemType &e);			// 删除元素值为e的顶点			 
 	void DeleteArc(int v1, int v2);			    // 删除从顶点为v1到v2的边			 
-	Status GetTag(int v) const;				    // 求顶点v的标志		 
+	
+	void Clear();
+	Status SetElem(int v, const ElemType& e);
 	void SetTag(int v, Status tag) const;	    // 设置顶点v的标志为tag	 
 	AdjListDirGraph<ElemType> &operator = (const AdjListDirGraph<ElemType> &g); // 重载赋值运算符 
-	void Display();	// 显示有向图的邻接表 
+	void Display();								// 打印有向图的邻接表 
+	bool displayRow(const int index);							// 打印索引为Index的一条链表
+
 };
 
 
@@ -203,6 +209,11 @@ struct CloseArcType
 	WeightType lowweight;
 	int nearvertex;
 };
+
+
+
+
+
 
 //********************************函数声明
 
@@ -258,7 +269,8 @@ AdjMatrixUndirGraph<ElemType>::AdjMatrixUndirGraph(ElemType es[], int vertexNum,
 	for (int v = 0; v < vexMaxNum; v++)
 		arcs[v] = new int[vexMaxNum];
 
-	for (int v = 0; v < vexNum; v++) {
+	for (int v = 0; v < vexNum; v++) 
+	{
 		vertexes[v] = es[v];
 		tag[v] = UNVISITED;
 		for (int u = 0; u < vexNum; u++)
@@ -347,9 +359,10 @@ Status AdjMatrixUndirGraph<ElemType>::SetElem(int v, const ElemType &d)
 	}
 }
 
+
+// 返回顶点个数	
 template <class ElemType>
 int AdjMatrixUndirGraph<ElemType>::GetVexNum() const
-// 操作结果：返回顶点个数			 
 {
 	return vexNum;
 }
@@ -361,18 +374,18 @@ int AdjMatrixUndirGraph<ElemType>::GetArcNum() const
 	return arcNum;
 }
 
+// 返回顶点v的第1个邻接点的索引
 template <class ElemType>
-int AdjMatrixUndirGraph<ElemType>::FirstAdjVex(int v) const
-// 操作结果：返回顶点v的第1个邻接点的序号		 
+int AdjMatrixUndirGraph<ElemType>::FirstAdjVex(int v) const	 
 {
 	if (v < 0 || v >= vexNum)
-		throw Error("v不合法!");// 抛出异常
+		throw Error("v不合法!");		// 抛出异常
 
 	for (int u = 0; u < vexNum; u++)
 		if (arcs[v][u] != 0)
 			return u;
 
-	return -1;					// 返回-1表示无邻接点
+	return -1;							// 返回-1表示无邻接点
 }
 
 template <class ElemType>
@@ -394,15 +407,15 @@ int AdjMatrixUndirGraph<ElemType>::NextAdjVex(int v1, int v2) const
 }
 
 template <class ElemType>
-void AdjMatrixUndirGraph<ElemType>::InsertVex(const ElemType &d)
-// 操作结果：插入顶点d			 
+void AdjMatrixUndirGraph<ElemType>::InsertVex(const ElemType &d)		 
 {
 	if (vexNum == vexMaxNum)
-		throw Error("图的顶点数不能超过允许的最大数!");	// 抛出异常
+		throw Error("图的顶点数不能超过允许的最大数!");	 
 
 	vertexes[vexNum] = d;
 	tag[vexNum] = UNVISITED;
-	for (int v = 0; v <= vexNum; v++) {
+	for (int v = 0; v <= vexNum; v++) 
+	{
 		arcs[vexNum][v] = 0;
 		arcs[v][vexNum] = 0;
 	}
@@ -923,14 +936,14 @@ void AdjMatrixUndirNetwork<ElemType, WeightType>::Display()
 template <class ElemType>
 AdjListGraphVex<ElemType>::AdjListGraphVex()
 {
-	firstarc = NULL;
+	firstArc = NULL;
 }
 
 template <class ElemType>
 AdjListGraphVex<ElemType>::AdjListGraphVex(ElemType  val, AdjListGraphArc *adj)
 {
 	data = val;
-	firstarc = adj;
+	firstArc = adj;
 }
 
 
@@ -951,10 +964,14 @@ AdjListDirGraph<ElemType>::AdjListDirGraph(ElemType es[], int vertexNum, int ver
 	tag = new Status[vexMaxNum];
 	vexTable = new AdjListGraphVex<ElemType>[vexMaxNum];
 
-	for (int v = 0; v < vexNum; v++) {
+	// 拷贝顶点数据：
+	std::memcpy(vexTable, es, vertexNum * sizeof(ElemType));
+
+	// 初始化tag和firstArc;
+	for (int v = 0; v < vexNum; v++) 
+	{
 		tag[v] = UNVISITED;
-		vexTable[v].data = es[v];
-		vexTable[v].firstarc = NULL;
+		vexTable[v].firstArc = nullptr;
 	}
 }
 
@@ -988,11 +1005,11 @@ void AdjListDirGraph<ElemType>::Clear()
 {
 	AdjListGraphArc *p;
 	for (int v = 0; v < vexNum; v++) {	// 释放边结点
-		p = vexTable[v].firstarc;
+		p = vexTable[v].firstArc;
 		while (p != NULL) {
-			vexTable[v].firstarc = p->nextArc;
+			vexTable[v].firstArc = p->nextArc;
 			delete p;
-			p = vexTable[v].firstarc;
+			p = vexTable[v].firstArc;
 		}
 	}
 	vexNum = 0;
@@ -1006,9 +1023,10 @@ bool AdjListDirGraph<ElemType>::IsEmpty()
 	return vexNum == 0;
 }
 
+
+// 求顶点e的索引.顶点的序号从0开始，图中不存在顶点e时返回 - 1.
 template <class ElemType>
-int AdjListDirGraph<ElemType>::GetOrder(ElemType &e) const
-// 操作结果：求顶点e的序号.顶点的序号从0开始，图中不存在顶点e时返回-1. 
+int AdjListDirGraph<ElemType>::GetOrder(ElemType& e) const
 {
 	int v;
 	for (v = 0; v < vexNum; v++)
@@ -1016,19 +1034,20 @@ int AdjListDirGraph<ElemType>::GetOrder(ElemType &e) const
 			break;
 
 	if (v < 0 || v >= vexNum)
-		return -1;	// 顶点e不存在,返回-1
+		return -1;			// 顶点e不存在,返回-1
 	else
-		return v;	// 顶点e存在,返回它的序号 
+		return v;			// 顶点e存在,返回它的序号 
 }
 
+
+// 求索引为v的顶点值
 template <class ElemType>
 Status AdjListDirGraph<ElemType>::GetElem(int v, ElemType &e) const
-// 操作结果：求序号为v的顶点值, v的取值范围为0 ≤ v ＜ vexNum, v合法时函数
-//	通过e取得顶点值，并返回ENTRY_FOUND；否则函数返回NOT_PRESENT
 {
 	if (v < 0 || v >= vexNum)
 		return NOT_PRESENT;			// 元素不存在
-	else {
+	else 
+	{
 		e = vexTable[v].data;		// 将顶点v的元素值赋给e
 		return ENTRY_FOUND;			// 元素存在
 	}
@@ -1062,16 +1081,15 @@ int AdjListDirGraph<ElemType>::GetArcNum() const
 }
 
 template <class ElemType>
-int AdjListDirGraph<ElemType>::FirstAdjVex(int v) const
-// 操作结果：返回顶点v的第一个邻接点			 
+int AdjListDirGraph<ElemType>::FirstAdjVex(int v) const			 
 {
 	if (v < 0 || v >= vexNum)
 		throw Error("v不合法!");// 抛出异常
 
-	if (vexTable[v].firstarc == NULL)
+	if (vexTable[v].firstArc == NULL)
 		return -1;              // 不存在邻接点
 	else
-		return vexTable[v].firstarc->adjVex;
+		return vexTable[v].firstArc->adjVex;
 }
 
 template <class ElemType>
@@ -1086,7 +1104,7 @@ int AdjListDirGraph<ElemType>::NextAdjVex(int v1, int v2) const
 	if (v1 == v2)
 		throw Error("v1不能等于v2!");// 抛出异常
 
-	p = vexTable[v1].firstarc;
+	p = vexTable[v1].firstArc;
 	while (p != NULL && p->adjVex != v2)
 		p = p->nextArc;
 
@@ -1104,7 +1122,7 @@ Status AdjListDirGraph<ElemType>::InsertVex(const ElemType &e)
 		return OVER_FLOW;			// 返回溢出 
 
 	vexTable[vexNum].data = e;
-	vexTable[vexNum].firstarc = NULL;
+	vexTable[vexNum].firstArc = NULL;
 	tag[vexNum] = UNVISITED;
 	vexNum++;
 	return SUCCESS;
@@ -1123,7 +1141,7 @@ void AdjListDirGraph<ElemType>::InsertArc(int v1, int v2)
 
 	AdjListGraphArc* p = nullptr;
 	AdjListGraphArc* q = nullptr;
-	p = vexTable[v1].firstarc;
+	p = vexTable[v1].firstArc;
 	while (p != NULL && p->adjVex != v2) 
 	{
 		q = p;
@@ -1132,8 +1150,8 @@ void AdjListDirGraph<ElemType>::InsertArc(int v1, int v2)
 
 	if (p == NULL) 
 	{
-		if (vexTable[v1].firstarc == NULL)
-			vexTable[v1].firstarc = new AdjListGraphArc(v2);
+		if (vexTable[v1].firstArc == NULL)
+			vexTable[v1].firstArc = new AdjListGraphArc(v2);
 		else
 			q->nextArc = new AdjListGraphArc(v2);
 		arcNum++;
@@ -1158,23 +1176,23 @@ void AdjListDirGraph<ElemType>::DeleteVex(const ElemType &e)
 		if (u != v)
 			DeleteArc(u, v);
 
-	p = vexTable[v].firstarc;                  // 删除从e出发的弧 
+	p = vexTable[v].firstArc;                  // 删除从e出发的弧 
 	while (p != NULL) {
-		vexTable[v].firstarc = p->nextArc;
+		vexTable[v].firstArc = p->nextArc;
 		delete p;
-		p = vexTable[v].firstarc;
+		p = vexTable[v].firstArc;
 		arcNum--;
 	}
 
 	vexNum--;
 	vexTable[v].data = vexTable[vexNum].data;
-	vexTable[v].firstarc = vexTable[vexNum].firstarc;
-	vexTable[vexNum].firstarc = NULL;
+	vexTable[v].firstArc = vexTable[vexNum].firstArc;
+	vexTable[vexNum].firstArc = NULL;
 	tag[v] = tag[vexNum];
 
 	for (int u = 0; u < vexNum; u++)
 		if (u != v) {
-			p = vexTable[u].firstarc;
+			p = vexTable[u].firstArc;
 			while (p != NULL) {
 				if (p->adjVex == vexNum)
 					p->adjVex = v;
@@ -1195,14 +1213,14 @@ void AdjListDirGraph<ElemType>::DeleteArc(int v1, int v2)
 		Error("v1不能等于v2!");		// 抛出异常
 
 	AdjListGraphArc *p, *q;
-	p = vexTable[v1].firstarc;
+	p = vexTable[v1].firstArc;
 	while (p != NULL && p->adjVex != v2) {
 		q = p;
 		p = p->nextArc;
 	}
 	if (p != NULL) {
-		if (vexTable[v1].firstarc == p)
-			vexTable[v1].firstarc = p->nextArc;
+		if (vexTable[v1].firstArc == p)
+			vexTable[v1].firstArc = p->nextArc;
 		else
 			q->nextArc = p->nextArc;
 		delete p;
@@ -1221,6 +1239,40 @@ Status AdjListDirGraph<ElemType>::GetTag(int v) const
 
 	return tag[v];
 }
+
+
+
+// 得到逆邻接表
+template <class ElemType>
+Status AdjListDirGraph<ElemType>::GetRevAdjList(AdjListDirGraph<ElemType>& list) const
+{
+	// 逆邻接表中，某邻接点设定为指向该点的点。
+	list.vexNum = this->vexNum;
+	list.arcNum = 0;
+ 
+	//		拷贝顶点数据
+	for (int v = 0; v < list.vexNum; v++)
+	{
+		list.tag[v] = UNVISITED;
+		list.vexTable[v].data = this->vexTable[v].data;
+		list.vexTable[v].firstArc = NULL;
+	}
+
+	//		遍历原图，生成逆邻接表的邻边数据：
+	for (int i = 0; i < this->vexNum; ++i) 
+	{
+		const AdjListGraphArc* pArc = this->vexTable[i].firstArc;
+		while (pArc != nullptr) 
+		{
+			int dstIdx = pArc->adjVex;
+			list.InsertArc(dstIdx, i);
+			pArc = pArc->nextArc;
+		}
+	}
+
+	return Status::SUCCESS;
+}
+
 
 template <class ElemType>
 void AdjListDirGraph<ElemType>::SetTag(int v, Status val) const
@@ -1246,12 +1298,12 @@ AdjListDirGraph<ElemType>::AdjListDirGraph(const AdjListDirGraph<ElemType> &g)
 	for (int v = 0; v < vexNum; v++) {
 		tag[v] = g.tag[v];
 		vexTable[v].data = g.vexTable[v].data;
-		vexTable[v].firstarc = NULL;
-		p = g.vexTable[v].firstarc;
+		vexTable[v].firstArc = NULL;
+		p = g.vexTable[v].firstArc;
 		while (p != NULL)
-			if (vexTable[v].firstarc == NULL) {
-				vexTable[v].firstarc = new AdjListGraphArc(p->adjVex);
-				q = vexTable[v].firstarc;
+			if (vexTable[v].firstArc == NULL) {
+				vexTable[v].firstArc = new AdjListGraphArc(p->adjVex);
+				q = vexTable[v].firstArc;
 				p = p->nextArc;
 			}
 			else {
@@ -1282,12 +1334,12 @@ AdjListDirGraph<ElemType> &AdjListDirGraph<ElemType>::operator =(const AdjListDi
 		for (int v = 0; v < vexNum; v++) {
 			tag[v] = g.tag[v];
 			vexTable[v].data = g.vexTable[v].data;
-			vexTable[v].firstarc = NULL;
-			p = g.vexTable[v].firstarc;
+			vexTable[v].firstArc = NULL;
+			p = g.vexTable[v].firstArc;
 			while (p != NULL)
-				if (vexTable[v].firstarc == NULL) {
-					vexTable[v].firstarc = new AdjListGraphArc(p->adjVex);
-					q = vexTable[v].firstarc;
+				if (vexTable[v].firstArc == NULL) {
+					vexTable[v].firstArc = new AdjListGraphArc(p->adjVex);
+					q = vexTable[v].firstArc;
 					p = p->nextArc;
 				}
 				else {
@@ -1304,17 +1356,42 @@ AdjListDirGraph<ElemType> &AdjListDirGraph<ElemType>::operator =(const AdjListDi
 template <class ElemType>
 void AdjListDirGraph<ElemType>::Display()
 {
-	AdjListGraphArc *p;
+	AdjListGraphArc* p;
 	std::cout << "有向图共有" << vexNum << "个顶点，" << arcNum << "条边。" << std::endl;
-	for (int v = 0; v < vexNum; v++) {	// 显示第v个邻接链表
-		std::cout << v << ":\t" << vexTable[v].data;				// 显示顶点号
-		p = vexTable[v].firstarc;
-		while (p != NULL) {
+	
+	for (int v = 0; v < vexNum; v++) 
+	{	// 显示第v个邻接链表
+		std::cout << vexTable[v].data << ":\t(" << v << ")";				// 显示顶点号
+		p = vexTable[v].firstArc;
+		while (p != nullptr) 
+		{
 			std::cout << "-->(" << p->adjVex << ")";
 			p = p->nextArc;
 		}
 		std::cout << std::endl;
 	}
+}
+
+
+// 打印索引为Index的一条邻接链表
+template <class ElemType>
+bool AdjListDirGraph<ElemType>::displayRow(const int index)
+{
+	if (index >= this->vexNum) 
+	{
+		return false;
+	}
+
+	AdjListGraphArc* pArc = this->vexTable[index].firstArc;
+	std::cout << "(" << index << ")";
+	while (pArc != nullptr) 
+	{
+		std::cout << "-->(" << pArc->adjVex << ")";
+		pArc = pArc->nextArc;
+	}
+	std::cout << std::endl;
+
+	return true;
 }
 
 
@@ -1357,6 +1434,7 @@ void BFS(const AdjMatrixUndirGraph<ElemType> &g, int v, void(*Visit)(const ElemT
 	}
 }
 
+
 // 图的深度优先(depth firsts)遍历
 template <class ElemType>
 void DFSTraverse(const AdjMatrixUndirGraph<ElemType> &g, void(*Visit)(const ElemType &))
@@ -1380,8 +1458,13 @@ void DFS(const AdjMatrixUndirGraph<ElemType> &g, int v, void(*Visit)(const ElemT
 	g.GetElem(v, e);			// 取顶点v的数据元素值 
 	Visit(e);					// 访问顶点v
 	for (int w = g.FirstAdjVex(v); w != -1; w = g.NextAdjVex(v, w))
+	{
 		if (g.GetTag(w) == UNVISITED)
+		{
 			DFS(g, w, Visit);	// 从v的尚未访问过的邻接顶点w开始进行深度优先搜索
+		}
+	}
+
 }
 
 
