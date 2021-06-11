@@ -117,6 +117,17 @@ void basicTypes_array_module::test1(void)
 	std::cout << "sizeof(arr1) == " << sizeof(arr1) << std::endl;      // sizeof(数组名)返回的是整个数组的容量
 	std::cout << "sizeof(arr2) == " << sizeof(arr2) << std::endl;      // arr2不是数组名，只是一个指针，C++里所有指针容量都是一样的，由机器决定。
 
+
+	// 使用指针数组创建二维数组，每行元素数可不相等。
+	int intArr0[3] = {1,2,3};
+	int intArr1[4] = {11,12,13,14};
+	int intArr2[5] = {21, 22, 23, 24, 25};
+
+	int* ptrArr[3] = {&intArr0[0], &intArr1[0], & intArr2[0]};
+	
+	std::cout << ptrArr[0][0] << std::endl;
+	std::cout << ptrArr[1][1] << std::endl;
+	std::cout << ptrArr[2][2] << std::endl;
 }
 
 

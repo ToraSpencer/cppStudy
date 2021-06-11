@@ -264,8 +264,6 @@ void basicTypes_strings_module::test3(void)
 
 
 
-
-
 		//			int strcmp(str1, str2)，若相等返回0；若不相等，比较第一个不相等的字符的ASCII码，左<右的话返回负数
 		std::cout << "strcmp(string1, string3) == " << strcmp(string1, string3) << std::endl;
 		std::cout << "strcmp(\"abc\", \"abd\") == " << strcmp("abc", "abd") << std::endl;
@@ -284,6 +282,17 @@ void basicTypes_strings_module::test3(void)
 		printf("%s\n", string1);						
 		printf("%s\n", string3);
 		printf("%s\n", string3+7);
+
+
+		// 英文字母大小写转换：std::toUpper(), std::toLower();
+		std::string lowerStr = "asdf";
+		std::string upperStr;
+		for (const auto& ch: lowerStr)
+		{
+			int temp = std::toupper(static_cast<unsigned char>(ch));
+			upperStr.push_back(static_cast<char>(temp));
+		}
+		std::cout << upperStr << std::endl;
 
 
 }
