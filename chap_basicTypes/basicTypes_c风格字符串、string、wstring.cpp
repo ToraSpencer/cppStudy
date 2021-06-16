@@ -417,4 +417,26 @@ void basicTypes_strings_module::test6(void)
 
 	std::cout << static_cast<unsigned char>(str[1]) << std::endl;
 
+	
+	// ¿í×Ö·ûºÍÆÕÍ¨×Ö·ûµÄ×ª»»£º
+	char ch1 = '1';
+	char ch2 = '9';
+	wchar_t wch1 = L'1';
+	wchar_t wch2 = L'9';
+	wchar_t wch3 = static_cast<wchar_t>(ch1);
+	std::cout << static_cast<int>(ch1) << std::endl;
+	std::cout << static_cast<int>(ch2) << std::endl;
+	std::cout << static_cast<int>(wch1) << std::endl;
+	std::cout << static_cast<int>(wch2) << std::endl;
+	std::cout << ch1 << std::endl;
+	std::cout << ch2 << std::endl;
+	std::wcout << wch1 << std::endl;
+	std::wcout << wch2 << std::endl;
+	std::wcout << wch3 << std::endl << std::endl;
+
+	std::cout << (char)(1 + 48) << std::endl;
+	std::cout << (char)(9 + 48) << std::endl;
+	std::wcout << (wchar_t)(1 + 48) << std::endl;
+	std::wcout << (wchar_t)(9 + 48) << std::endl;
+
 }
