@@ -119,10 +119,6 @@ void STL_set_module::test0(void)
 
 
 	// 		若想要修改元素排序的方式，则构造时
-
- 
-
-
 }
 
 
@@ -227,7 +223,7 @@ namespace COMPARER1
 	struct intPtrComparer
 	{
 	public:
-		bool operator()(const int* pi1, const int* pi2)
+		bool operator()(const int* pi1, const int* pi2) const
 		{
 			if (*pi1 < *pi2)
 			{
