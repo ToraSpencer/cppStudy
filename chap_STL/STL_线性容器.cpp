@@ -48,10 +48,6 @@
 							forward_list————	单向链表
 							deque——				双端队列
 							
-							
-
-
-
 
 */
 
@@ -69,10 +65,7 @@ virtualModule* STL_linear_container_module::getInstance()		// 线程不安全的单例模
 }
 
 
- 
 
- 
- 
 
 // test0():向量构造函数、初始化方法。
 void STL_linear_container_module::test0(void)
