@@ -2,10 +2,18 @@
 *.dll
 *.exe
 *.ipch
+*.pch
 *.sdf
-*.obj
 *.ncb
-
+*.tlog
+*.obj
+*.iobj
+*.pdb
+*.ipdb
+*.exp
+*.log
+*.recipe
+*.lib
 
 *.vcxproj.user
 *.vc.db
@@ -14,15 +22,9 @@
 *.pdf
 *.doc
 *.docx
-
-
 # 忽略的文件夹
 x64/
-x86/
-Release/
 Debug/
 Bin_Debug/
-Bin_Release/
 Win32_Debug/
-Win32_Release/
-
+ 
