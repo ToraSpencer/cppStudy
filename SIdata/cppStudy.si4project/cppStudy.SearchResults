@@ -1,0 +1,16 @@
+---- atoi Matches (1 in 1 files) ----
+OBJReadFile in basicTools.cpp (E:\workstation\gitRepositories\cppStudy\basicTools) : 
+				break;
+			surf.x = atoi(tmpBuffer) - 1;
+			nRet = ReadNextValidData(pTmp, nReadLen, tmpBuffer, nMaxSize);
+			if (0 == nRet)
+				break;
+			surf.y = atoi(tmpBuffer) - 1;
+
+			nRet = ReadNextValidData(pTmp, nReadLen, tmpBuffer, nMaxSize);
+			if (0 == nRet)
+				break;
+			surf.z = atoi(tmpBuffer) - 1;
+			vSurfs.push_back(surf);
+		}
+	}
