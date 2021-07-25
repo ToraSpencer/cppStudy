@@ -122,7 +122,7 @@ virtualModule* STL_adapter_module::getInstance()		// 线程不安全的单例模式
 // test0:  std::stack类模板的成员
 void STL_adapter_module::test0(void)
 {
-	std::stack<char> stc1;										// 默认情况下用deque构造std::stack
+	std::stack<char> stack1;										// 默认情况下用deque构造std::stack
 	std::stack<int, std::vector<int>> sti1;						// 指定使用vector来构造std::stack
 	std::stack<float, std::list<float>> stf1;
 
@@ -130,18 +130,18 @@ void STL_adapter_module::test0(void)
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test0:  std::stack类模板的成员" << std::endl;
 
-	stc1.push('a');																			// 压栈操作
-	stc1.push('b');
-	stc1.push('c');
-	stc1.push('d');
-	stc1.push('e');
+	stack1.push('a');																			// 压栈操作
+	stack1.push('b');
+	stack1.push('c');
+	stack1.push('d');
+	stack1.push('e');
  
 
-	std::cout << "\tstc1.empty() = " << stc1.empty() << std::endl;				// 查看是否为空
-	std::cout << "\tstc1.size() = " << stc1.size() << std::endl;						// 查看当前元素数
+	std::cout << "\tstack1.empty() = " << stack1.empty() << std::endl;				// 查看是否为空
+	std::cout << "\tstack1.size() = " << stack1.size() << std::endl;						// 查看当前元素数
 
-	stc1.pop();																					// 出栈操作
-	std::cout << "\tstc1.top() = " << stc1.top() << std::endl;						// 访问栈顶元素
+	stack1.pop();																					// 出栈操作
+	std::cout << "\tstack1.top() = " << stack1.top() << std::endl;						// 访问栈顶元素
 	std::cout << std::endl;
 	
 }

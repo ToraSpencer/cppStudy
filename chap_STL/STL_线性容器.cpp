@@ -179,7 +179,7 @@ void STL_linear_container_module::test1(void)
 
 
 
-// test2():vector的迭代器
+// test2():vector，list的迭代器
 void STL_linear_container_module::test2(void)
 {
 	std::cout << "\n\n\ntest3():vector的迭代器" << std::endl << std::endl;
@@ -195,7 +195,7 @@ void STL_linear_container_module::test2(void)
 	vi.push_back(5);
 	vi.push_back(6);
 
-	// 使用const_iterator来遍历vector中所有元素。
+	// 1. 使用const_iterator来遍历vector中所有元素。
 	std::cout << "use const_iterator to traverse all the items on the vector container:" << std::endl;
 	for (citer_i = vi.begin(); citer_i != vi.end(); citer_i++)
 	{
@@ -204,7 +204,7 @@ void STL_linear_container_module::test2(void)
 	std::cout << std::endl;
 
 
-	// 使用iterator来修改vector中的元素。
+	// 2. 使用iterator来修改vector中的元素。
 	std::cout << "use iterator to change the vector's item's value: " << std::endl;
 	iter_i = vi.begin();								//迭代器指向第一个元素。
 	*iter_i = -1;
@@ -217,40 +217,23 @@ void STL_linear_container_module::test2(void)
 	std::cout << "vi[2] == " << *iter_i << std::endl;
 	std::cout << std::endl;
 
+	// 3. list的迭代器
+	std::list<int> numlist{ 1,2,3,4,5,6,7,8,9 };
 
-	// vector的迭代器失效问题：
-	std::vector<int> vec;
-	vec.push_back(1);
-	vec.push_back(2);
-	vec.push_back(3);
-	vec.push_back(4);
-
-
-	std::vector<int>::iterator  iter1 = vec.begin();
-	std::vector<int>::iterator  iter2 = iter1;
-	iter2++;
-
-
-	std::cout << "*iter1 == " << *iter1 << std::endl;			// 貌似插入操作之后，即使是插入点之前的iterator也失效了。
-	std::cout << "*iter2 == " << *iter2 << std::endl;
-
-
-	vec.insert(iter2, 999);
-
-
-	for (const auto& elem : vec)
+	//			3.1 std::list的迭代器只支持++和--，不支持一次性移任意常数位。
+	for (unsigned i = 0; i < 2; ++i)
 	{
-		std::cout << elem << ",  ";
+		numlist.erase(numlist.begin());
+		numlist.erase(--numlist.end());
 	}
-	std::cout << std::endl;
+	traverseSTL(numlist, disp<int>);
 
-	std::cout << "*iter1 == " << *iter1 << std::endl;			// 貌似插入操作之后，即使是插入点之前的iterator也失效了。
-	std::cout << "*iter2 == " << *iter2 << std::endl;
-
-	std::vector<int>::iterator iter = vec.begin() + 3;
-	std::cout << "*iter == " << *iter << std::endl;
-
-	std::cout << std::distance(vec.begin(), iter) << std::endl;
+	//			3.2 std::list的迭代器执行erase()之后迭代器失效，返回删除元素下一个元素的迭代器
+	numlist = std::list<int>{ 1,2,3,4,5,6,7,8,9 };
+	auto iter1 = numlist.begin();
+	iter1 = numlist.erase(iter1);
+	std::cout << "*iter1 == " << *iter1 << std::endl;
+	traverseSTL(numlist, disp<int>);
 
 }
 
@@ -279,15 +262,12 @@ void STL_linear_container_module::test3(void)
 // test4()——vector迭代器失效问题
 void STL_linear_container_module::test4(void)
 {
+	// vector的内存重新分配的话，所有迭代器都会失效。
+
 	std::vector<int> v1 = {1,2,3};		// 初始时v1容量为3，可以使用v1.capacity()查看。
 	auto iter1 = v1.begin();
-	v1.push_back(4);				// 此时v1容量发生改变，内存重新分配，所有迭代器失效。
+	v1.push_back(4);							// 此时v1容量发生改变，内存重新分配，所有迭代器失效。
 	std::cout << *iter1 << std::endl;			// 此时程序会崩溃出错，因为迭代器已经失效。
-
-	// 执行插入操作的时候同理。
-
-
-
 
 }
 

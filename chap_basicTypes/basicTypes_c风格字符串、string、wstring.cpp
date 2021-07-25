@@ -8,7 +8,8 @@
 #include <vector>						//vector类模板在头文件<vector>中
 #include <algorithm>
 #include <iterator>
-
+#include <atlstr.h>
+#include <windows.h>
 
 
 
@@ -118,7 +119,7 @@ void basicTypes_strings_module::test1(void)
 	std::string str3("hello world");		// 字符串字面量构造的std::string
 
 
-	// 访问单个元素的接口：operator[], at(), front(), back()
+	// 1. 访问单个元素的接口：operator[], at(), front(), back()
 	std::cout << "\t访问单个元素的接口：operator[], at(), front(), back():" << std::endl;
 	std::cout << "\tstr2[2] == " << str2[2] << std::endl;
 	try
@@ -134,8 +135,7 @@ void basicTypes_strings_module::test1(void)
 	std::cout << std::endl << std::endl;
 
 
-
-	// 操作多个元素的接口：insert, replace, substr, append
+	// 2. 操作多个元素的接口：insert, replace, substr, append
 	str1 = str2.substr(2,4);
 	str2.replace(3, 2, "bcbcbc");
 	str3.insert(6, "new ");			// 在第6个字符后面插入，“第六”是指从“第一“开始数
@@ -147,9 +147,7 @@ void basicTypes_strings_module::test1(void)
 	std::cout << "str1.clear(); str1 == " << str1 << std::endl;
 	std::cout << std::endl << std::endl;
 
-
-
-	// std::string对象之间的操作：operator+=
+	// 3. std::string对象之间的操作：operator+=
 	str1 += str2;
 	str1 += str3;
 	std::cout << "\tstring对象之间的操作：operator+=" << std::endl;
@@ -159,14 +157,40 @@ void basicTypes_strings_module::test1(void)
 	
 	// getline()
 
-
-
-	// 迭代器接口：begin, cbegin(C++11), rbegin(C++11), crbegin(C++11)...
+	// 4. 迭代器接口：begin, cbegin(C++11), rbegin(C++11), crbegin(C++11)...
 	std::cout << "\t使用反向迭代器，反向打印字符串："<< std::endl;
 	for_each(str3.rbegin(), str3.rend(), disp<char>);
+	std::cout << std::endl << std::endl;
 
 
+	// 5. 1 字符串转换为其他类型std::stoi(), std::stol(), std::stoll() ———— 字符串、宽字符串转为整形数(c++11)：
+	str1 = "123";
+	str2 = "1234567890";
+	std::wstring wstr1 = L"54321";
+	int num1 = std::stoi(str1);
+	long num2 = std::stol(str2);
+	int num3 = std::stoi(wstr1);
+	std::cout << num1 << std::endl;
+	std::cout << num2 << std::endl;
+	std::cout << num3 << std::endl;
 
+	// 5.2 其他类型转换为字符串：a. 使用stringstream实现； b. std::to_string()和std::to_wstring()——数值转换为字符串（C++11）
+	str1 = std::to_string(321);
+	str2 = std::to_string(987654321);
+	wstr1 = std::to_wstring(12345);
+	std::cout << str1 << std::endl;
+	std::cout << str2 << std::endl;
+	std::wcout << wstr1 << std::endl;
+	std::cout << std::endl << std::endl;
+
+	// 6. 子串操作：
+	str1 = "asdfhjkl12345";
+	str2 = str1.substr(3, 4);
+	std::cout << str2 << std::endl;
+	str2 = "9999";
+	str1.erase(3, 4);
+	str1.insert(3, str2);
+	std::cout << str1 << std::endl;
 
 
 }
@@ -403,13 +427,12 @@ void basicTypes_strings_module::test5(void)
 
 
 
-// test: 宽字符wstring类
+// test6: 宽字符wchar_t，宽字符串wstring
 void basicTypes_strings_module::test6(void)
 {
 	// wstring在<std::string>头文件中定义，其对应的字面量前面带有L
 	std::wstring str = L"abcde";
 	std::cout << str.size() << std::endl;
-
 
 	std::cout << str[0] << std::endl;
 	std::cout << str[1] << std::endl;
@@ -417,8 +440,7 @@ void basicTypes_strings_module::test6(void)
 
 	std::cout << static_cast<unsigned char>(str[1]) << std::endl;
 
-	
-	// 宽字符和普通字符的转换：
+	// 1. 宽字符和普通字符的转换：
 	char ch1 = '1';
 	char ch2 = '9';
 	wchar_t wch1 = L'1';
@@ -438,5 +460,46 @@ void basicTypes_strings_module::test6(void)
 	std::cout << (char)(9 + 48) << std::endl;
 	std::wcout << (wchar_t)(1 + 48) << std::endl;
 	std::wcout << (wchar_t)(9 + 48) << std::endl;
+
+
+	// 2. VC++中的宽字符TCHAR，及其相关接口
+
+			/*
+			C++支持两种字符串，即常规的ANSI编码（使用""包裹）和Unicode编码（使用L""包裹）
+			TCHAR使用条件编译，对两套字符集及其操作进行了统一。
+			#ifdef   UNICODE
+				typedef   wchar_t   TCHAR;
+			#else
+				typedef   unsigned   char   TCHAR;
+			#endif
+		*/
+	std::cout << typeid(wchar_t).name() << std::endl;
+	std::cout << typeid(TCHAR).name() << std::endl;
+	std::cout << typeid(WCHAR).name() << std::endl;
+
+	const TCHAR* wstr1 = L"阿斯顿发送到发送到发斯蒂芬";
+ 
+	// std::locale()——设置语言环境
+	std::wcout.imbue(std::locale(std::locale(), "", LC_CTYPE));	// 设置wcout的语言环境，缺少这一步打印中文会有错误。
+	std::wcout << wstr1 << std::endl;
+
+	TCHAR modulePath[MAX_PATH + 1] = { 0 };
+	GetModuleFileName(NULL, modulePath, MAX_PATH);
+	std::wcout << L"当前运行模块为： "  << modulePath << std::endl;
+
+	// wcsrchr()——宽字符串搜索
+	TCHAR* pc = wcsrchr(modulePath, TEXT('\\'));				// pc指向字符串modulePath中最后一次出现'\\'的位置；
+	std::wcout << L"当前运行模块名为：" << pc << std::endl;
+
+	TCHAR tail[100] = { 0 };
+	//	wcscpy_s()——宽字符串拷贝
+	wcscpy_s(tail, sizeof(tail) / sizeof(TCHAR), pc);
+	std::wcout << L"当前运行模块名为：" << tail << std::endl;
+	std::wcout << tail << std::endl;
+
+	// 截断字符串
+	*pc = L'\0';
+	std::wcout << L"当前运行模块所在目录为："  << modulePath << std::endl;
+	std::cout << wcscmp(tail, TEXT("\\mytest0.exe")) << std::endl;
 
 }
