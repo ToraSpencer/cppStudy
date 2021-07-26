@@ -1,7 +1,12 @@
-﻿  exception_标准异常.cpp
-    正在创建库 D:\workstation\gitRepositories\cppStudy\Release\chap_exception.lib 和对象 D:\workstation\gitRepositories\cppStudy\Release\chap_exception.exp
+﻿  chap_exception.cpp
+E:\workstation\gitRepositories\cppStudy\chap_exception\chap_exception.cpp(49,1): warning C4273: “getChap”: dll 链接不一致
+E:\workstation\gitRepositories\cppStudy\chap_exception\chap_exception.h(39,16): message : 参见“getChap”的前一个定义
+  exception_基本异常处理.cpp
+  exception_标准异常.cpp
+  dllmain.cpp
+    正在创建库 E:\workstation\gitRepositories\cppStudy\Release\chap_exception.lib 和对象 E:\workstation\gitRepositories\cppStudy\Release\chap_exception.exp
   正在生成代码
-  All 142 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Previous IPDB not found, fall back to full compilation.
+  All 216 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   已完成代码的生成
-  chap_exception.vcxproj -> D:\workstation\gitRepositories\cppStudy\Release\chap_exception.dll
-  chap_exception.vcxproj -> D:\workstation\gitRepositories\cppStudy\Release\chap_exception.pdb (Full PDB)
+  chap_exception.vcxproj -> E:\workstation\gitRepositories\cppStudy\Release\chap_exception.dll

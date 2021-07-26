@@ -1,10 +1,18 @@
-﻿  stdlib_IO库.cpp
-stdlib_IO库.cpp(277): warning C4305: “初始化”: 从“double”到“float”截断
-    正在创建库 D:\workstation\gitRepositories\cppStudy\Release\chap_stdlib.lib 和对象 D:\workstation\gitRepositories\cppStudy\Release\chap_stdlib.exp
+﻿  chap_stdlib.cpp
+E:\workstation\gitRepositories\cppStudy\chap_stdlib\chap_stdlib.cpp(62,1): warning C4273: “getChap”: dll 链接不一致
+E:\workstation\gitRepositories\cppStudy\chap_stdlib\chap_stdlib.h(46,16): message : 参见“getChap”的前一个定义
+  stdlib_IO库.cpp
+E:\workstation\gitRepositories\cppStudy\chap_stdlib\stdlib_IO库.cpp(277,22): warning C4305: “初始化”: 从“double”到“float”截断
+  stdlib_工具库.cpp
+  stdlib_数值库.cpp
+E:\workstation\gitRepositories\cppStudy\chap_stdlib\stdlib_数值库.cpp(169,12): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
+  stdlib_正则表达式.cpp
+  stdlib_类型支持库.cpp
+  stdlib_线程支持库.cpp
+  dllmain.cpp
+    正在创建库 E:\workstation\gitRepositories\cppStudy\Release\chap_stdlib.lib 和对象 E:\workstation\gitRepositories\cppStudy\Release\chap_stdlib.exp
   正在生成代码
-  2 of 1192 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    12 functions had inline decision re-evaluated but remain unchanged
+  Previous IPDB not found, fall back to full compilation.
+  All 1131 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   已完成代码的生成
-  chap_stdlib.vcxproj -> D:\workstation\gitRepositories\cppStudy\Release\chap_stdlib.dll
-  chap_stdlib.vcxproj -> D:\workstation\gitRepositories\cppStudy\Release\chap_stdlib.pdb (Full PDB)
+  chap_stdlib.vcxproj -> E:\workstation\gitRepositories\cppStudy\Release\chap_stdlib.dll

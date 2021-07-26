@@ -108,7 +108,7 @@ void basicTypes_strings_module::test0(void)
 
 
 
-// test1: std::string类的API
+// test1: 字符串常用的API
 void basicTypes_strings_module::test1(void)
 {
 	std::cout << "\n\n\n\n" << std::endl;
@@ -163,16 +163,33 @@ void basicTypes_strings_module::test1(void)
 	std::cout << std::endl << std::endl;
 
 
-	// 5. 1 字符串转换为其他类型std::stoi(), std::stol(), std::stoll() ———— 字符串、宽字符串转为整形数(c++11)：
+	// 5. 1 字符串转换为其他类型std::stoi(), std::stol(), std::stoll(), std::stof() ———— C风格字符串、字符串、宽字符串转为数值(c++11)：
+	char* cstr = "123";
 	str1 = "123";
 	str2 = "1234567890";
+	str3 = "12fd132";
+	std::string str4 = "12.23";
+	std::string str5 = " 888";
+	std::string str6 = "123 456 678";
 	std::wstring wstr1 = L"54321";
+	int num0 = std::stoi(cstr);
 	int num1 = std::stoi(str1);
 	long num2 = std::stol(str2);
 	int num3 = std::stoi(wstr1);
+	float num4 = std::stof(str4);
+	int num5 = std::stoi(str5);		// 前后的空格不影响数值转换
+	int num6 = std::stoi(str6);		// 数字中间有空格的话，会截断空格后面的数字。
+	
+	std::cout << num0 << std::endl;
 	std::cout << num1 << std::endl;
 	std::cout << num2 << std::endl;
 	std::cout << num3 << std::endl;
+	// std::cout << std::stoi(str3) << std::endl;		字符串中有非数值字符程序会中断。
+	std::cout << num4 << std::endl;
+	std::cout << num5 << std::endl;
+	std::cout << num6 << std::endl;
+	std::cout << std::endl << std::endl;
+
 
 	// 5.2 其他类型转换为字符串：a. 使用stringstream实现； b. std::to_string()和std::to_wstring()——数值转换为字符串（C++11）
 	str1 = std::to_string(321);
@@ -191,7 +208,6 @@ void basicTypes_strings_module::test1(void)
 	str1.erase(3, 4);
 	str1.insert(3, str2);
 	std::cout << str1 << std::endl;
-
 
 }
 
