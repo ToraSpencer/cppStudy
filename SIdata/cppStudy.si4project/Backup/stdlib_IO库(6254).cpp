@@ -199,8 +199,10 @@ virtualModule* stdlib_io_module::getInstance()		// 线程不安全的单例模式
 }
 
  
+ 
 
-// test0: 控制输出格式：
+
+// test0: <iomanip>中的操纵符(manipulator)来控制输出格式：
 void stdlib_io_module::test0(void)
 {
 	double d1, d2, d3;
@@ -237,27 +239,7 @@ void stdlib_io_module::test0(void)
 	std::cout << std::setprecision(1) << d2 << std::endl;					// 此时setprecision()设置的是有效数字位数；位数不够用时默认使用科学计数法std::ios_base::scientific
 	std::cout << setiosflags(std::ios_base::fixed) << std::setprecision(1) << d2 << std::endl;
 																					// 指定定点标记输出std::ios_base::fixed输出时，setprecision设置的是小数点后保留位数。
-	std::cout << std::endl << std::endl;
 
-
-	// C语言中的格式控制：
-
-	/*
-		%c	字符输出到缓冲区，不转换。
-		%d	整数转成十进位。
-		%f	倍精确度数字转成浮点数。
-					例：%08.2f
-									0是 "填空字元" 表示,如果长度不足时就用0来填满；
-									8格式化后总长度；
-									2f小数位长度，即2位；
-		%o	整数转成八进位。
-		%s	字符串输出到缓冲区，不转换。
-		%x	整数转成小写十六进位。
-		%X	整数转成大写十六进位。
-	*/
-	char str[100] = {0};
-	sprintf(str, "d1 == %.9f;", d1);
-	std::cout << str << std::endl;
 
 }
 
@@ -363,6 +345,7 @@ void stdlib_io_module::test1(void)
 }	
 
 
+
 // test2: 使用cin对象来接收输入：
 void stdlib_io_module::test2(void)
 {
@@ -405,6 +388,7 @@ void stdlib_io_module::test2(void)
 }
 
 
+
 // test3: string流
 namespace TEST_STRINGSTREAM
 {
@@ -435,7 +419,6 @@ void stdlib_io_module::test3(void)
 
 	std::stringstream ss;
 	// 字符串拷贝、拼接、格式化等工作都可以通过sstream来实现，比C语言中方便。
-
 	//		格式化字符串
 	for (int i = 1; i < 10; i++) 
 	{
