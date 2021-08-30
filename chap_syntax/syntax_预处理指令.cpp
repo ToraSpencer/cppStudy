@@ -14,32 +14,32 @@
 // 知识点
 /*
 #define————宏（macro）定义
-格式
-#define 宏  替换体
-若一个宏替换体超过一行，上一行的行末尾需要加\
-注意
-宏替换的本质是完全的文本替换，将记号替换为字符串
-宏是一个记号(token)型字符串，而不是字符型字符串
-比如若定义了#define PI 3.14159
-双引号中的PI不会被替换，因为是字符型字符串
-其他地方的PI会被替换成文本3.14159
-分类————1. 类对象宏(object-like macro)，	2. 类函数宏(function-like macro)
+	格式
+			#define 宏  替换体
+			若一个宏替换体超过一行，上一行的行末尾需要加\
+	注意
+			宏替换的本质是完全的文本替换，将记号替换为字符串
+			宏是一个记号(token)型字符串，而不是字符型字符串
+			比如若定义了#define PI 3.14159
+			双引号中的PI不会被替换，因为是字符型字符串
+			其他地方的PI会被替换成文本3.14159
+	分类————1. 类对象宏(object-like macro)，	2. 类函数宏(function-like macro)
 
 宏函数（类函数宏）
 见test2;
 
 
 宏的重定义
-先撤销已有的宏定义：#undef  PI
-再重定义该宏： #define PI 3.14159
+		先撤销已有的宏定义：#undef  PI
+		再重定义该宏： #define PI 3.14159
 
 #include————文件包含
 
 
 预定义符号
-C标准中预定义好的一些符号
-不可以被重定义
-如__FILE__, __LINE__等
+		C标准中预定义好的一些符号
+		不可以被重定义
+		如__FILE__, __LINE__等
 
 
 预定符号相关指令
@@ -70,16 +70,12 @@ C标准中预定义好的一些符号
 连接库文件。
 #pragma pack
 设置内存对齐
-
-
-
-
+ 
 
 #error————错误指令
 让预处理器报错，显示该错误指令中的文本
 例子：#error not C11
-
-
+ 
 
 常见预定义宏
 ANSI C标准中有几个标准预定义宏：
@@ -142,13 +138,33 @@ void syntax_preprocessing_instruction_module::test0(void)
 
 
 
-
 #line 1000								// 当前行号重置为1000 
 	std::cout << "\t当前行号重置为1000 ：#line 1000; __LINE__ == " << __LINE__ << std::endl;
 #line 10 "temp.c"						 // 当前行号重置为10，当前源文件名重置为temp.c
 	std::cout << "\t当前行号重置为10，当前源文件名重置为temp.c:" << std::endl;
 	std::cout << "\t__LINE__ == " << __LINE__ << std::endl;
 	std::cout << "\t__FILE__ == " << __FILE__ << std::endl;
+
+	// __COUNTER__，每编译一次+1
+	std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+	std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+
+#if 0
+	//		#if 0 中的内容不会编译，所以这里不会加1
+	std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+#endif
+
+	if (0) 
+	{
+		std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+	}
+	else
+	{
+		// 上面的分支虽然不会运行，但是会编译，所以上面会加1.
+		std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+		std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+	}
+
 }
 
 
