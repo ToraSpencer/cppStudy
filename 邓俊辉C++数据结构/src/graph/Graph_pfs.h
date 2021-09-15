@@ -1,11 +1,3 @@
-/******************************************************************************************
- * Data Structures in C++
- * ISBN: 7-302-33064-6 & 7-302-33065-3 & 7-302-29652-2 & 7-302-26883-3
- * Junhui DENG, deng@tsinghua.edu.cn
- * Computer Science & Technology, Tsinghua University
- * Copyright (c) 2003-2020. All rights reserved.
- ******************************************************************************************/
-
 #pragma once
 
 template <typename Tv, typename Te> template <typename PU> //优先级搜索（全图）
@@ -16,6 +8,7 @@ void Graph<Tv, Te>::pfs ( int s, PU prioUpdater ) { //assert: 0 <= s < n
          PFS ( v, prioUpdater ); //即从该顶点出发启动一次PFS
    while ( s != ( v = ( ++v % n ) ) ); //按序号检查，故不漏不重
 }
+
 
 template <typename Tv, typename Te> template <typename PU> //顶点类型、边类型、优先级更新器
 void Graph<Tv, Te>::PFS ( int s, PU prioUpdater ) { //优先级搜索（单个连通域）

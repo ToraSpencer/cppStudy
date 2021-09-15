@@ -1,14 +1,6 @@
-/******************************************************************************************
- * Data Structures in C++
- * ISBN: 7-302-33064-6 & 7-302-33065-3 & 7-302-29652-2 & 7-302-26883-3
- * Junhui DENG, deng@tsinghua.edu.cn
- * Computer Science & Technology, Tsinghua University
- * Copyright (c) 2003-2020. All rights reserved.
- ******************************************************************************************/
-
 #pragma once
 
-template <typename Tv, typename Te> //广度优先搜索BFS算法（全图）
+template <typename Tv, typename Te>         //广度优先搜索BFS算法（全图）
 void Graph<Tv, Te>::bfs ( int s ) { //assert: 0 <= s < n
    reset(); int clock = 0; int v = s; //初始化
    do //逐一检查所有顶点

@@ -1,23 +1,15 @@
-/******************************************************************************************
- * Data Structures in C++
- * ISBN: 7-302-33064-6 & 7-302-33065-3 & 7-302-29652-2 & 7-302-26883-3
- * Junhui DENG, deng@tsinghua.edu.cn
- * Computer Science & Technology, Tsinghua University
- * Copyright (c) 2003-2020. All rights reserved.
- ******************************************************************************************/
-
-#pragma once
+ #pragma once
 
 template <typename Tv, typename Te> void Graph<Tv, Te>::bcc ( int s ) { //基于DFS的BCC分解算法
    reset(); int clock = 0; int v = s; Stack<int> S; //栈S用以记录已访问的顶点
    do
       if ( UNDISCOVERED == status ( v ) ) { //一旦发现未发现的顶点（新连通分量）
          BCC ( v, clock, S ); //即从该顶点出发启动一次BCC
-         S.pop(); //遍历返回后，弹出栈中最后一个顶点——当前连通域的起点
+         S.pop();               //遍历返回后，弹出栈中最后一个顶点——当前连通域的起点
       }
    while ( s != ( v = ( ++v % n ) ) );
 }
-#define hca(x) (fTime(x)) //利用此处闲置的fTime[]充当hca[]
+#define hca(x) (fTime(x))                //利用此处闲置的fTime[]充当hca[]
 template <typename Tv, typename Te> //顶点类型、边类型
 void Graph<Tv, Te>::BCC ( int v, int& clock, Stack<int>& S ) { //assert: 0 <= v < n
    hca ( v ) = dTime ( v ) = ++clock; status ( v ) = DISCOVERED; S.push ( v ); //v被发现并入栈

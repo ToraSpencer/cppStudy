@@ -101,7 +101,6 @@ void importGraph ( GraphMatrix<char, int> & g )
 void test1() 
 {
     srand((unsigned int)time(NULL));
-
     GraphMatrix<char, int> g;
 
     int versCount = 8;
