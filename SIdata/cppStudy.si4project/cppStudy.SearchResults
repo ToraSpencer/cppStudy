@@ -1,0 +1,88 @@
+---- constexpr Matches (13 in 5 files) ----
+basicTools.h (G:\gitRepositories\cppStudy\basicTools) line 36 : 
+#define MAX_PATH          260
+constexpr float VF_EPS = 0.0001f;
+constexpr float VF_EPS_2 = 0.000001f;
+constexpr float VF_MAX = 10000.0f;
+constexpr float VF_MIN = -10000.0f;
+
+
+// 从输入流inStream中跳过空格及制表符获取一字符
+basicTools.h (G:\gitRepositories\cppStudy\basicTools) line 217 : 
+//	是否约等于零
+inline constexpr bool vf_appro_zero(float r, float dThreshold = VF_EPS) { return r >= -dThreshold && r <= dThreshold; } 
+
+// 是否约等于零
+inline constexpr bool vf_appro_zero_2(float  r) { return vf_appro_zero(r, VF_EPS_2); } 
+
+
+// 三元数组类模板
+basicTypes_数组.cpp (G:\gitRepositories\cppStudy\chap_basicTypes) line 76 : 
+	const unsigned int size1 = 4;
+	constexpr unsigned int size2 = 3;
+	float arrf1[size1];
+	float arrf2[size2];				// 上面如果不指明size1是常量，size2是常量表达式的话，编译不通过。
+
+general_notifications.txt (G:\gitRepositories\cppStudy\CppStudy) line 33 : 
+**          返回值： T   给定元素init和容器中给定范围所有元素的和。
+**          注意：C++20起，返回值改为constexpr
+**         
+**  重载2：
+**        (C++20 前) template< class InputIt, class T, class BinaryOperation >
+general_notifications.txt (G:\gitRepositories\cppStudy\CppStudy) line 42 : 
+**          返回值：
+**          注意：C++20起，返回值改为constexpr
+**
+**
+*. EC------------------------------------------------------------------------
+STL_算法库.cpp (G:\gitRepositories\cppStudy\chap_STL) line 188 : 
+           template<class InputIt, class T >
+           constexpr InputIt find(    InputIt first,                  容器中第一个迭代器
+                                                   InputIt last,                  容器中第二个迭代器
+                                                   const T& value);           待查找的元素值
+             返回值：
+STL_算法库.cpp (G:\gitRepositories\cppStudy\chap_STL) line 217 : 
+          返回值： T   给定元素init和容器中给定范围所有元素的和。
+          注意：C++20起，返回值改为constexpr
+         
+  重载2：
+        (C++20 前) template< class InputIt, class T, class BinaryOperation >
+STL_算法库.cpp (G:\gitRepositories\cppStudy\chap_STL) line 226 : 
+          返回值：
+          注意：C++20起，返回值改为constexpr
+
+
+*. EC------------------------------------------------------------------------
+STL_算法库.cpp (G:\gitRepositories\cppStudy\chap_STL) line 247 : 
+              返回值：bool――进行比较的元素全部相等返回true，否则返回false
+              注意：C++20起，返回值改为constexpr
+     
+
+  重载2：...
+STL_算法库.cpp (G:\gitRepositories\cppStudy\chap_STL) line 272 : 
+        template< class InputIt, class UnaryFunction >
+        constexpr UnaryFunction for_each(   InputIt first, 
+                                            InputIt last, 
+                                            UnaryFunction f );
+
+syntax_表达式.cpp (G:\gitRepositories\cppStudy\chap_syntax) line 17 : 
+
+// C++语法――表达式、constexpr
+/*
+		 
+*/
+syntax_表达式.cpp (G:\gitRepositories\cppStudy\chap_syntax) line 39 : 
+
+// test0:常量表达式constexpr的简单应用
+namespace CONSTEXPR_APPLICATION1 
+{
+	constexpr unsigned fooConst()			// 返回值为constexpr的函数
+	{
+		return 9;
+	}
+syntax_expression_module::test0 in syntax_表达式.cpp (G:\gitRepositories\cppStudy\chap_syntax) : 
+{
+	using namespace CONSTEXPR_APPLICATION1;
+	int arr[fooConst()];				// fooConst()函数返回一个常量表达式，可以用来声明数组。
+
+	std::cout << sizeof(arr) << std::endl;
