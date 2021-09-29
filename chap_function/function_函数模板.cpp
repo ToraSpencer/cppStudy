@@ -4,6 +4,7 @@
 #include <cstdio>
 
 #include "function_函数模板.h"
+
 /*
 	函数模板
 
@@ -28,7 +29,7 @@ namespace FUNCTION_TEMPLATE_EXAMPLE1
 	void foo(T(&arr)[N]);					// 函数模板示例，带有类型参数T，和非类型参数N
 
 
-											// foo——函数模板示例，带有类型参数T，和非类型参数N
+	// foo——函数模板示例，带有类型参数T，和非类型参数N
 	template <typename T, size_t N>
 	void foo(T(&arr)[N])		// 使用范围for循环，遍历打印出传入数组中的所有元素。
 	{
