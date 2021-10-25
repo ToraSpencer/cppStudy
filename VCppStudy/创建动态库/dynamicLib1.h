@@ -38,10 +38,13 @@
 
 
 
+// 宏DLL_EXPORTS
+/*
+	生成动态库的项目中应该定义预编译宏DLL_EXPORTS，从而执行输出动态库的分支。
+		 方法1：项目属性->C/C++ -> 预处理器 -> 预处理器定义中加入宏DLL_EXPORTS
+		 方法2：stdafx.h中#define DLL_EXPORTS
+*/
 
-// 生成动态库的项目中应该定义预编译宏DLL_EXPORTS，从而执行输出动态库的分支。
-//		 方法1：项目属性->C/C++ -> 预处理器 -> 预处理器定义中加入宏DLL_EXPORTS
-//		 方法2：stdafx.h中#define DLL_EXPORTS
 #ifdef DLL_EXPORTS
 #define DLL_API __declspec(dllexport) 
 #else

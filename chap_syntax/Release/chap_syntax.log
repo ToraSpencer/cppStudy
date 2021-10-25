@@ -1,8 +1,27 @@
-﻿  syntax_预处理指令.cpp
+﻿  chap_syntax.cpp
+G:\gitRepositories\cppStudy\chap_syntax\chap_syntax.cpp(74,1): warning C4273: “getChap”: dll 链接不一致
+G:\gitRepositories\cppStudy\chap_syntax\chap_syntax.h(53,16): message : 参见“getChap”的前一个定义
+  syntax_关键字.cpp
+  syntax_几个特殊运算符.cpp
+  syntax_内存管理.cpp
+G:\gitRepositories\cppStudy\chap_syntax\syntax_内存管理.cpp(117,8): warning C4101: “pc”: 未引用的局部变量
+G:\gitRepositories\cppStudy\chap_syntax\syntax_内存管理.cpp(115,6): warning C4101: “i1”: 未引用的局部变量
+G:\gitRepositories\cppStudy\chap_syntax\syntax_内存管理.cpp(191,33): warning C4305: “初始化”: 从“double”到“float”截断
+  syntax_基本语句、新增语句.cpp
+  syntax_声明、定义、初始化.cpp
+G:\gitRepositories\cppStudy\chap_syntax\syntax_声明、定义、初始化.cpp(74,6): warning C4101: “numi_local”: 未引用的局部变量
+G:\gitRepositories\cppStudy\chap_syntax\syntax_声明、定义、初始化.cpp(75,8): warning C4101: “numf_local”: 未引用的局部变量
+G:\gitRepositories\cppStudy\chap_syntax\syntax_声明、定义、初始化.cpp(67,6): warning C4101: “intDefined”: 未引用的局部变量
+  syntax_类型转换.cpp
+  syntax_表达式.cpp
+  syntax_重载运算符.cpp
+  syntax_预处理指令.cpp
+  dllmain.cpp
     正在创建库 G:\gitRepositories\cppStudy\Release\chap_syntax.lib 和对象 G:\gitRepositories\cppStudy\Release\chap_syntax.exp
   正在生成代码
-  1 of 355 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+  Previous IPDB was built with incompatible compiler, fall back to full compilation.
+G:\gitRepositories\cppStudy\chap_syntax\syntax_重载运算符.cpp(93): warning C4172: 返回局部变量或临时变量的地址: temp
+G:\gitRepositories\cppStudy\chap_syntax\syntax_重载运算符.cpp(82): warning C4172: 返回局部变量或临时变量的地址: temp
+  All 355 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   已完成代码的生成
   chap_syntax.vcxproj -> G:\gitRepositories\cppStudy\Release\chap_syntax.dll

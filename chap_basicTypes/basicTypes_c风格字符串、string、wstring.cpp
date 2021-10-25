@@ -449,12 +449,10 @@ void basicTypes_strings_module::test6(void)
 	// wstring在<std::string>头文件中定义，其对应的字面量前面带有L
 	std::wstring str = L"abcde";
 	std::cout << str.size() << std::endl;
-
 	std::cout << str[0] << std::endl;
 	std::cout << str[1] << std::endl;
 	std::cout << str[2] << std::endl;
-
-	std::cout << static_cast<unsigned char>(str[1]) << std::endl;
+	std::cout << static_cast<unsigned char>(str[1]) << std::endl << std::endl;
 
 	// 1. 宽字符和普通字符的转换：
 	char ch1 = '1';
@@ -480,15 +478,15 @@ void basicTypes_strings_module::test6(void)
 
 	// 2. VC++中的宽字符TCHAR，及其相关接口
 
-			/*
-			C++支持两种字符串，即常规的ANSI编码（使用""包裹）和Unicode编码（使用L""包裹）
-			TCHAR使用条件编译，对两套字符集及其操作进行了统一。
-			#ifdef   UNICODE
-				typedef   wchar_t   TCHAR;
-			#else
-				typedef   unsigned   char   TCHAR;
-			#endif
-		*/
+		/*
+		C++支持两种字符串，即常规的ANSI编码（使用""包裹）和Unicode编码（使用L""包裹）
+		TCHAR使用条件编译，对两套字符集及其操作进行了统一。
+		#ifdef   UNICODE
+			typedef   wchar_t   TCHAR;
+		#else
+			typedef   unsigned   char   TCHAR;
+		#endif
+	*/
 	std::cout << typeid(wchar_t).name() << std::endl;
 	std::cout << typeid(TCHAR).name() << std::endl;
 	std::cout << typeid(WCHAR).name() << std::endl;

@@ -1,16 +1,16 @@
 ﻿  chap_function.cpp
-E:\workstation\gitRepositories\cppStudy\chap_function\chap_function.cpp(58,1): warning C4273: “getChap”: dll 链接不一致
-E:\workstation\gitRepositories\cppStudy\chap_function\chap_function.h(44,16): message : 参见“getChap”的前一个定义
+G:\gitRepositories\cppStudy\chap_function\chap_function.cpp(58,1): warning C4273: “getChap”: dll 链接不一致
+G:\gitRepositories\cppStudy\chap_function\chap_function.h(44,16): message : 参见“getChap”的前一个定义
   function_内联函数.cpp
   function_函数子.cpp
   function_函数指针.cpp
   function_函数模板.cpp
-E:\workstation\gitRepositories\cppStudy\chap_function\function_函数模板.cpp(50,47): warning C4305: “初始化”: 从“double”到“float”截断
+G:\gitRepositories\cppStudy\chap_function\function_函数模板.cpp(51,47): warning C4305: “初始化”: 从“double”到“float”截断
   function_可变参数函数.cpp
   dllmain.cpp
-    正在创建库 E:\workstation\gitRepositories\cppStudy\Release\chap_function.lib 和对象 E:\workstation\gitRepositories\cppStudy\Release\chap_function.exp
+    正在创建库 G:\gitRepositories\cppStudy\Release\chap_function.lib 和对象 G:\gitRepositories\cppStudy\Release\chap_function.exp
   正在生成代码
-  Previous IPDB not found, fall back to full compilation.
+  Previous IPDB was built with incompatible compiler, fall back to full compilation.
   All 253 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   已完成代码的生成
-  chap_function.vcxproj -> E:\workstation\gitRepositories\cppStudy\Release\chap_function.dll
+  chap_function.vcxproj -> G:\gitRepositories\cppStudy\Release\chap_function.dll
