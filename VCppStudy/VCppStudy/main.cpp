@@ -250,8 +250,6 @@ namespace CONFIG
 }
 
 
-
-
 // windows∂‡œﬂ≥Ã
 namespace MULTITHREAD
 {

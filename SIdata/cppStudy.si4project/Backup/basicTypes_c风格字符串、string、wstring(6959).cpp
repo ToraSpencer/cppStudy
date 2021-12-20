@@ -460,22 +460,20 @@ void basicTypes_strings_module::test6(void)
 	wchar_t wch1 = L'1';
 	wchar_t wch2 = L'9';
 	wchar_t wch3 = static_cast<wchar_t>(ch1);
-	std::cout << static_cast<int>(ch1) << std::endl;	// 49
-	std::cout << static_cast<int>(ch2) << std::endl;	// 57
-	std::cout << static_cast<int>(wch1) << std::endl;	// 49
-	std::cout << static_cast<int>(wch2) << std::endl;	// 57
-	std::cout << static_cast<char>(wch2) << std::endl;				// 9	宽字符和字符类型使用static_cast转换，内容不变。
-	std::wcout << static_cast<wchar_t>(ch2) << std::endl;			// 9
- 	std::cout << ch1 << std::endl;					// 1
-	std::cout << ch2 << std::endl;					// 9 
-	std::wcout << wch1 << std::endl;				// 1
-	std::wcout << wch2 << std::endl;				// 9
-	std::wcout << wch3 << std::endl << std::endl;	// 1
+	std::cout << static_cast<int>(ch1) << std::endl;
+	std::cout << static_cast<int>(ch2) << std::endl;
+	std::cout << static_cast<int>(wch1) << std::endl;
+	std::cout << static_cast<int>(wch2) << std::endl;
+	std::cout << ch1 << std::endl;
+	std::cout << ch2 << std::endl;
+	std::wcout << wch1 << std::endl;
+	std::wcout << wch2 << std::endl;
+	std::wcout << wch3 << std::endl << std::endl;
 
-	std::cout << (char)(1 + 48) << std::endl;		// 1
-	std::cout << (char)(9 + 48) << std::endl;		// 9
-	std::wcout << (wchar_t)(1 + 48) << std::endl;	// 1
-	std::wcout << (wchar_t)(9 + 48) << std::endl;	// 9
+	std::cout << (char)(1 + 48) << std::endl;
+	std::cout << (char)(9 + 48) << std::endl;
+	std::wcout << (wchar_t)(1 + 48) << std::endl;
+	std::wcout << (wchar_t)(9 + 48) << std::endl;
 
 
 	// 2. VC++中的宽字符TCHAR，及其相关接口

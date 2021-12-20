@@ -135,15 +135,18 @@ void STL_linear_container_module::test1(void)
 	std::list<int> li1{ 1,2,3,4,5,4,6,7,8,9,4 };
 	std::deque<int> di1{ 1,2,3,4,5,4,6,7,8,9,4 };
 
-	// 增：
+	// 增——insert()方法插入元素
+	auto iter1 = vi1.begin();
+	iter1++;
+	iter1 = vi1.insert(iter1, 999);						// 在当前迭代器指向的元素之前插入新元素；若成功，则返回插入新元素的迭代器；
+	traverseSTL(vi1, disp<int>);
+	std::cout << "*iter1 == " << *iter1 << std::endl;
 	
 	//		数组区间拷贝到顺序表STL容器——vector中
 	int arri[] = { 1,2,3,4,5,6,77,88,999 };
 	std::vector<int> vi2(9);
 	memcpy(&vi2[0], &arri[0], sizeof(int) * 9);
 	traverseSTL(vi2, disp<decltype(vi1[0])>);
-
-
 
 	// 删除元素：
 
