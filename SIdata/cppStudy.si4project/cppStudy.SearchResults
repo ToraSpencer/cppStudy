@@ -1,52 +1,84 @@
----- const_cast Matches (7 in 3 files) ----
-RANGE_FOR_LOOP::operator[] in syntax_基本语句、新增语句.cpp (G:\gitRepositories\cppStudy\chap_syntax) : 
-	{
-		return const_cast<MyArray&>(*this)[i];				// ？？？？
-	}
+---- tuple Matches (13 in 5 files) ----
+basicTypes_对、元祖.cpp (G:\gitRepositories\cppStudy\chap_basicTypes) line 27 : 
 
-
-RANGE_FOR_LOOP::begin in syntax_基本语句、新增语句.cpp (G:\gitRepositories\cppStudy\chap_syntax) : 
-	{
-		return const_cast<MyArray*>(this)->begin();
-	}
-
-
-RANGE_FOR_LOOP::end in syntax_基本语句、新增语句.cpp (G:\gitRepositories\cppStudy\chap_syntax) : 
-	{
-		return const_cast<MyArray*>(this)->end();			// end()指针转型成const指针
-	}
-
-
-syntax_类型转换.cpp (G:\gitRepositories\cppStudy\chap_syntax) line 31 : 
-
-					const_cast 
-								可以去除、增添变量的const属性，一般不会使用。
-
-					reinterpret_cast 
-syntax_类型转换.cpp (G:\gitRepositories\cppStudy\chap_syntax) line 58 : 
-
-// test0: const_cast
-void syntax_type_cast_module::test0(void)
+virtualModule* basicTypes_pair_tuple_module::getInstance()		// 线程不安全的单例模式
 {
-	int  numi1 = 5;
-syntax_type_cast_module::test0 in syntax_类型转换.cpp (G:\gitRepositories\cppStudy\chap_syntax) : 
+	if (nullptr != p_moduleIns)
+	{
+basicTypes_pair_tuple_module::getInstance in basicTypes_对、元祖.cpp (G:\gitRepositories\cppStudy\chap_basicTypes) : 
+	}
+	p_moduleIns = new basicTypes_pair_tuple_module;
+	return p_moduleIns;
+}
 
-	std::cout << "test0: const_cast" << std::endl;
+basicTypes_对、元祖.cpp (G:\gitRepositories\cppStudy\chap_basicTypes) line 39 : 
 
-	pci1 = &numi1;											 			// const指针pci1指向numi1，是底层const。不可以通过pci1来修改numi1的值。
-	pi1 = const_cast<int*>(pci1);						 	 // 使用pci1给pi1赋值，但是使用const_cast移除了const属性。
-
-
-	*pi1 = 6;
-	std::cout << "\tpci1 = &numi1; pi1 = const_cast<int*>(pci1);	 *pi1 = 6; " << std::endl;
-	std::cout <<"\tnumi1 == " << numi1 << std::endl;
+void basicTypes_pair_tuple_module::test0(void)
+{
 
 }
-syntax_keyword_module::test0 in syntax_关键字.cpp (G:\gitRepositories\cppStudy\chap_syntax) : 
+basicTypes_对、元祖.cpp (G:\gitRepositories\cppStudy\chap_basicTypes) line 45 : 
 
-	pi1 = const_cast<int*>(cpi1);							// 可以使用const_cast去除cpi1的const属性， pi1指向的位置可以修改：
-	pi1 = &numi2;
-	std::cout <<"\t\tpi1 = const_cast<int*>(cpi1); pi1 = &numi2; *pi1 == " << *pi1 << std::endl;
+void basicTypes_pair_tuple_module::test1(void) 
+{
 
+}
+basicTypes_对、元祖.cpp (G:\gitRepositories\cppStudy\chap_basicTypes) line 52 : 
 
-	// 底层const：指针指向的数据是一个常量
+void basicTypes_pair_tuple_module::test2(void)
+{
+
+}
+basicTypes_对、元祖.cpp (G:\gitRepositories\cppStudy\chap_basicTypes) line 60 : 
+
+void basicTypes_pair_tuple_module::test3(void)
+{
+
+}
+basicTypes_对、元祖.cpp (G:\gitRepositories\cppStudy\chap_basicTypes) line 68 : 
+
+void basicTypes_pair_tuple_module::test4(void)
+{
+
+}
+basicTypes_对、元祖.cpp (G:\gitRepositories\cppStudy\chap_basicTypes) line 76 : 
+
+void basicTypes_pair_tuple_module::test5(void)
+{
+
+}
+basicTypes_对、元祖.cpp (G:\gitRepositories\cppStudy\chap_basicTypes) line 84 : 
+
+void basicTypes_pair_tuple_module::test6(void)
+{
+
+}
+
+basicTypes_对、元祖.h (G:\gitRepositories\cppStudy\chap_basicTypes) line 7 : 
+
+struct basicTypes_pair_tuple_module : public virtualModule
+{
+protected:
+	basicTypes_pair_tuple_module() = default;
+
+public:
+	static virtualModule* getInstance();
+chap_basicTypes::selectModule in chap_basicTypes.cpp (G:\gitRepositories\cppStudy\chap_basicTypes) : 
+		break;
+	case MODULE_PAIR_TUPLE:
+		this->pm = basicTypes_pair_tuple_module::getInstance();
+		break;
+	case MODULE_ENUM_UNION_STRUCT:
+		this->pm = basicTypes_enum_union_struct_module::getInstance();
+BASIC_TYPES_MODULE in chap_basicTypes.h (G:\gitRepositories\cppStudy\chap_basicTypes) : 
+	MODULE_REFERENCE,
+	MODULE_PAIR_TUPLE,
+	MODULE_ENUM_UNION_STRUCT,
+};
+
+stdlib_工具库.cpp (G:\gitRepositories\cppStudy\chap_stdlib) line 34 : 
+		工具函数
+		pair， tuple (C++11)
+		optional (C++17)， any (C++17)
+		variant (C++17)，format (C++20)
+ 
