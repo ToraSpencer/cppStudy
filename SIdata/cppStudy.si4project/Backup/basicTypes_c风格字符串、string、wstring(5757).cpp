@@ -415,11 +415,11 @@ void basicTypes_strings_module::test5(void)
 	*/
 
 	// C++中的轮子实现字符串匹配：
-	std::string str1 = "asdfajiuiuwww.github.comasdfuoiup";
+	std::string str1 = "asdfajiuiuwww.baidu.comasdfuoiup";
 
 	//			std::string类的find()方法——查找字符串中的字符或子串
 	//					size_type——std::string和vector定义的类型，是表示容器容量的无符号整型数，
-	std::string::size_type num = str1.find("github", 0);							// 第二个参数是搜索开始的位置。
+	std::string::size_type num = str1.find("baidu", 0);							// 第二个参数是搜索开始的位置。
 	if (num == std::string::npos)															// 搜索不到的时候返回npos，一般等于-1
 	{
 		std::cout << "没有找到模板字符串" << std::endl;
