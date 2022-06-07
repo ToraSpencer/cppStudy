@@ -20,7 +20,6 @@ typedef int(__stdcall *f_funci)();
 // 调用静态库、动态库
 namespace TEST_LIBS
 {
-
 	// 调用静态库
 	/*
 	调用静态库配置：
@@ -115,7 +114,6 @@ namespace TEST_LIBS
 }
 
 
-
 // 读写配置文件config.ini
 namespace CONFIG
 {
@@ -132,7 +130,6 @@ namespace CONFIG
 		// 更新CString对象的长度。
 		sPath.ReleaseBuffer();
 		std::cout << "当前sPath的长度是：" << sPath.GetLength() << std::endl;
-
 
 		// 设置wcout的语言环境，缺少这一步打印中文会有错误。
 		std::wcout.imbue(std::locale(std::locale(), "", LC_CTYPE));
@@ -170,8 +167,6 @@ namespace CONFIG
 
 		// 宏MAX_PATH——微软系统最长路径的字节数(260)
 		std::cout << "MAX_PATH == " << MAX_PATH << std::endl;
-
-
 
 	}
 
@@ -319,7 +314,7 @@ namespace GENERAL_VCPP
 
 int main()
 {
-	MULTITHREAD::test1();
+	CONFIG::test0();
 
     return 0;
 }

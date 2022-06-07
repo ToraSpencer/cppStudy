@@ -269,8 +269,6 @@ namespace TEST_FILESTREAM
 	{
 		int year, month, day;
 	};
-
-
 }
 
 void stdlib_io_module::test1(void)
@@ -286,24 +284,22 @@ void stdlib_io_module::test1(void)
 	std::ofstream writeFile1("test1.xxx");
 	std::ofstream writeFile2("test2.xxx", std::ios_base::out|std::ios_base::binary);
 	std::ofstream writeTextFile("myText.txt", std::ios_base::out);
-	std::ifstream readFile1("test1.xxx");
+	std::ifstream readFile1("testTxt.txt");
 	std::ifstream readFile2("test2.xxx", std::ios_base::in|std::ios_base::binary);
 
 	std::string str1 = "hello world";
 	std::string str11;
 	int inum1 = 2019;
 	float fnum1 = 2019.4;
-	char str2[100];
+	char str2[512];
 
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test1: 使用ifstream, ofstream读写文件	" << std::endl;
 
 	// 1. fstream重载了!运算符，返回一个bool，用来判断文件句柄是否打开成功：
-	std::fstream testFile("E:/asdfasdfasdf.yuiu", std::ios_base::in);
+	std::fstream testFile("E:/一个不存在的文件.aaa", std::ios_base::in);
 	if (!testFile) 
-	{
 		std::cout << "文件句柄testFile打开失败。" << std::endl;
-	}
 
 
 	// 2. 写二进制文件
@@ -327,31 +323,30 @@ void stdlib_io_module::test1(void)
 	writeFile2.write(reinterpret_cast<char*>(&dt), sizeof(dt));
 	writeFile2.close();
 
-	
+
 	// 3. 写文本文件
 	writeTextFile<< str1<<inum1<<fnum1;
 	
-
 
 	// 4. 读文件：
 
 	//		4.1 getline()方法——从流对象中读取数据存储到字符串。
 	/*
-		basic_istream& getline( char_type* s, 
+		basic_istream& getline( 
+							char_type* s, 
 							std::streamsize count 
-							);
-					
+							);		
 	*/
-	readFile1.getline(str2,30);
-	std::ifstream readTextFile("myText.txt", std::ios_base::in);
-	readTextFile>>str11;		// 直接用输入流运算符
-	std::cout << str2 << std::endl;
+	std::cout << "循环调用getline()从文本文件中读取每一行：" << std::endl;
+	while (readFile1.getline(str2, 512))		// 只要可以读到文件内容（包括空行），getline()返回值就一直是True(internal state flag)；
+		std::cout << str2 << std::endl;				// 如果读取失败，那么会抛出相对应的异常。
 	readFile1.close();
-
+	std::cout << std::endl;
 
 	//		4.2 read()方法————二进制文件中读取数据。
 	/*
-		basic_istream& read( char_type* s,					接收读取数据的变量的头部指针，强转为char*	
+		basic_istream& read( 
+							char_type* s,					接收读取数据的变量的头部指针，强转为char*	
 						   std::streamsize count			读取输入的字节数。
 							);
 	*/
@@ -359,7 +354,6 @@ void stdlib_io_module::test1(void)
 	readFile2.read(reinterpret_cast<char*>(&dt_input), sizeof(dt_input));
 	std::cout << "日期是"<< dt_input.year << "-" << dt_input.month << "-"<< dt_input.day << std::endl;
 	readFile2.close();
-
 }	
 
 
@@ -377,16 +371,14 @@ void stdlib_io_module::test2(void)
 	std::cout << "输入的整数是：" << numi1 << std::endl;
 	std::cout << std::endl << std::endl;
 	
-	
 
 	// cin.get()————类似于>>，但是>>拒绝接受空格，get()可以
 	setbuf(stdin, NULL);					// 清空缓冲区
 	std::cout << "请输入一段字符串，以q结束：" << std::endl;
 	char ch;
 	while ((ch = std::cin.get()) != 'q')
-	{
 		std::cout.put(ch);
-	}
+
 	setbuf(stdin, NULL);					// 清空缓冲区
 	std::cin.clear();
 	std::cout << std::endl << std::endl;
@@ -399,8 +391,6 @@ void stdlib_io_module::test2(void)
 	std::cin.clear();
 	setbuf(stdin, NULL);					// 清空缓冲区
 	std::cout << "输入的字符串为："<< str << std::endl;
-
-
 
 }
 
@@ -426,12 +416,10 @@ void stdlib_io_module::test3(void)
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test3: string流" << std::endl;
 
-
 	// string流对象实现的toString函数：
 	int numi1 = 999;
 	std::string str = toString(numi1);
 	std::cout << str << std::endl;
-
 
 	std::stringstream ss;
 	// 字符串拷贝、拼接、格式化等工作都可以通过sstream来实现，比C语言中方便。

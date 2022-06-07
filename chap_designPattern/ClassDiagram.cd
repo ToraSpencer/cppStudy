@@ -1,0 +1,389 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PROXY_PATTERN_AS1::play" Collapsed="true">
+    <Position X="12.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAIAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PROXY_PATTERN_AS1::player" Collapsed="true">
+    <Position X="9.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAIAAAAAAAAAAABAAAAAAAABAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PROXY_PATTERN_AS1::proxyOrdinaryPlayer" Collapsed="true">
+    <Position X="11.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAIAAAAAIAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PROXY_PATTERN_AS1::proxyVIPplayer" Collapsed="true">
+    <Position X="13.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAIAAAAAIAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PROXY_PATTERN_AS1::proxyPlatinicVIPplayer" Collapsed="true">
+    <Position X="16" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAIAAAAAIAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PROXY_FACTORY::NM_COMMON::VObjRef" Collapsed="true">
+    <Position X="3.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PROXY_FACTORY::NMALG_MESHSIMPLIFY::VCMeshSimplify" Collapsed="true">
+    <Position X="3.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABCAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PROXY_FACTORY::NMALG_MESHRAYINTERSECTION::VSMeshRayIntersection" Collapsed="true">
+    <Position X="3.5" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAEAAAAAAAAE=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PROXY_FACTORY::NMALG_CUTPATHHPGEN::VSCutpathhpgen" Collapsed="true">
+    <Position X="0.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAIAABAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PROXY_FACTORY::NMALG_OBJECTCONTAINER::VObjManager" Collapsed="true">
+    <Position X="23.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAIAAAAAAAAAIAgABAAAAICAAAAAAIAAAAAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PROXY_FACTORY::NMALG_OBJECTCONTAINERPROXY::VCProxy" Collapsed="true">
+    <Position X="22" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAIACAAAAAAAAAAAAgAIAAAAAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SIMPLE_SINGLETON::taskManager" Collapsed="true">
+    <Position X="23.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAACAAAQAAAAAIAAAAAA=</HashCode>
+      <FileName>designPattern_单例模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MEYERS_SINGLETON::taskManager" Collapsed="true">
+    <Position X="18.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAAAAQAAAAAIAAAAAA=</HashCode>
+      <FileName>designPattern_单例模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SIMPLE_FACTORY::Shoes" Collapsed="true">
+    <Position X="7.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SIMPLE_FACTORY::NiKeShoes" Collapsed="true">
+    <Position X="3.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SIMPLE_FACTORY::AdidasShoes" Collapsed="true">
+    <Position X="8.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SIMPLE_FACTORY::LiNingShoes" Collapsed="true">
+    <Position X="10.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SIMPLE_FACTORY::ShoesFactory" Collapsed="true">
+    <Position X="22" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ABSTRACT_FACTORY::Clothe" Collapsed="true">
+    <Position X="8.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAgAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ABSTRACT_FACTORY::NiKeClothe" Collapsed="true">
+    <Position X="8.5" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ABSTRACT_FACTORY::Shoes" Collapsed="true">
+    <Position X="23.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ABSTRACT_FACTORY::NiKeShoes" Collapsed="true">
+    <Position X="6" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ABSTRACT_FACTORY::Factory" Collapsed="true">
+    <Position X="12" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAABAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ABSTRACT_FACTORY::NiKeProducer" Collapsed="true">
+    <Position X="12" Y="12.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TEMPLATE_FACTORY::Shoes" Collapsed="true">
+    <Position X="18.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TEMPLATE_FACTORY::NiKeShoes" Collapsed="true">
+    <Position X="1.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TEMPLATE_FACTORY::Clothe" Collapsed="true">
+    <Position X="18.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAgAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TEMPLATE_FACTORY::UniqloClothe" Collapsed="true">
+    <Position X="10.75" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TEMPLATE_FACTORY::AbstractFactory&lt;AbstractProduct_t&gt;" Collapsed="true">
+    <Position X="9" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TEMPLATE_FACTORY::ConcreteFactory&lt;AbstractProduct_t, ConcreteProduct_t&gt;" Collapsed="true">
+    <Position X="9" Y="12.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FACTORY_SINGLETON::Shoes" Collapsed="true">
+    <Position X="20.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FACTORY_SINGLETON::NiKeShoes" Collapsed="true">
+    <Position X="12.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FACTORY_SINGLETON::Clothe" Collapsed="true">
+    <Position X="20.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAgAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FACTORY_SINGLETON::UniqloClothe" Collapsed="true">
+    <Position X="6.25" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FACTORY_SINGLETON::IProductRegistrar&lt;ProductType_t&gt;" Collapsed="true">
+    <Position X="6" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAgAAAAAAE=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FACTORY_SINGLETON::ProductFactory&lt;ProductType_t&gt;" Collapsed="true">
+    <Position X="22" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAACAAAAAAAAAAAAIAAAAQAAgCAAAACA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FACTORY_SINGLETON::ProductRegistrar&lt;ProductType_t, ProductImpl_t&gt;" Collapsed="true">
+    <Position X="6" Y="12.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="STRATEGY_PATTERN_AS1::welcomeScreen" Collapsed="true">
+    <Position X="2.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>designPattern_策略模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="STRATEGY_PATTERN_AS1::welcomeEng" Collapsed="true">
+    <Position X="1.25" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>designPattern_策略模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="STRATEGY_PATTERN_AS1::welcomeChi" Collapsed="true">
+    <Position X="3.5" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>designPattern_策略模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="STRATEGY_PATTERN_AS1::television" Collapsed="true">
+    <Position X="20.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAFAAAAAAAAgAAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_策略模式.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="PROXY_FACTORY::IVObject" Collapsed="true">
+    <Position X="6.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PROXY_FACTORY::NM_COMMON::IVObjRef" Collapsed="true">
+    <Position X="3.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PROXY_FACTORY::NMALG_MESHSIMPLIFY::IVMeshSimplify" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PROXY_FACTORY::NMALG_MESHRAYINTERSECTION::IVMeshRayIntersection" Collapsed="true">
+    <Position X="6.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PROXY_FACTORY::NMALG_CUTPATHHPGEN::IVCutpathhpgen" Collapsed="true">
+    <Position X="6.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="chap_designPattern" Collapsed="true">
+    <Position X="18.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAgAAAAAAAQAAAAgAAAAAAA=</HashCode>
+      <FileName>chap_designPattern.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="designPattern_proxy_module" Collapsed="true">
+    <Position X="22" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAACAAACAAAAAAABQAAAQAAAoAAAAAAIA=</HashCode>
+      <FileName>designPattern_代理模式.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="designPattern_singleton_module" Collapsed="true">
+    <Position X="23.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAAQAACAAAAAAABQAAAQAAAoAAAAAAIA=</HashCode>
+      <FileName>designPattern_单例模式.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="designPattern_factory_module" Collapsed="true">
+    <Position X="20.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACBAAAAAAAAAACAAAAAAABQAAAQAAAoAAAAAAIA=</HashCode>
+      <FileName>designPattern_工厂模式.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="designPattern_strategy_module" Collapsed="true">
+    <Position X="18.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAAAAACAAAAAAABQAAAQAAAoAAAIAAIA=</HashCode>
+      <FileName>designPattern_策略模式.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="PROXY_FACTORY::NMALG_OBJECTCONTAINER::E_OBJ_TYPE" Collapsed="true">
+    <Position X="20.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_代理模式.cpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="SIMPLE_FACTORY::SHOES_TYPE" Collapsed="true">
+    <Position X="23.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAQAAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>designPattern_工厂模式.cpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="STRATEGY_PATTERN_AS1::language" Collapsed="true">
+    <Position X="22" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>designPattern_策略模式.cpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DESIGNPATTERN_MODULE" Collapsed="true">
+    <Position X="18.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAgAABAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>chap_designPattern.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Microsoft YaHei UI" Size="8.83" />
+</ClassDiagram>

@@ -50,9 +50,7 @@
 virtualModule* basicTypes_strings_module::getInstance()		// 线程不安全的单例模式
 {
 	if (nullptr != p_moduleIns)
-	{
 		delete p_moduleIns;
-	}
 	p_moduleIns = new basicTypes_strings_module;
 	return p_moduleIns;
 }
@@ -136,7 +134,7 @@ void basicTypes_strings_module::test1(void)
 
 
 	// 2. 操作多个元素的接口：insert, replace, substr, append
-	str1 = str2.substr(2,4);
+	str1 = str2.substr(2,4);		// 参数为起止字符的索引，是闭区间。
 	str2.replace(3, 2, "bcbcbc");
 	str3.insert(6, "new ");			// 在第6个字符后面插入，“第六”是指从“第一“开始数
 	std::cout << "\t操作多个元素的接口：insert, replace, sub_str, append, clear" << std::endl;
@@ -154,14 +152,10 @@ void basicTypes_strings_module::test1(void)
 	std::cout << "\tstr1 == " << str1 << std::endl;
 	std::cout << std::endl << std::endl;
 
-	
-	// getline()
-
 	// 4. 迭代器接口：begin, cbegin(C++11), rbegin(C++11), crbegin(C++11)...
 	std::cout << "\t使用反向迭代器，反向打印字符串："<< std::endl;
 	for_each(str3.rbegin(), str3.rend(), disp<char>);
 	std::cout << std::endl << std::endl;
-
 
 	// 5. 1 字符串转换为其他类型std::stoi(), std::stol(), std::stoll(), std::stof() ———— C风格字符串、字符串、宽字符串转为数值(c++11)：
 	char* cstr = "123";
@@ -190,7 +184,6 @@ void basicTypes_strings_module::test1(void)
 	std::cout << num6 << std::endl;
 	std::cout << std::endl << std::endl;
 
-
 	// 5.2 其他类型转换为字符串：a. 使用stringstream实现； b. std::to_string()和std::to_wstring()——数值转换为字符串（C++11）
 	str1 = std::to_string(321);
 	str2 = std::to_string(987654321);
@@ -202,6 +195,8 @@ void basicTypes_strings_module::test1(void)
 
 	// 6. 子串操作：
 	str1 = "asdfhjkl12345";
+
+	//		substr()
 	str2 = str1.substr(3, 4);
 	std::cout << str2 << std::endl;
 	str2 = "9999";
@@ -278,8 +273,6 @@ void basicTypes_strings_module::test3(void)
 		puts("\tTyping and printing mode exited.");
 
 
-
-
 		char string1[50] = "hello ";
 		char string2[] = "world ";
 		char string3[20];
@@ -301,7 +294,6 @@ void basicTypes_strings_module::test3(void)
 		
 		*/
 		strcpy(string3, string1);	
-
 
 
 		//			int strcmp(str1, str2)，若相等返回0；若不相等，比较第一个不相等的字符的ASCII码，左<右的话返回负数
@@ -421,24 +413,16 @@ void basicTypes_strings_module::test5(void)
 	//					size_type——std::string和vector定义的类型，是表示容器容量的无符号整型数，
 	std::string::size_type num = str1.find("github", 0);							// 第二个参数是搜索开始的位置。
 	if (num == std::string::npos)															// 搜索不到的时候返回npos，一般等于-1
-	{
 		std::cout << "没有找到模板字符串" << std::endl;
-	}
 	else
-	{ 
 		std::cout << "找到模板字符串，位置是" << num << std::endl;
-	}
 
 
 	//			std::string类的find_first_of()和find_last_of()方法——查找字符或子串第一次、最后一次出现的位置
 	std::string::size_type num1 = str1.find_first_of("asd");
 	std::string::size_type num2 = str1.find_last_of("asd");
 	if (num1 != num2)			
-	{
 		std::cout << "子串asd出现了不止一次" << std::endl;				// 可以用这种方法来判断子串在目标字符串中出现的次数
-	}
-
-
 }
 
 

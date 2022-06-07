@@ -7,35 +7,38 @@
 #include "designPattern_策略模式.h"
 
 
-
 /*
 	和工厂模式的区别：
 			核心在于：在策略调用者和策略之间加了一层抽象层——策略接口类strategy。
 			策略的调用有了统一的形式——策略调用者使用strategy指针，该指针是多态的，具体要看指向的是哪个策略实例。
-			策略本质上是策略功能类的对象，继承了strategy接口，具体的算法代码都封装在类方法中。这样可以很方便地扩展，有新的策略需要加入的话，只需要继承strategy接口新增一个子类就可以了。
+			策略本质上是策略功能类的对象，继承了strategy接口，具体的算法代码都封装在类方法中。
+			这样可以很方便地扩展，有新的策略需要加入的话，只需要继承strategy接口新增一个子类就可以了。
 
 */
+
 
 namespace STRATEGY_PATTERN_AS1
 {
 	enum language { english, chinese };
 
-	class welcomeScreen				// 展示欢迎屏幕——策略接口
+	// 展示欢迎屏幕——策略接口
+	class welcomeScreen				
 	{
 	public:
-		virtual void welcome() = 0;
+		virtual void welcome() = 0;			// 具体的不同的策略代码，都写在该方法的实现中。
 	};
 
-	class welcomeEng : public welcomeScreen				// 展示英文欢迎屏幕——策略功能类
+	// 展示英文欢迎屏幕——策略功能类
+	class welcomeEng : public welcomeScreen				
 	{
 		virtual void welcome() override
 		{
 			std::cout << "nothing is impossible!" << std::endl;
 		}
-
 	};
 
-	class welcomeChi : public welcomeScreen				// 展示中文欢迎屏幕——策略功能类
+	// 展示中文欢迎屏幕——策略功能类
+	class welcomeChi : public welcomeScreen				
 	{
 		virtual void welcome() override
 		{
@@ -43,12 +46,12 @@ namespace STRATEGY_PATTERN_AS1
 		}
 	};
 
+
 	class television		
 	{
 	private:
 		welcomeScreen* pw;
 		television() = default;					// 禁用无参构造，实例化一个telivision的时候必须指定语言。
-
 
 	public:
 
@@ -88,9 +91,8 @@ namespace STRATEGY_PATTERN_AS1
 virtualModule* designPattern_strategy_module::getInstance()		// 线程不安全的单例模式
 {
 	if (nullptr != p_moduleIns)
-	{
 		delete p_moduleIns;
-	}
+
 	p_moduleIns = new designPattern_strategy_module;
 	return p_moduleIns;
 }
@@ -105,12 +107,11 @@ void designPattern_strategy_module::test0()
 	welcomeScreen* pws = nullptr;
 	pws = new welcomeChi();
 
-	television tl(pws);			// telivision是策略调用者。
+	television tl(pws);					// telivision是策略调用者。
 	tl.showWelcome();
 
 	tl.setLanguage(english);
 	tl.showWelcome();
-
 }
 
 

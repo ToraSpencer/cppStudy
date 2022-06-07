@@ -23,10 +23,10 @@ namespace SIMPLE_SINGLETON
 	class taskManager
 	{
 	private:
-		static taskManager* tm_instance;		// 唯一实例，数据实体分配在堆上。
-		taskManager() = default;						// 构造函数都设为私有的。
+		static taskManager* tm_instance;				// 唯一实例，数据实体分配在堆上。
+		taskManager() = default;								// 构造函数都设为私有的。
 		taskManager(const taskManager&) {}				// 如果不写的话，则会生成public的默认拷贝构造函数，外部可以进行拷贝构造。
-		~taskManager() = default;						// 同上。
+		~taskManager() = default;							// 同上。
 
 	public:
 		static taskManager* getInstance()
@@ -35,12 +35,9 @@ namespace SIMPLE_SINGLETON
 			{
 				tm_instance = new taskManager;
 				std::cout << "生成了一个任务管理器实例。" << std::endl;
-
 			}
 			else
-			{
 				std::cout << "已有任务管理器实例，返回其指针。" << std::endl;
-			}
 			return tm_instance;
 		}
 	};
@@ -74,9 +71,8 @@ namespace MEYERS_SINGLETON
 virtualModule* designPattern_singleton_module::getInstance()		// 线程不安全的单例模式
 {
 	if (nullptr != p_moduleIns)
-	{
 		delete p_moduleIns;
-	}
+
 	p_moduleIns = new designPattern_singleton_module;
 	return p_moduleIns;
 }
