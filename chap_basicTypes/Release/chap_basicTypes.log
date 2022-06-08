@@ -1,8 +1,1 @@
-﻿  basicTypes_c风格字符串、string、wstring.cpp
-    正在创建库 G:\gitRepositories\cppStudy\Release\chap_basicTypes.lib 和对象 G:\gitRepositories\cppStudy\Release\chap_basicTypes.exp
-  正在生成代码
-  4 of 692 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
-  已完成代码的生成
-  chap_basicTypes.vcxproj -> G:\gitRepositories\cppStudy\Release\chap_basicTypes.dll
+﻿  chap_basicTypes.vcxproj -> G:\gitRepositories\cppStudy\Release\chap_basicTypes.dll

@@ -135,13 +135,26 @@ void STL_linear_container_module::test1(void)
 	std::list<int> li1{ 1,2,3,4,5,4,6,7,8,9,4 };
 	std::deque<int> di1{ 1,2,3,4,5,4,6,7,8,9,4 };
 
-	// 增——insert()方法插入元素
+	// 增——insert()方法插入元素，可以插入单个，也可以插入一定范围的所有元素；
+	std::cout << "insert()方法——" << std::endl;
 	auto iter1 = vi1.begin();
 	iter1++;
 	iter1 = vi1.insert(iter1, 999);						// 在当前迭代器指向的元素之前插入新元素；若成功，则返回插入新元素的迭代器；
 	traverseSTL(vi1, disp<int>);
 	std::cout << "*iter1 == " << *iter1 << std::endl;
-	
+
+	std::vector<int> vec1{ 1, 2, 3 };
+	std::vector<int> vec2{ 4, 5, 6, 7 };
+	std::vector<int> vec12, vec21, vec12rev;
+	vec12 = vec1; vec21 = vec1; vec12rev = vec1;
+	vec12.insert(vec12.end(), vec2.begin(), vec2.end());
+	vec21.insert(vec21.begin(), vec2.begin(), vec2.end());				// 可以在任意位置插入；
+	vec12rev.insert(vec12rev.end(), vec2.rbegin(), vec2.rend());		// 可以输入反向迭代器反向插入元素；
+	traverseSTL(vec12, disp<int>);			// 1234567
+	traverseSTL(vec21, disp<int>);			// 4567123 
+	traverseSTL(vec12rev, disp<int>);			// 1237654
+	std::cout << std::endl << std::endl;
+
 	//		数组区间拷贝到顺序表STL容器——vector中
 	int arri[] = { 1,2,3,4,5,6,77,88,999 };
 	std::vector<int> vi2(9);
@@ -172,9 +185,7 @@ void STL_linear_container_module::test1(void)
 			iter = di1.erase(iter);		// 获得被删除元素下一个元素的迭代器
 		}
 		else
-		{
 			++iter;
-		}
 	}
 	traverseSTL(di1, disp<decltype(*di1.begin())>);
 
@@ -341,6 +352,5 @@ void STL_linear_container_module::test6(void)
 	std::cout << str << std::endl;
 	std::fstream file(str, std::ios::out);
 	file.close();
-
 }
 
