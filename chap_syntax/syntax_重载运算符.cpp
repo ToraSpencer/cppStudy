@@ -24,9 +24,7 @@
 virtualModule* syntax_overloaded_operator_module::getInstance()		// 线程不安全的单例模式
 {
 	if (nullptr != p_moduleIns)
-	{
 		delete p_moduleIns;
-	}
 	p_moduleIns = new syntax_overloaded_operator_module;
 	return p_moduleIns;
 }
@@ -100,9 +98,7 @@ namespace OVERLOADED_OPERATOR_EXAMPLE1
 
 		// 若复数的虚部不为0，抛出异常，类型转换失败。
 		if (this->imag > EPS || this->imag < -EPS)			// 判断一个浮点数是否为0的正确方法
-		{
 			throw std::invalid_argument("imaginary part is not zero;");
-		}
 
 		temp = this->real;
 
@@ -120,13 +116,9 @@ namespace OVERLOADED_OPERATOR_EXAMPLE1
 	{
 		os << cc.real;
 		if (cc.imag >= 0)
-		{
 			os << " + ";
-		}
 		else
-		{
 			os << " - ";
-		}
 		os << "i" << cc.imag;
 
 		return os;

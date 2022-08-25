@@ -1,1 +1,52 @@
----- 编码 Matches (#count#) ----
+---- const_cast Matches (7 in 3 files) ----
+RANGE_FOR_LOOP::operator[] in syntax_基本语句、新增语句.cpp (G:\gitRepositories\cppStudy\chap_syntax) : 
+	{
+		return const_cast<MyArray&>(*this)[i];				// ？？？？
+	}
+
+
+RANGE_FOR_LOOP::begin in syntax_基本语句、新增语句.cpp (G:\gitRepositories\cppStudy\chap_syntax) : 
+	{
+		return const_cast<MyArray*>(this)->begin();
+	}
+
+
+RANGE_FOR_LOOP::end in syntax_基本语句、新增语句.cpp (G:\gitRepositories\cppStudy\chap_syntax) : 
+	{
+		return const_cast<MyArray*>(this)->end();			// end()指针转型成const指针
+	}
+
+
+syntax_类型转换.cpp (G:\gitRepositories\cppStudy\chap_syntax) line 31 : 
+
+					const_cast 
+								可以去除、增添变量的const属性，一般不会使用。
+
+					reinterpret_cast 
+syntax_类型转换.cpp (G:\gitRepositories\cppStudy\chap_syntax) line 58 : 
+
+// test0: const_cast
+void syntax_type_cast_module::test0(void)
+{
+	int  numi1 = 5;
+syntax_type_cast_module::test0 in syntax_类型转换.cpp (G:\gitRepositories\cppStudy\chap_syntax) : 
+
+	std::cout << "test0: const_cast" << std::endl;
+
+	pci1 = &numi1;											 			// const指针pci1指向numi1，是底层const。不可以通过pci1来修改numi1的值。
+	pi1 = const_cast<int*>(pci1);						 	 // 使用pci1给pi1赋值，但是使用const_cast移除了const属性。
+
+
+	*pi1 = 6;
+	std::cout << "\tpci1 = &numi1; pi1 = const_cast<int*>(pci1);	 *pi1 = 6; " << std::endl;
+	std::cout <<"\tnumi1 == " << numi1 << std::endl;
+
+}
+syntax_关键字.cpp (G:\gitRepositories\cppStudy\chap_syntax) line 103 : 
+
+	pi1 = const_cast<int*>(cpi1);							// 可以使用const_cast去除cpi1的const属性， pi1指向的位置可以修改：
+	pi1 = &numi2;
+	std::cout <<"\t\tpi1 = const_cast<int*>(cpi1); pi1 = &numi2; *pi1 == " << *pi1 << std::endl;
+
+
+	// 底层const：指针指向的数据是一个常量

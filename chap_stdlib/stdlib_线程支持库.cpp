@@ -11,7 +11,7 @@
 #include <cstdio>
 #include "stdlib_Ïß³ÌÖ§³Ö¿â.h"
 
-#define EPS 1e-10								//¶¨Òå·Ç³£Ğ¡µÄÒ»¸öÁ¿EPSilon£¬µ±¸¡µãÊı²»´óÓÚÕâ¸öÖµÊ±£¬ÊÓÎª0
+#define EPS 1e-10								// ¶¨Òå·Ç³£Ğ¡µÄÒ»¸öÁ¿EPSilon£¬µ±¸¡µãÊı²»´óÓÚÕâ¸öÖµÊ±£¬ÊÓÎª0
 #define PI 3.14159
 
 
@@ -59,9 +59,7 @@
 virtualModule* stdlib_thread_support_module::getInstance()		// Ïß³Ì²»°²È«µÄµ¥ÀıÄ£Ê½
 {
 	if (nullptr != p_moduleIns)
-	{
 		delete p_moduleIns;
-	}
 	p_moduleIns = new stdlib_thread_support_module;
 	return p_moduleIns;
 }
@@ -69,67 +67,17 @@ virtualModule* stdlib_thread_support_module::getInstance()		// Ïß³Ì²»°²È«µÄµ¥ÀıÄ
 
 
 void stdlib_thread_support_module::test0(void)
-{
-
-}
+{}
 
 
-// test1£º <ctime>¡ª¡ªC·ç¸ñµÄÊ±¼ä¡¢ÈÕÆÚ¹¤¾ß¡£
+// test1£º 
 void stdlib_thread_support_module::test1(void)
 {}
 
 
 // test2:
 void stdlib_thread_support_module::test2(void)
-{
-	using namespace std::chrono;
-
-	//Ñ­»·1£º
-	auto start = system_clock::now();
-
-	long int num = 10000000;
-	for (int i = 0; i != num; i++)
-	{
-		int* b = new int[10]();
-		delete[] b;
-	}
-
-	auto end = system_clock::now();
-	auto duration = duration_cast<microseconds>(end - start);
-	std::cout << "³ÌĞò1»¨·ÑÁË"
-		<< double(duration.count()) * microseconds::period::num / microseconds::period::den << "Ãë" << std::endl;
-
-
-	//Ñ­»·2
-	start = system_clock::now();
-
-	int num2 = num >> 1;
-	for (int i = 0; i != num2; i++) {
-		int* b = new int[10]();
-		delete[] b;
-	}
-	for (int i = num2; i != num; i++) {
-		int* b = new int[10]();
-		delete[] b;
-	}
-
-	end = system_clock::now();
-	duration = duration_cast<microseconds>(end - start);
-	std::cout << "³ÌĞò2»¨·ÑÁË"
-		<< double(duration.count()) * microseconds::period::num / microseconds::period::den << "Ãë" << std::endl;
-
-	//Ñ­»·3
-	start = system_clock::now();
-
-	//testfuc2(num);
-
-	end = system_clock::now();
-	duration = duration_cast<microseconds>(end - start);
-	std::cout << "³ÌĞò3»¨·ÑÁË"
-		<< double(duration.count()) * microseconds::period::num / microseconds::period::den << "Ãë" << std::endl;
-
-
-}
+{}
 
 
 void stdlib_thread_support_module::test3(void)

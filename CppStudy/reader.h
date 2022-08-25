@@ -9,7 +9,7 @@
 #include "chap_syntax/chap_syntax.h"
 #include "chap_function/chap_function.h"
 #include "chap_stdlib/chap_stdlib.h"
-#include "chap_exception/chap_exception.h"
+#include "chap_errorHandling/chap_errorHandling.h"
 #include "chap_DSA/chap_DSA.h"
 
 

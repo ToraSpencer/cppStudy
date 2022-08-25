@@ -1,5 +1,12 @@
 #include <iostream>
+#include <fstream>
+#include <vector>
 #include <string>
+#include <random>
+#include <functional>
+#include <algorithm>
+#include <numeric>
+
 #include "staticLib1.h"
 #include "dynamicLib1.h"
 
@@ -8,12 +15,64 @@
 #include <atlstr.h>		// 包含CString类。属于microsoft ATL(活动模板库avtive template library)
 
 
-
-
 using namespace std;
 
 typedef void (__cdecl *pfun)(void);
 typedef int(__stdcall *f_funci)();
+
+
+// 自定义计时器，使用WINDOWS计时API
+class tiktok
+{
+private:
+	tiktok() = default;
+	tiktok(const tiktok&) {}
+	~tiktok() = default;
+
+public:
+	DWORD startTik;
+	DWORD endTik;
+	unsigned recordCount;
+	std::vector<DWORD> records;
+
+	static tiktok& getInstance()
+	{
+		static tiktok tt_instance;
+		return tt_instance;
+	}
+
+	void start()
+	{
+		this->startTik = GetTickCount();
+		this->recordCount = 0;
+		this->records.clear();
+	}
+
+	void endCout(const char* str)
+	{
+		this->endTik = GetTickCount();
+		std::cout << str << endTik - startTik << std::endl;
+	}
+
+	bool endWrite(const char* fileName, const char* str)
+	{
+		this->endTik = GetTickCount();
+		std::ofstream file(fileName, std::ios_base::out | std::ios_base::app);
+		if (!file)
+			return false;
+
+		file << str << endTik - startTik << std::endl;
+		file.close();
+		return true;
+	}
+
+	void takeArecord()
+	{
+		this->records.push_back(GetTickCount());
+		recordCount++;
+	}
+};
+
 
 
 
@@ -248,7 +307,7 @@ namespace CONFIG
 // windows多线程
 namespace MULTITHREAD
 {
-	HANDLE hMutex = NULL;//互斥量
+	HANDLE hMutex = NULL;		//互斥量
 
 	DWORD WINAPI Fun(LPVOID lpParamter)
 	{
@@ -258,10 +317,11 @@ namespace MULTITHREAD
 			WaitForSingleObject(hMutex, INFINITE);
 			cout << "A Thread Fun Display!" << endl;
 			Sleep(100);
+
 			//释放互斥量锁
 			ReleaseMutex(hMutex);
 		}
-		return 0L;//表示返回的是long型的0
+		return 0L;			//表示返回的是long型的0
 
 	}
 
@@ -272,28 +332,53 @@ namespace MULTITHREAD
 
 		//关闭线程句柄
 		if (hThread != nullptr) 
-		{
 			CloseHandle(hThread);
-		}
 	
 		//主线程的执行路径
 		for (int i = 0; i < 10; i++)
 		{
 			//请求获得一个互斥量锁
 			if (hMutex != nullptr) 
-			{
 				WaitForSingleObject(hMutex, INFINITE);
-			}
 			
 			cout << "Main Thread Display!" << endl;
 			Sleep(100);
 
 			//释放互斥量锁
 			if (hMutex != nullptr)
-			{
 				ReleaseMutex(hMutex);
-			}
 		}
+	}
+
+
+
+	void test2() 
+	{
+		// 生成一个大容量的向量，存放随机数：
+		std::vector<float> numVec(10000, 0);
+		std::vector<float> randVec(10000);
+		numVec[0] = 0.1;
+		unsigned elemCount = numVec.size();
+		std::default_random_engine e;								// 随机数生成器的引擎对象
+		std::uniform_real_distribution<float> URD_f(0, 1);
+		tiktok& tt = tiktok::getInstance();
+
+		// 单线程耗时为9s+
+		std::cout << "开始：" << std::endl;
+		tt.start();
+		for (unsigned i = 0; i < elemCount; ++i)		// 生成一组随机数，求和，赋值给numVec中的元素；
+		{
+			for (auto& num : randVec)
+				num = URD_f(e);
+			numVec[i] = std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0));
+		}
+		tt.endCout("耗时：");
+
+
+		// 多线程并行：
+
+
+		std::cout << "finished." << std::endl;
 	}
 }
 
@@ -301,7 +386,6 @@ namespace MULTITHREAD
 // 暂时无法分类
 namespace GENERAL_VCPP 
 {
-
 	// 查看环境信息
 	void test0() 
 	{
@@ -314,7 +398,9 @@ namespace GENERAL_VCPP
 
 int main()
 {
-	CONFIG::test0();
+	// CONFIG::test0();
+
+	MULTITHREAD::test2();
 
     return 0;
 }

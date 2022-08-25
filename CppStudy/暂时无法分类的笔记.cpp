@@ -50,19 +50,6 @@
 
 
 
-// 断言
-/*
-1. 基本信息：
-函数原型——void assert( int expression );
-作用——简单地说是如果它的条件返回错误，则终止程序执行
-具体过程——先计算表达式 expression，如果其值为假（即为0），那么它先向stderr打印一条出错信息，然后通过调用 abort 来终止程序运行。
-
-2. assert是用来避免显而易见的错误的，而不是处理异常的。
-错误和异常是不一样的，错误是不应该出现的，异常是不可避免的。
-c语言异常可以通过条件判断来处理，其它语言有各自的异常处理机制。
-
-
-*/
 
 
 
@@ -137,11 +124,7 @@ DLL中的代码是以API函数形式出现的
 */
 
 
-
-
-
-
-
+ 
 // test0: 大小端问题
 static void test0() 
 {
@@ -155,9 +138,7 @@ static void test0()
         printf("%x\t", *pc);
 
         if (i <= 3)
-        {
             pc++;
-        }
     }
  
 
@@ -168,7 +149,6 @@ static void test0()
 static void test2()
 {
 	std::vector<int> vec;
-
 	unsigned int num = 0;
 
 	for (int i = 10; i >= num; i--)			// i会隐式转换为无符号整形，减到0后执行--操作会变成4294967295，循环依然会继续。
@@ -176,16 +156,11 @@ static void test2()
 		vec.push_back(i);
 
 		if (vec.size() > 15)
-		{
 			break;
-		}
 	}
 
 	for (const auto& elem : vec)
-	{
 		std::cout << elem << ",  ";
-	}
-
 }
 
 
@@ -197,43 +172,33 @@ namespace RECURSION
 	static unsigned long factorial(unsigned int num)
 	{
 		//		递归递推：factorial(n) == n*factorial(n-1)
+ 
 		//		递归终止条件：factorial(1) == 1;	factorial(0) == 1;
 
 		unsigned long result;
 
 		if ((1 == num) || (0 == num))
-		{
 			result = 1;
-		}
 		else
-		{
-			//		 尾递归：
-			//				递归最简单的情形。
-			//				可以很容易地改写成循环的形式。
-			result = num * factorial(num - 1);
-		}
+			result = num * factorial(num - 1);		// 尾递归：递归最简单的情形， 可以很容易地改写成循环的形式。
 
 		return result;
-
 	}
 
 	// to_binary————将输入的十进制正整数转换为二进制数打印出来
 	static void to_binary(unsigned long num)
 	{
 		//		递归递推： to_binary(num) → to_binary(num/2)
+ 
 		//		递归终止条件： num == 0; num == 1;
 		int remind;
 
 		remind = num % 2;
 		if (num >= 2)
-		{
 			to_binary(num / 2);
-		}
 
 		putchar(remind ? '1' : '0');
-
 	}
-
 
 }
 
@@ -247,23 +212,6 @@ static void test0(void)
 	cout << factorial(num) << endl;
 
 	cout << to_binary(num) << endl;
-
 }
 
-
-
-// test0: 断言的基本使用
-static void test0(void)
-{
-
-	cout << "\n\n\n\n" << endl;
-	cout << "test0: 断言的基本使用" << endl;
-
-	int flag;
-	cout << "please input a integer" << endl;
-	cin >> flag;
-
-	assert(flag);
-	cout << "flag >0" << endl;			// 如果输入的值等于0的话，程序不会运行到这里，在这之前就被abort了。
-
-}
+ 

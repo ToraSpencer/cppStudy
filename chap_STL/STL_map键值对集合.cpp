@@ -77,15 +77,9 @@ struct person
 void dispPerson(person& p)
 {
 	if(p.age)
-	{
 		std::cout << p.name << ", male, age: " << p.age << ", career: " << p.job << std::endl;
-	}
 	else
-	{
 		std::cout << p.name << ", female, age: " << p.age << ", career: " << p.job << std::endl;
-	}
-	
-	
 }
 
 

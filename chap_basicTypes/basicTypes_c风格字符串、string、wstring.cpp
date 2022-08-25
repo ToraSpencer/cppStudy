@@ -56,8 +56,6 @@ virtualModule* basicTypes_strings_module::getInstance()		// 线程不安全的单例模式
 }
 
 
-
-
 //	test0: C++中的字符串（std::string对象），C中的字符串（char数组），以及C/C++中的字符串字面量。
 void basicTypes_strings_module::test0(void)
 {
@@ -105,7 +103,6 @@ void basicTypes_strings_module::test0(void)
 }
 
 
-
 // test1: 字符串常用的API
 void basicTypes_strings_module::test1(void)
 {
@@ -116,14 +113,10 @@ void basicTypes_strings_module::test1(void)
 	std::string str2(9,'a');				// 若干个相同字符构造的std::string
 	std::string str3("hello world");		// 字符串字面量构造的std::string
 
-
 	// 1. 访问单个元素的接口：operator[], at(), front(), back()
 	std::cout << "\t访问单个元素的接口：operator[], at(), front(), back():" << std::endl;
 	std::cout << "\tstr2[2] == " << str2[2] << std::endl;
-	try
-	{
-		
-	}
+	try{ }
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << '\n';
@@ -196,17 +189,21 @@ void basicTypes_strings_module::test1(void)
 	// 6. 子串操作：
 	str1 = "asdfhjkl12345";
 
-	//		substr()
-	str2 = str1.substr(3, 4);
+	// substr(pos, count)——提取子串
+	str2 = str1.substr(3, 4);			// 前闭后开区间；
 	std::cout << str2 << std::endl;
 	str2 = "9999";
 	str1.erase(3, 4);
 	str1.insert(3, str2);
-	std::cout << str1 << std::endl;
+	std::cout << "str1 == " << str1 << std::endl;
 
+	// find_first_of()——查找子串：
+	unsigned index = str1.find_first_of("123");
+	str2 = str1.substr(0, index);
+	str3 = str1.substr(index, str1.size() - index);
+	std::cout << "str2 == " << str2 << std::endl;
+	std::cout << "str3 == " << str3 << std::endl;
 }
-
-
 
 
 // test2: std::string对象的输入输出
@@ -229,8 +226,6 @@ void basicTypes_strings_module::test2(void)
 	std::getline(std::cin, number, '#');
 	std::cout << "您输入的号码是：" << number << std::endl;
 }
-
-
 
  
 // test3: C语言中的字符串的API
@@ -330,7 +325,6 @@ void basicTypes_strings_module::test3(void)
 }
  
 
-
 // test4: 字符编码
 void basicTypes_strings_module::test4(void)
 {
@@ -395,7 +389,6 @@ void basicTypes_strings_module::test4(void)
 }
 
 
-
 // test5: 常用算法C++实现
 void basicTypes_strings_module::test5(void)
 {
@@ -424,7 +417,6 @@ void basicTypes_strings_module::test5(void)
 	if (num1 != num2)			
 		std::cout << "子串asd出现了不止一次" << std::endl;				// 可以用这种方法来判断子串在目标字符串中出现的次数
 }
-
 
 
 // test6: 宽字符wchar_t，宽字符串wstring
@@ -502,4 +494,48 @@ void basicTypes_strings_module::test6(void)
 	std::wcout << L"当前运行模块所在目录为："  << modulePath << std::endl;
 	std::cout << wcscmp(tail, TEXT("\\mytest0.exe")) << std::endl;
 
+}
+
+
+// test7: application: 使用字符串转换接口std::stoi(), std::stof(), std::stod()等来提取字符串中的所有数值；
+void basicTypes_strings_module::test7(void)
+{
+	std::cout << "\n\n\n\n" << std::endl;
+	std::cout << "test7: application: 使用字符串转换接口std::stoi(), std::stof(), std::stod()等来提取字符串中的所有数值。" << std::endl;
+
+	// to be optimized——出现非小数点意义的"."会有bug;
+	std::string str{"asdf123, (5.12, 6.99)。。。iuio91*"};
+	std::list<std::string> numStrs;
+	std::string tmpStr;
+
+	// 1. 提取字符串中所有纯数值子串：
+	for (const auto& ch: str) 
+	{
+		if (ch >= '0' && ch <= '9' || ch == '.')
+			tmpStr.push_back(ch);
+		else
+		{
+			if (tmpStr.size() > 0)
+			{
+				numStrs.push_back(tmpStr);
+				tmpStr.clear();
+			}
+		}
+	}
+
+	// 2. 纯数值子串转换为double
+	std::vector<double> numVec;
+	numVec.reserve(numStrs.size());
+	for (const auto& str : numStrs)
+	{
+		//	double	stod(const std::string& str, std::size_t* pos = nullptr);
+		double num = std::stod(str);
+		numVec.push_back(num);
+	}
+
+	std::cout << "input str == " << str << std::endl;
+	std::cout << "extracted numbers : " << std::endl;
+	traverseSTL(numVec, disp<double>);
+
+	std::cout << "test 7 finished." << std::endl;
 }

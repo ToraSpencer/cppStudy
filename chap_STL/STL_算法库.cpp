@@ -313,29 +313,19 @@ void STL_algorithm_module::test0(void)
     std::cout << "\n\n\n\n" << std::endl;
     std::cout << "test0：algorithm中一些常用的只读算法" << std::endl;
 
-
-
     // find()——容器中查找元素。
     pi = std::find(std::begin(iarr), std::end(iarr), 5);                                        // 返回查找元素的迭代器。
   
     if (pi)         // 若没找到相符元素，返回的指针是NULL
-    {
         std::cout << "\tthe number 5 is present in the int array iarr."<< std::endl;
-    }
     else 
-    {
         std::cout << "\tthe number 5 is not present in the int array iarr" << std::endl;
-    }
 
     iti = find(begin(vi), end(vi), 99);
     if (iti != vi.end())      // vec.end()表示vec最后一个元素后一个位置，可以认为是空位置。
-    {
         std::cout << "\tthe number -4 is present in the int vector vi." << std::endl;
-    }
     else
-    {
         std::cout << "\tthe number -4 is not present in the int vector vi." << std::endl;
-    }
     std::cout << std::endl;
 
 
@@ -350,13 +340,9 @@ void STL_algorithm_module::test0(void)
     // equal——比较容器中的元素
     flag = equal(vs.begin(),vs.end(), std::begin(sarr));
     if (flag)
-    {
         std::cout << "\telements from two containers are the same. " << std::endl;
-    }
     else 
-    {
         std::cout << "\telements from two containers are not the same." << std::endl;
-    }
     std::cout << std::endl;
 
 

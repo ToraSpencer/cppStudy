@@ -209,13 +209,9 @@ namespace COMPARER1
 			int i1 = static_cast<int>(num1);
 			int i2 = static_cast<int>(num2);
 			if (i1<i2)
-			{
 				return true;	// 返回true表示认为num1小于num2;
-			}
 			else
-			{
 				return false;
-			}
 		};
 	};
 
@@ -226,13 +222,9 @@ namespace COMPARER1
 		bool operator()(const int* pi1, const int* pi2) const
 		{
 			if (*pi1 < *pi2)
-			{
 				return true;
-			}
 			else
-			{
 				return false;
-			}
 		}
 	};
 

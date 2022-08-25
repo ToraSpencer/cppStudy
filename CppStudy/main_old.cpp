@@ -52,8 +52,8 @@ extern void set_fun_dataType_function_pointer(void);
 extern void set_fun_dataType_built_in_types(void);
 extern void set_fun_dataType_pointer(void);
 extern void set_fun_dataType_array(void);
-extern void set_fun_exception_basic(void);
-extern void set_fun_exception_std_exception(void);
+extern void set_fun_errorHandling_basic(void);
+extern void set_fun_errorHandling_std_exception(void);
 
 
 
@@ -95,8 +95,8 @@ extern void start_dataType_function_pointer(void);
 extern void start_dataType_built_in_types(void);
 extern void start_dataType_pointer(void);
 extern void start_dataType_array(void);
-extern void start_exception_basic(void);
-extern void start_exception_std_exception(void);
+extern void start_errorHandling_basic(void);
+extern void start_errorHandling_std_exception(void);
 
 
 
@@ -708,8 +708,8 @@ int main(int argc, char** argv)
 				cout << "**************************C++ EXCEPTION HANDLING MENU**********************" << endl;
 				cout << "Please input a number to choose a function setting plan:" << endl;
 				cout << "-1. Back to the previous interface" << endl;
-				cout << "0. exception_基本异常处理" << endl;
-				cout << "1. exception_标准异常" << endl;
+				cout << "0. errorHandling_基本异常处理" << endl;
+				cout << "1. errorHandling_标准异常" << endl;
 
 
 				inputTag = scanf("%d", &inputNum);
@@ -731,14 +731,14 @@ int main(int argc, char** argv)
 					break;
 				case 0:
 					reset_pfun();
-					set_fun_exception_basic();
-					start_exception_basic();
+					set_fun_errorHandling_basic();
+					start_errorHandling_basic();
 					break;
 
 				case 1:
 					reset_pfun();
-					set_fun_exception_std_exception();
-					start_exception_std_exception();
+					set_fun_errorHandling_std_exception();
+					start_errorHandling_std_exception();
 					break;
 
 

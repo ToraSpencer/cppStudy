@@ -17,18 +17,12 @@
 #include <cstdio>
 
 
-
-
 #ifdef linux
 #include <cstrubg>				// 需要使用stderror()函数
 #endif
 
-
-
 #define EPS 1e-10					//定义非常小的一个量EPSilon，当浮点数不大于这个值时，视为0
 #define PI 3.14159
-
-
 
 // 知识点
 /*
@@ -187,7 +181,6 @@
 */
 
 
-
 virtualModule* stdlib_io_module::getInstance()		// 线程不安全的单例模式
 {
 	if (nullptr != p_moduleIns)
@@ -198,7 +191,6 @@ virtualModule* stdlib_io_module::getInstance()		// 线程不安全的单例模式
 	return p_moduleIns;
 }
 
- 
 
 // test0: 控制输出格式：
 void stdlib_io_module::test0(void)
@@ -416,15 +408,16 @@ void stdlib_io_module::test3(void)
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test3: string流" << std::endl;
 
-	// string流对象实现的toString函数：
+	// 1. string流对象实现的toString函数：
 	int numi1 = 999;
 	std::string str = toString(numi1);
 	std::cout << str << std::endl;
 
 	std::stringstream ss;
-	// 字符串拷贝、拼接、格式化等工作都可以通过sstream来实现，比C语言中方便。
 
-	//		格式化字符串
+	// 2. 字符串拷贝、拼接、格式化等工作都可以通过sstream来实现，比C语言中方便。
+
+	//			格式化字符串
 	for (int i = 1; i < 10; i++) 
 	{
 		ss << "这是第" << i << "次循环";
@@ -432,7 +425,7 @@ void stdlib_io_module::test3(void)
 		ss.str("");					// 使用空字符串来替代oss流对象的底层字符串。
 	}
 
-	// string对象拼接
+	//			string对象拼接
 	std::string str1, str2;
 	str1 = "hahaha";
 	str2 = "wawawa";
@@ -441,7 +434,7 @@ void stdlib_io_module::test3(void)
 	ss.str("");
 	std::cout << str1 << std::endl << std::endl;;
 
-	// C风格的字符串拼接
+	//			C风格的字符串拼接
 	char cstr1[50] = "hahaha";
 	char cstr2[50] = "wawawa";
 	char cstr3[50] = "1";
@@ -454,6 +447,28 @@ void stdlib_io_module::test3(void)
 	ss.str("");
 	std::cout << cstr1 << std::endl;
 	std::cout << cstr3 << std::endl;
+
+	// 3. operator>>()返回布尔值，表示当前string流是否为空
+	ss.clear();
+	ss << "sadf";
+	ss << "dfdf,12;";
+	ss << "45oi^";
+	unsigned elemCount = 0;
+	std::list<char>chList;
+	char tmpCh = 0;
+	while (ss >> tmpCh)				// 逐个提取string流中的字符，直到取空为止；
+	{
+		chList.push_back(tmpCh);
+		elemCount++;
+	}
+	
+	str.clear();
+	str.reserve(chList.size());
+	for (const auto& ch : chList)
+		str.push_back(ch);
+	std::cout << "the input string is " << str << std::endl;
+	std::cout << "elemCount of the string stream is  " << elemCount << std::endl;
+
 }
 
 

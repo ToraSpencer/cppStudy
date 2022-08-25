@@ -19,5 +19,6 @@ public:
 	virtual void test4();
 	virtual void test5();
 	virtual void test6();
+	virtual void test7();
 };
 

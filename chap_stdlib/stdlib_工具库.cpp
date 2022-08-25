@@ -108,7 +108,58 @@ void stdlib_tools_module::test0()
 }
 
 
-void stdlib_tools_module::test1() {}
+// c++中的时间工具：
+void stdlib_tools_module::test1() 
+{
+	using namespace std::chrono;
+
+	//循环1：
+	auto start = system_clock::now();
+
+	long int num = 10000000;
+	for (int i = 0; i != num; i++)
+	{
+		int* b = new int[10]();
+		delete[] b;
+	}
+
+	auto end = system_clock::now();
+	auto duration = duration_cast<microseconds>(end - start);
+	std::cout << "程序1花费了"
+		<< double(duration.count()) * microseconds::period::num / microseconds::period::den << "秒" << std::endl;
+
+
+	//循环2
+	start = system_clock::now();
+
+	int num2 = num >> 1;
+	for (int i = 0; i != num2; i++)
+	{
+		int* b = new int[10]();
+		delete[] b;
+	}
+	for (int i = num2; i != num; i++)
+	{
+		int* b = new int[10]();
+		delete[] b;
+	}
+
+	end = system_clock::now();
+	duration = duration_cast<microseconds>(end - start);
+	std::cout << "程序2花费了"
+		<< double(duration.count()) * microseconds::period::num / microseconds::period::den << "秒" << std::endl;
+
+	//循环3
+	start = system_clock::now();
+
+	//testfuc2(num);
+
+	end = system_clock::now();
+	duration = duration_cast<microseconds>(end - start);
+	std::cout << "程序3花费了"
+		<< double(duration.count()) * microseconds::period::num / microseconds::period::den << "秒" << std::endl;
+
+}
 
 
 void stdlib_tools_module::test2() {}

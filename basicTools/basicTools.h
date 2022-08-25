@@ -86,17 +86,18 @@ void Write(const ElemType &e)
 }
 
 
-// 模块类的抽象基类
+// 模块类的基类
 struct virtualModule
 {
 protected:
-	virtual void test0() = 0;
-	virtual void test1() = 0;
-	virtual void test2() = 0;
-	virtual void test3() = 0;
-	virtual void test4() = 0;
-	virtual void test5() = 0;
-	virtual void test6() = 0;
+	virtual void test0() {}
+	virtual void test1() {}
+	virtual void test2() {}
+	virtual void test3() {}
+	virtual void test4() {}
+	virtual void test5() {}
+	virtual void test6() {}
+	virtual void test7() {}
 
 public:
 	static virtualModule* p_moduleIns;
@@ -197,10 +198,7 @@ public:
 	myString() = delete;
 	myString(const char* pc0) :pc(pc0) {}
 	myString(const myString& str);	// 应该自己实现拷贝构造函数、重载赋值运算符，以实现深拷贝。否则系统分配浅拷贝的拷贝构造函数。
-	
 
-	
-	
 	const char* c_str() const
 	{
 		return this->pc;

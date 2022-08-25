@@ -55,8 +55,8 @@ add_executable(CppStudy
         function_函数模板.cpp
         function_可变参数函数.cpp
         example.h
-        exception_基本异常处理.cpp
-        exception_标准异常.cpp
+        errorHandling_基本异常处理.cpp
+        errorHandling_标准异常.cpp
         UP_预处理指令.cpp
         UP_内存管理.cpp
 	 UP_断言.cpp

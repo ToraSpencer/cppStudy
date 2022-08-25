@@ -56,6 +56,9 @@ void virtualModule::run(unsigned testID)
 	case 6:
 		test6();
 		break;
+	case 7:
+		test7();
+		break;
 	default:
 		break;
 	}
