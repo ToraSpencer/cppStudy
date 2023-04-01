@@ -19,4 +19,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\创建动态库\dynamicLib1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\创建静态库\staticLib1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

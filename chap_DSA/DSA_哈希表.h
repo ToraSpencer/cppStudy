@@ -2,7 +2,7 @@
 
 
 #include "basicTools/basicTools.h"
-#pragma comment(lib, "./Release/basicTools.lib")
+
 
 
 struct DSA_hashed_list_module : public virtualModule

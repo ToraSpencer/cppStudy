@@ -2,7 +2,6 @@
 
 
 #include "basicTools/basicTools.h"
-#pragma comment(lib, "./Release/basicTools.lib")
 
 
 struct basicTypes_builtin_types_module : public virtualModule

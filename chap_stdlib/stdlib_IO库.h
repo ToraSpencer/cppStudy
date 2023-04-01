@@ -2,7 +2,7 @@
 
 
 #include "basicTools/basicTools.h"
-#pragma comment(lib, "./Release/basicTools.lib")
+
 
 
 struct stdlib_io_module : public virtualModule

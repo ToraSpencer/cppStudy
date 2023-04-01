@@ -2,7 +2,7 @@
 
 
 #include "basicTools/basicTools.h"
-#pragma comment(lib, "./Release/basicTools.lib")
+
 
 
 struct syntax_overloaded_operator_module : public virtualModule

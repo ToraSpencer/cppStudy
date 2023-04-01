@@ -93,13 +93,9 @@ void virtualChap::runTest(const unsigned testID)
 bool virtualChap::isNullModule() const
 {
 	if (nullptr == this->pm) 
-	{
 		return true;
-	}
 	else 
-	{
 		return false;
-	}
 }
 
 
@@ -158,9 +154,8 @@ void OBJReadFile(std::vector<VFVECTOR3>& vVerts, std::vector<VNVECTOR3UI>& vSurf
 	ifs.seekg(0, std::ios::end);
 	unsigned fileLen = (unsigned)ifs.tellg();
 	if (0 == fileLen)
-	{
 		return;
-	}
+
 	ifs.seekg(pos);     //   restore   saved   position   
 	char* pFileBuf = new char[fileLen + 1];
 	std::memset(pFileBuf, 0, fileLen + 1);
@@ -576,7 +571,7 @@ VSMesh& VSMesh::AddTriangle(const VFVECTOR3& p0, const VFVECTOR3& p1, const VFVE
 {
 	//if (!(p0 - p1).IsZero() && !(p1 - p2).IsZero() && !(p2 - p0).IsZero())
 	{
-		const auto cnt = this->vVertice.size();
+		unsigned cnt = this->vVertice.size();
 		this->vVertice.push_back(p0);
 		this->vVertice.push_back(p1);
 		this->vVertice.push_back(p2);

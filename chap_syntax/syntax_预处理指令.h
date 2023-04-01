@@ -3,7 +3,7 @@
 
 
 #include "basicTools/basicTools.h"
-#pragma comment(lib, "./Release/basicTools.lib")
+
 
 
 struct syntax_preprocessing_instruction_module : public virtualModule

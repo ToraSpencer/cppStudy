@@ -2,7 +2,7 @@
 
 
 #include "basicTools/basicTools.h"
-#pragma comment(lib, "./Release/basicTools.lib")
+
 
 
 struct function_functor_module : public virtualModule

@@ -1,15 +1,1 @@
-﻿  stdlib_工具库.cpp
-stdlib_工具库.cpp(49): error C2065: “DWORD”: 未声明的标识符
-stdlib_工具库.cpp(49): error C2146: 语法错误: 缺少“;”(在标识符“start”的前面)
-stdlib_工具库.cpp(49): error C2065: “start”: 未声明的标识符
-stdlib_工具库.cpp(49): error C3861: “GetTickCount”: 找不到标识符
-stdlib_工具库.cpp(53): error C3861: “Sleep”: 找不到标识符
-stdlib_工具库.cpp(56): error C2065: “DWORD”: 未声明的标识符
-stdlib_工具库.cpp(56): error C2146: 语法错误: 缺少“;”(在标识符“end”的前面)
-stdlib_工具库.cpp(56): error C3861: “GetTickCount”: 找不到标识符
-stdlib_工具库.cpp(57): error C2065: “DWORD”: 未声明的标识符
-stdlib_工具库.cpp(57): error C2146: 语法错误: 缺少“;”(在标识符“interval”的前面)
-stdlib_工具库.cpp(57): error C2065: “interval”: 未声明的标识符
-stdlib_工具库.cpp(57): error C2065: “start”: 未声明的标识符
-stdlib_工具库.cpp(57): error C2563: 在形参表中不匹配
-stdlib_工具库.cpp(58): error C2065: “interval”: 未声明的标识符
+﻿  CppStudy.vcxproj -> G:\gitRepositories\cppStudy\x64\Release\CppStudy.exe

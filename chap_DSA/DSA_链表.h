@@ -1,7 +1,7 @@
 #pragma once
 
 #include "basicTools/basicTools.h"
-#pragma comment(lib, "./Release/basicTools.lib")
+
 using std::cout;
 using std::cin;
 using std::endl;

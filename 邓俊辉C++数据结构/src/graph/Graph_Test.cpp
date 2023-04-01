@@ -150,7 +150,7 @@ int main ( int argc, char* argv[] )
 
     int versCount = 8;
     int edgesCount = 20;
-    randomGraph<char, int>(g, versCount, edgesCount);    //顶点以字符编号，边为整数权重
+    randomGraph<char, int>(g, versCount, edgesCount);           // 顶点以字符编号，边为整数权重
 
     print(g);
 

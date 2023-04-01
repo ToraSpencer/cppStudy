@@ -8,7 +8,6 @@
 #include "basicTypes_指针、智能指针、内存泄漏.h"
 #include "basicTypes_引用.h"
  
-#pragma comment(lib, "basicTools.lib")
 
 
 #ifdef DLL_EXPORTS

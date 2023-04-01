@@ -6,16 +6,15 @@
 #include <functional>
 #include <algorithm>
 #include <numeric>
+#include <thread>
 
 #include "staticLib1.h"
 #include "dynamicLib1.h"
 
-
 #include <windows.h>
 #include <atlstr.h>		// 包含CString类。属于microsoft ATL(活动模板库avtive template library)
-
-
-using namespace std;
+#include <io.h>
+ 
 
 typedef void (__cdecl *pfun)(void);
 typedef int(__stdcall *f_funci)();
@@ -75,8 +74,7 @@ public:
 
 
 
-
-// 调用静态库、动态库
+// TEST——调用静态库、动态库
 namespace TEST_LIBS
 {
 	// 调用静态库
@@ -119,8 +117,16 @@ namespace TEST_LIBS
 		MYDLL::disp();
 		MYDLL::printCurrentPath();
 		MYDLL::calculator calc;
-		cout << "calc.Add(1,2) == " << calc.Add(1, 2) << endl;
+		std::cout << "calc.Add(1,2) == " << calc.Add(1, 2) << std::endl;
 
+		std::cout << addNum(3, 4) << std::endl;
+		std::cout << addNum(3, 4, 5) << std::endl;
+
+		dispArg(3.1415);
+		dispArg(333);
+		dispArg("hahaha");
+
+		std::cout << "finished." << std::endl;
 	}
 
 
@@ -139,9 +145,7 @@ namespace TEST_LIBS
 		Hdll = LoadLibrary(L"../Release/dynamicLib1.dll");
 
 		if (nullptr == Hdll)
-		{
-			cout << "加载动态库失败" << endl;
-		}
+			std::cout << "加载动态库失败" << std::endl;
 		else
 		{
 			pfuncV = (pVV)(GetProcAddress(Hdll, "dllDisp"));
@@ -151,16 +155,12 @@ namespace TEST_LIBS
 		FreeLibrary(Hdll);
 
 		if (Hdll == nullptr)
-		{
-			cout << "DLL释放成功" << endl;
-		}
+			std::cout << "DLL释放成功" << std::endl;
 
 		Hdll = LoadLibrary(L"../Release/dynamicLib1.dll");
 
 		if (nullptr == Hdll)
-		{
-			cout << "加载动态库失败" << endl;
-		}
+			std::cout << "加载动态库失败" << std::endl;
 		else
 		{
 			pfuncV = (pVV)(GetProcAddress(Hdll, "dllDisp"));
@@ -169,14 +169,42 @@ namespace TEST_LIBS
 
 	}
 
-
 }
 
 
-// 读写配置文件config.ini
-namespace CONFIG
+
+// 测试常用的windows api
+namespace TEST_WINAPI
 {
-	// 读取当前程序路径，生成config.ini文件并写入内容
+	// 读取某个目录下所有文件名、目录名；
+	void getFileNames(std::string path, std::vector<std::string>& files, bool blRecur = true)
+	{
+		std::string str;
+		struct _finddata_t fileinfo;			// 文件信息
+		intptr_t hFile = _findfirst(str.assign(path).append("/*").c_str(), &fileinfo);							// 文件句柄	
+		bool blFileValid = (hFile != -1);
+
+		if (blFileValid)			
+		{
+			do
+			{
+				bool isSubDir = (fileinfo.attrib & _A_SUBDIR);
+				//如果是目录,递归查找；如果不是,把文件绝对路径存入vector中
+				if (isSubDir & blRecur)
+				{
+					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
+						getFileNames(str.assign(path).append("/").append(fileinfo.name), files);
+				}
+				else
+					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
+						files.push_back(str.assign(path).append("/").append(fileinfo.name));
+			} while (_findnext(hFile, &fileinfo) == 0);
+			_findclose(hFile);
+		}
+	}
+
+
+	// 读取当前程序路径，生成配置文件config.ini并写入内容
 	void test0()
 	{
 		CString   sPath;
@@ -192,9 +220,9 @@ namespace CONFIG
 
 		// 设置wcout的语言环境，缺少这一步打印中文会有错误。
 		std::wcout.imbue(std::locale(std::locale(), "", LC_CTYPE));
-		wcout << (LPCTSTR)sPath << endl;		// 控制台上打印宽字符
+		std::wcout << (LPCTSTR)sPath << std::endl;		// 控制台上打印宽字符
 
-												// 截取sPath倒数第二个'\\'及之前的内容
+		// 截取sPath倒数第二个'\\'及之前的内容
 		int   nPos;
 		nPos = sPath.ReverseFind('\\');
 		sPath = sPath.Left(nPos);
@@ -206,7 +234,7 @@ namespace CONFIG
 
 		// 生成配置文件路径
 		CString  configPath = sPath + "\\outerConfig.ini";
-		wcout << (LPCTSTR)configPath << endl;
+		std::wcout << (LPCTSTR)configPath << std::endl;
 
 		// 生成配置文件、写入内容；
 
@@ -239,17 +267,14 @@ namespace CONFIG
 		int retNum1, retNum2;
 
 		// 设置wcout的语言环境，缺少这一步打印中文会有错误。
-		wcout.imbue(locale(locale(), "", LC_CTYPE));
-
-
+		std::wcout.imbue(std::locale(std::locale(), "", LC_CTYPE));
 
 		// 1. 读字符串
-
 		/*
 		GetPrivateProfileString(
-					LPCTSTR lpAppName,			// 节名
-					LPCTSTR lpKeyName,			// key名
-					LPCTSTR lpDefault,			// 如果INI文件中没有前两个参数指定的节名或key名,则将此值赋给变量.
+					LPCTSTR lpAppName,				// 节名
+					LPCTSTR lpKeyName,				// key名
+					LPCTSTR lpDefault,					// 如果INI文件中没有前两个参数指定的节名或key名,则将此值赋给变量.
 					LPTSTR lpReturnedString,	// 存储返回的字符串的缓存器
 					DWORD nSize,				// 上面的缓存器的大小。
 					LPCTSTR lpFileName			// INI文件路径，相对路径绝对路径都可以。
@@ -263,7 +288,6 @@ namespace CONFIG
 
 
 		// 2. 读整形数
-
 		/*
 			UINT WINAPI GetPrivateProfileInt(
 						_In_LPCTSTR lpAppName,					节名
@@ -282,8 +306,9 @@ namespace CONFIG
 		std::cout << typeid(str).name() << std::endl;
 		std::wcout << str << std::endl;
 
+
 		//		3.1 宽字符串转换为普通字符串
-		const int iSize = WideCharToMultiByte(CP_ACP, 0, str, -1, NULL, 0, NULL, NULL); //iSize =wcslen(pwsUnicode)+1=6
+		const int iSize = WideCharToMultiByte(CP_ACP, 0, str, -1, NULL, 0, NULL, NULL);		//iSize =wcslen(pwsUnicode)+1=6
 		char* newStr = new char(iSize * sizeof(char));
 		WideCharToMultiByte(CP_ACP, 0, str, -1, newStr, iSize, NULL, NULL);		
 		std::cout << newStr << std::endl;
@@ -299,9 +324,71 @@ namespace CONFIG
 
 		delete newStr;
 	}
+ 
+
+	// 测试getFileNames()
+	void test2() 
+	{
+		std::vector<std::string> fileNames, fileNamesRecur;
+		std::string path("E:/抽壳加支撑");  
+
+		//getFileNames(path, fileNames, false);
+		//std::cout << "非递归遍历文件名：" << std::endl;
+		//for (const auto& ph : fileNames)
+		//	std::cout << ph << std::endl;
+		//std::cout << std::endl << std::endl;
+
+		getFileNames(path, fileNamesRecur, true);
+		std::cout << "递归遍历文件名：" << std::endl;
+		for (const auto& ph : fileNamesRecur)
+			std::cout << ph << std::endl;
+
+		std::cout << "finished." << std::endl;
+	}
 
 
+	// CString, 和普通字符、字符串的转换：
+	void test3() 
+	{
+		/*
+		CStringT
+			实际上它是一个操作可变长度字符串的模板类。
+			CStringT模板类有三个实例：CString、CStringA和CStringW，它们分别提供对TCHAR、char和wchar_t字符类型的字符串的操作。
+				char类型定义的是Ansi字符
+				wchar_t类型定义的是Unicode字符，
+			
+			而TCHAR取决于MFC工程的属性对话框中的Configuration Properties->General->Character Set属性，
+					如果此属性为Use Multi-Byte Character Set，则TCHAR类型定义的是Ansi字符，
+					而如果为Use Unicode Character Set，则TCHAR类型定义的是Unicode字符。
+ 
+		
+		*/
+		CString   sPath;
+		CString cstr{"你好"};
+
+		////			注：WIN10下TXT文件默认的字符编码是UTF-8，需要转换成ANSI或UNICODE编码；
+		//std::wcout.imbue(std::locale(std::locale(), "", LC_CTYPE));			// 设置wcout的语言环境，缺少这一步打印中文会有错误。
+		//std::wstring wDatFileName = STR_UTF8ToUnicode(tempStr);
+		//std::string datFileName = STR_UnicodeToANSI(wDatFileName);
+		//std::string datFilePath = g_debugPath + datFileName;
+		//std::cout << datFilePath << std::endl;
+
+		// 获取当前进程加载的模块的路径。
+		std::cout << "当前sPath的长度是：" << sPath.GetLength() << std::endl;
+		GetModuleFileName(NULL, sPath.GetBufferSetLength(MAX_PATH + 1), MAX_PATH);
+		std::cout << "当前sPath的长度是：" << sPath.GetLength() << std::endl;
+
+		// CT2A()——CString转换为ansi编码的std::string;
+		std::string str1 = CT2A(sPath);
+		std::string str2 = CT2A(cstr);
+		
+
+
+
+		std::cout << "finished." << std::endl;
+	}
 }
+
 
 
 // windows多线程
@@ -315,7 +402,7 @@ namespace MULTITHREAD
 		{
 			//请求一个互斥量锁
 			WaitForSingleObject(hMutex, INFINITE);
-			cout << "A Thread Fun Display!" << endl;
+			std::cout << "A Thread Fun Display!" << std::endl;
 			Sleep(100);
 
 			//释放互斥量锁
@@ -341,7 +428,7 @@ namespace MULTITHREAD
 			if (hMutex != nullptr) 
 				WaitForSingleObject(hMutex, INFINITE);
 			
-			cout << "Main Thread Display!" << endl;
+			std::cout << "Main Thread Display!" << std::endl;
 			Sleep(100);
 
 			//释放互斥量锁
@@ -349,7 +436,6 @@ namespace MULTITHREAD
 				ReleaseMutex(hMutex);
 		}
 	}
-
 
 
 	void test2() 
@@ -363,6 +449,7 @@ namespace MULTITHREAD
 		std::uniform_real_distribution<float> URD_f(0, 1);
 		tiktok& tt = tiktok::getInstance();
 
+# if 1
 		// 单线程耗时为9s+
 		std::cout << "开始：" << std::endl;
 		tt.start();
@@ -372,15 +459,56 @@ namespace MULTITHREAD
 				num = URD_f(e);
 			numVec[i] = std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0));
 		}
-		tt.endCout("耗时：");
-
+		tt.endCout("单线程耗时：");
+#endif 
 
 		// 多线程并行：
+		const static unsigned n_threads = std::thread::hardware_concurrency();
+		std::cout << "线程数：" << n_threads << std::endl;
+		if (0u == n_threads)
+			return;
 
+		unsigned slice = std::round(elemCount / n_threads);
+		slice = std::max(slice, 1u);
+		std::vector<std::thread> threadPool;
+		threadPool.reserve(n_threads);
+
+		// 线程函数：
+		auto func = [&](unsigned start, unsigned end)
+		{
+			std::vector<float> tmpRands(10000);
+			for (unsigned i = start; i < end; ++i)		// 生成一组随机数，求和，赋值给numVec中的元素；
+			{
+				for (auto& num : tmpRands)
+					num = URD_f(e);
+				numVec[i] = std::sqrt(std::accumulate(tmpRands.begin(), tmpRands.end(), 0));
+			}
+		};
+
+		// 生成thread对象：
+		unsigned start = 0;
+		unsigned end = 0;
+		for (unsigned i = 0; end + slice - 1 <= elemCount; ++i)
+		{
+			start = i * slice;
+			end = start + slice;
+			threadPool.emplace_back(func, start ,end);
+		}
+		if (end < elemCount)
+			threadPool.emplace_back(func, end, elemCount);
+
+		tt.start();
+		for (auto& t : threadPool)
+		{
+			if (t.joinable())
+				t.join();
+		}
+		tt.endCout("多线程耗时：");
 
 		std::cout << "finished." << std::endl;
 	}
 }
+
 
 
 // 暂时无法分类
@@ -398,9 +526,11 @@ namespace GENERAL_VCPP
 
 int main()
 {
-	// CONFIG::test0();
+	// TEST_LIBS::test1_2();
+	
+	TEST_WINAPI::test3();
 
-	MULTITHREAD::test2();
+	// MULTITHREAD::test2();
 
     return 0;
 }

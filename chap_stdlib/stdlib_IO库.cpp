@@ -30,6 +30,8 @@
 			setiosflags()			使用多种枚举常量来设定输出格式：
 			setw()					设置宽度
 			setprecision()			设置浮点数精度。
+			oct						以八进制形式输出整数
+			dec						以十进制形式输出整数
 			hex						以十六进制形式输出整数
 			fixed					以普通小数形式输出浮点数
 			scientific				以科学计数法形式输出浮点数
@@ -211,6 +213,11 @@ void stdlib_io_module::test0(void)
 	std::cout.width(10);
 	std::cout << d3 << std::endl;
 	std::cout << std::endl << std::endl;
+
+	// 使用std::oct, std::dec, std::hex指定不同进制输出整型数：
+	std::cout << std::oct << 1024 << std::endl;
+	std::cout << std::dec << 1024 << std::endl;
+	std::cout << std::hex << 1024 << std::endl;
 
 
 	// setiosflags()————使用多种枚举常量来设定输出格式：

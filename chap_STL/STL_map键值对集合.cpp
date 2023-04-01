@@ -105,7 +105,7 @@ void STL_map_module::test0(void)
 	mis.insert(std::make_pair(6, "xiaohong"));			// 插入pair对象
 	mis.insert(std::make_pair(5,"ali"));
 
-	//			使用下标运算符来增加、修改元素
+	//			使用下标运算符operator[]来增加、修改元素
 	mis[1] = "xiaoming";								// 下标运算符：无该键时创建该键，有该键时修改该键。						
 	mis[33] = "laowang";
 	mis[33] = "laoli";	

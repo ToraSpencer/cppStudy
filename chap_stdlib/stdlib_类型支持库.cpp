@@ -54,6 +54,7 @@ virtualModule* stdlib_type_support_module::getInstance()		// Ïß³Ì²»°²È«µÄµ¥ÀıÄ£Ê
 // test0: is_xxxÏµÁĞÀàÄ£°åÅĞ¶ÏÀàĞÍ¡¢ÊôĞÔ
 void stdlib_type_support_module::test0(void)
 {
+	// <type_traits>ÖĞµÄstd::is_xxx<>Ä£°å
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test0:  is_xxxÏµÁĞÀàÄ£°åÅĞ¶ÏÀàĞÍ¡¢ÊôĞÔ" << std::endl;
 

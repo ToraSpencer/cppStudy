@@ -195,14 +195,14 @@ void basicTypes_strings_module::test1(void)
 	str2 = "9999";
 	str1.erase(3, 4);
 	str1.insert(3, str2);
-	std::cout << "str1 == " << str1 << std::endl;
+	std::cout << "str1 == " << str1 << std::endl;	// asd9999l12345
 
 	// find_first_of()¡ª¡ª²éÕÒ×Ó´®£º
 	unsigned index = str1.find_first_of("123");
 	str2 = str1.substr(0, index);
 	str3 = str1.substr(index, str1.size() - index);
-	std::cout << "str2 == " << str2 << std::endl;
-	std::cout << "str3 == " << str3 << std::endl;
+	std::cout << "str2 == " << str2 << std::endl;	// asd9999l
+	std::cout << "str3 == " << str3 << std::endl;	// 12345
 }
 
 

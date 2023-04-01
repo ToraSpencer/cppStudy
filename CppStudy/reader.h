@@ -14,7 +14,7 @@
 
 
 
-#pragma comment(lib, "./Release/basicTools.lib")
+
 
 extern HMODULE Hdll;
 using VOIDP = void*;

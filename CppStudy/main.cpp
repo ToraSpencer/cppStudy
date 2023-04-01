@@ -48,9 +48,7 @@ int main()
 		
 
 		if (!pr->isNullChap()) 
-		{
 			interfaceLevel = 2;
-		}
 
 		while (2 == interfaceLevel)
 		{
@@ -80,15 +78,12 @@ int main()
 			}
 
 			if (!pr->isNullModule()) 
-			{
 				interfaceLevel = 3;
-			}
 
 
 			while (3 == interfaceLevel) 
 			{
 				std::cout << "选择要执行的test序号，-1退出。" << std::endl;
-
 				inputTag = scanf("%d", &inputNum);
 
 				// 若输入值不是整数，重新输入。

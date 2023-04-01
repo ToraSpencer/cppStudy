@@ -27,13 +27,13 @@ template <typename Te> struct Edge
 
 
 
-//基于向量，以邻接矩阵形式实现的图
+// 基于向量，以邻接矩阵形式实现的图（点边图: G(V, E)）
 template <typename Tv, typename Te>         //顶点类型、边类型
 class GraphMatrix : public Graph<Tv, Te>
 { 
 private:
-   Vector< Vertex< Tv > > V;                        //顶点集（向量）
-   Vector< Vector< Edge< Te > * > > E;      //边集（邻接矩阵）
+   Vector< Vertex< Tv > > V;                        // 顶点集（向量）
+   Vector< Vector< Edge< Te > * > > E;      // 边集（邻接矩阵）
 
 public:
    GraphMatrix() { n = e = 0; }  

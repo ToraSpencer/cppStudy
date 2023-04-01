@@ -142,57 +142,37 @@ void STL_set_module::test1(void)
 	//	find————查找成功返回指向搜索结果的迭代器，查找失败返回尾后迭代器
 	iter_i1 = seti1.find(-3);					
 	if(iter_i1 == seti1.end())
-	{
 		cout << "\tseti1中没有-3这个元素" << endl;
 
-	}
 	else
-	{
 		cout << "\titer_i是指向seti1中元素-3的迭代器。" << endl;
-
-	}
 
 
 	// lower_bound———返回set中首个小于等于指定元素的元素迭代器
 	iter_i1 = seti1.lower_bound(1);
 	if(iter_i1 == seti1.end())
-	{
 		cout << "\tseti1中没有小于等于1的元素" << endl;
 
-	}
 	else
-	{
 		cout << "\tseti1中首个小于等于1的元素为：*iter_i1 == " << *iter_i1 << endl;
-
-	}
 
 
 
 	// upper_bound————返回set中首个大于等于指定元素的元素迭代器
 	iter_i1 = seti1.upper_bound(1);
 	if(iter_i1 == seti1.end())
-	{
 		cout << "\tseti1中没有大于等于1的元素" << endl;
 
-	}
 	else
-	{
 		cout << "\tseti1中首个大于等于1的元素为：*iter_i1 == " << *iter_i1 << endl;
-
-	}
 
 
 	// equal_range————返回一个pari，分别包含lower_bound和upper_bound可以返回的迭代器
 	pi1 = seti1.equal_range(1);
 	if(pi1.first != seti1.end())
-	{
 		cout << "\t*pi1.first == " << *pi1.first << endl;
-	}
 	if(pi1.second != seti1.end())
-	{
-	cout << "\t*pi1.second == " << *pi1.second << endl;
-	}
-
+		cout << "\t*pi1.second == " << *pi1.second << endl;
 
 }
 
@@ -264,15 +244,11 @@ void STL_set_module::test3(void)
 	}
 
 	for (const auto& elem : s1)		// s1中的排序很可能是错误的，因为排序依据的是指针的值
-	{
 		cout << *elem << ", ";
-	}
 	cout << endl;
 
 	for (const auto& elem : s2)		// s2使用了自定义比较器，排序是正确的。
-	{
 		cout << *elem << ", ";
-	}
 	cout << endl;
 }
 

@@ -72,9 +72,9 @@ void Display(ElemType elem[], int n)
 {
 	for (int i = 0; i < n; i++)
 	{	// ÏÔÊ¾Êý×éelem
-		cout << elem[i] << "  ";
+		std::cout << elem[i] << "  ";
 	}
-	cout << endl;
+	std::cout << std::endl;
 }
 
 
@@ -82,7 +82,7 @@ void Display(ElemType elem[], int n)
 template <class ElemType>
 void Write(const ElemType &e)
 {
-	cout << e << "  ";
+	std::cout << e << "  ";
 }
 
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "basicTools/basicTools.h"
-#pragma comment(lib, "./Release/basicTools.lib")
+
 using std::cout;
 using std::endl;
 
@@ -1511,7 +1511,7 @@ void MiniSpanTreeKruskal(const AdjMatrixUndirNetwork<ElemType, WeightType> &g)
 {
 	int count, VexNum = g.GetVexNum();
 	KruskalEdge<ElemType, WeightType> KEdge;
-	MinHeap<KruskalEdge<ElemType, WeightType> > ha(g.GetEdgeNum());
+	MinHeap<KruskalEdge<ElemType, WeightType>> ha(g.GetEdgeNum());
 	ElemType  *kVex, v1, v2;
 	kVex = new ElemType[VexNum];	// 定义顶点数组,存储顶点信息 
 	for (int i = 0; i < VexNum; i++)

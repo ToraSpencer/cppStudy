@@ -1,11 +1,3 @@
-/******************************************************************************************
- * Data Structures in C++
- * ISBN: 7-302-33064-6 & 7-302-33065-3 & 7-302-29652-2 & 7-302-26883-3
- * Junhui DENG, deng@tsinghua.edu.cn
- * Computer Science & Technology, Tsinghua University
- * Copyright (c) 2003-2020. All rights reserved.
- ******************************************************************************************/
-
 #pragma once
 
 #include <cstdio> //采用C风格精细控制输出格式
@@ -26,6 +18,7 @@
 #include "PQ_LeftHeap/PQ_LeftHeap.h" //基于左式堆实现的优先级队列
 #include "graph/Graph.h" //图
 #include "graphMatrix/GraphMatrix.h" //基于邻接矩阵实现的图
+
 
 /******************************************************************************************
  * 数据元素、数据结构通用输出接口
