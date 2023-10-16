@@ -154,10 +154,8 @@ void syntax_preprocessing_instruction_module::test0(void)
 	std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
 #endif
 
-	if (0) 
-	{
-		std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
-	}
+	if (0)  
+		std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl; 
 	else
 	{
 		// 上面的分支虽然不会运行，但是会编译，所以上面会加1.

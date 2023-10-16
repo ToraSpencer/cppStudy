@@ -54,7 +54,6 @@ double MYDLL::calculator::Add(double a, double b)
 }
 
 
-
 double MYDLL::calculator::Subtract(double a, double b)
 {
 	std::cout << "调用了动态库dynamicLib1中的MYDLL::calculator::Subtract方法" << std::endl;
