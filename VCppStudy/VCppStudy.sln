@@ -9,10 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "创建动态库", "创建�
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VCppStudy", "VCppStudy\VCppStudy.vcxproj", "{E7B8AA8A-B5D2-4E65-BFA0-5C0891EB53EB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "myEigenTools", "..\..\Eigen-libiglStudy\myEigenTools\myEigenTools.vcxproj", "{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestMyDLL", "TestMyDLL\TestMyDLL.vcxproj", "{345F665D-806B-4E22-93C5-73F5FE5EEDE0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -59,30 +55,6 @@ Global
 		{E7B8AA8A-B5D2-4E65-BFA0-5C0891EB53EB}.Release|x64.Build.0 = Release|x64
 		{E7B8AA8A-B5D2-4E65-BFA0-5C0891EB53EB}.Release|x86.ActiveCfg = Release|Win32
 		{E7B8AA8A-B5D2-4E65-BFA0-5C0891EB53EB}.Release|x86.Build.0 = Release|Win32
-		{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}.Debug|x64.ActiveCfg = Debug|x64
-		{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}.Debug|x64.Build.0 = Debug|x64
-		{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}.Debug|x86.ActiveCfg = Debug|Win32
-		{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}.Debug|x86.Build.0 = Debug|Win32
-		{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}.DebugStatic|x64.ActiveCfg = Debug|x64
-		{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}.DebugStatic|x64.Build.0 = Debug|x64
-		{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}.DebugStatic|x86.ActiveCfg = Debug|Win32
-		{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}.DebugStatic|x86.Build.0 = Debug|Win32
-		{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}.Release|x64.ActiveCfg = Release|x64
-		{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}.Release|x64.Build.0 = Release|x64
-		{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}.Release|x86.ActiveCfg = Release|Win32
-		{C4DD3FBE-E0FA-4EC1-AB45-FFABB1E6413D}.Release|x86.Build.0 = Release|Win32
-		{345F665D-806B-4E22-93C5-73F5FE5EEDE0}.Debug|x64.ActiveCfg = Debug|x64
-		{345F665D-806B-4E22-93C5-73F5FE5EEDE0}.Debug|x64.Build.0 = Debug|x64
-		{345F665D-806B-4E22-93C5-73F5FE5EEDE0}.Debug|x86.ActiveCfg = Debug|Win32
-		{345F665D-806B-4E22-93C5-73F5FE5EEDE0}.Debug|x86.Build.0 = Debug|Win32
-		{345F665D-806B-4E22-93C5-73F5FE5EEDE0}.DebugStatic|x64.ActiveCfg = Debug|x64
-		{345F665D-806B-4E22-93C5-73F5FE5EEDE0}.DebugStatic|x64.Build.0 = Debug|x64
-		{345F665D-806B-4E22-93C5-73F5FE5EEDE0}.DebugStatic|x86.ActiveCfg = Debug|Win32
-		{345F665D-806B-4E22-93C5-73F5FE5EEDE0}.DebugStatic|x86.Build.0 = Debug|Win32
-		{345F665D-806B-4E22-93C5-73F5FE5EEDE0}.Release|x64.ActiveCfg = Release|x64
-		{345F665D-806B-4E22-93C5-73F5FE5EEDE0}.Release|x64.Build.0 = Release|x64
-		{345F665D-806B-4E22-93C5-73F5FE5EEDE0}.Release|x86.ActiveCfg = Release|Win32
-		{345F665D-806B-4E22-93C5-73F5FE5EEDE0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
