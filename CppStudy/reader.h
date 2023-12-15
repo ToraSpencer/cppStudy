@@ -13,13 +13,9 @@
 #include "chap_DSA/chap_DSA.h"
 
 
-
-
-
 extern HMODULE Hdll;
 using VOIDP = void*;
 using pVV = VOIDP(*)(void);
-
 
 
 enum CHAP_ENUM
@@ -39,7 +35,7 @@ enum CHAP_ENUM
 struct reader
 {
 private:
-	virtualChap* pc;		// 当前查看的章节。
+	virtualChap* pc;						// 当前查看的章节。
 	CHAP_ENUM currentChap;		// 当前查看章节对应的枚举常量。
 	reader();
 

@@ -15,6 +15,7 @@
 #include <atlstr.h>		// 包含CString类。属于microsoft ATL(活动模板库avtive template library)
 #include <io.h>
 
+
 // 内存和CPU监视接口需要的一些头文件；
 #ifdef WIN32 
 #include <psapi.h>   
@@ -30,7 +31,6 @@
 
 typedef void (__cdecl *pfun)(void);
 typedef int(__stdcall *f_funci)();
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
@@ -104,6 +104,7 @@ namespace MY_DEBUG
 	};
 }
 using namespace MY_DEBUG;
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// WINDOWS API:
 namespace MY_WIN_API

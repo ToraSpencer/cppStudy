@@ -5,13 +5,12 @@
 #include <cmath>
 #include <windows.h>
 
- 
 #include "reader.h"
 
  
 
 HMODULE Hdll = nullptr;
-int inputTag = 0;							// 菜单界面中判断输入是否有效的标识符。
+int inputTag = 0;								// 菜单界面中判断输入是否有效的标识符。
 int inputNum = 0;							// 菜单界面中用户输入的整数
 int interfaceLevel = 1;						// 当前菜单界面的层级，主菜单是一级。
 
@@ -107,7 +106,6 @@ int main()
 		}
 	
 	}
-
 
 	getchar();
 	return 0;

@@ -25,6 +25,7 @@ reader::~reader()		noexcept	// 要从最底层开始向上依次delete指针。
 }
 
 
+// 打印章节列表
 void reader::showChapList()
 {
 	std::cout << "************章节列表***************" << std::endl;
@@ -40,6 +41,7 @@ void reader::showChapList()
 }
 
 
+// 打印模块列表
 void reader::showModuleList() 
 {
 	if (this->pc == nullptr) 
@@ -51,26 +53,25 @@ void reader::showModuleList()
 }
 
 
+// 选择章节：
 bool reader::selectChap(const CHAP_ENUM ch)
 {
-	if (this->currentChap == ch && this->currentChap!=CHAP_ENUM::NO_CHAP)		// 选择章节和当前章节相同的话，则什么都不做。
-	{
-		return true;
-	}
+	// 选择章节和当前章节相同的话，则什么都不做。
+	if (this->currentChap == ch && this->currentChap!=CHAP_ENUM::NO_CHAP)		 
+		return true; 
 
 	if (pc != nullptr && Hdll != nullptr)
 	{
-
 		delete this->pc;
 		this->pc = nullptr;
 		FreeLibrary(Hdll);
 	}
 
 	pVV pfunc = nullptr;
-
 	switch (ch)
 	{
 	case CHAP_BASIC_TYPES:					// 基本类型章节
+	{
 		Hdll = LoadLibrary(L"chap_basicTypes.dll");
 		if (Hdll == nullptr)
 		{
@@ -86,7 +87,7 @@ bool reader::selectChap(const CHAP_ENUM ch)
 		this->pc = reinterpret_cast<chap_designPattern*>((*pfunc)());
 		this->currentChap = CHAP_ENUM::CHAP_BASIC_TYPES;
 		break;
-
+	}
 
 	case CHAP_DESIGN_PATTERN:				// 设计模式章节
 		Hdll = LoadLibrary(L"chap_designPattern.dll");
@@ -209,7 +210,6 @@ bool reader::selectChap(const CHAP_ENUM ch)
 		this->currentChap = CHAP_ENUM::CHAP_DSA;
 		break;
 
-
 	default:
 		return false;
 	}
@@ -219,10 +219,8 @@ bool reader::selectChap(const CHAP_ENUM ch)
 
 bool reader::selectMol(const int molEnum)
 {
-	if (this->pc == nullptr)
-	{
-		return true;
-	}
+	if (this->pc == nullptr) 
+		return true; 
 
 	return this->pc->selectModule(molEnum);
 }
@@ -236,32 +234,20 @@ void reader::runTest(const unsigned testID)
 
 bool reader::isNullChap() const
 {
-	if (this->pc == nullptr)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	if (this->pc == nullptr) 
+		return true; 
+	else 
+		return false; 
 }
-
 
 
 bool reader::isNullModule() const 
 {
-	if (isNullChap())
-	{
-		return true;
-	}
+	if (isNullChap()) 
+		return true; 
 
-	if (this->pc->isNullModule())
-	{
-		return true;
-	}
-	else 
-	{
-		false;
-	}
-
+	if (this->pc->isNullModule()) 
+		return true; 
+	else  
+		false;  
 }
