@@ -13,7 +13,7 @@
 #include "chap_DSA/chap_DSA.h"
 
 
-extern HMODULE Hdll;
+extern HMODULE g_Hdll;
 using VOIDP = void*;
 using pVV = VOIDP(*)(void);
 

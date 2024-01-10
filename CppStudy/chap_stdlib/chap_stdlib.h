@@ -20,8 +20,8 @@
 enum STDLIB_MODULE
 {
 	MODULE_IO = 1,
-	MODULE_TOOLS,
 	MODULE_NUMERICAL,
+	MODULE_TOOLS,
 	MODULE_TYPE_SUPPORT,
 	MODULE_THREAD_SUPPORT,
 	MODULE_REGEX,
@@ -38,7 +38,6 @@ public:
 	static virtualChap* getInstance();
 	bool selectModule(const int molEnum);
 };
-
 
 
 extern "C"

@@ -60,11 +60,11 @@ bool reader::selectChap(const CHAP_ENUM ch)
 	if (this->currentChap == ch && this->currentChap!=CHAP_ENUM::NO_CHAP)		 
 		return true; 
 
-	if (pc != nullptr && Hdll != nullptr)
+	if (pc != nullptr && g_Hdll != nullptr)
 	{
 		delete this->pc;
 		this->pc = nullptr;
-		FreeLibrary(Hdll);
+		FreeLibrary(g_Hdll);
 	}
 
 	pVV pfunc = nullptr;
@@ -72,13 +72,13 @@ bool reader::selectChap(const CHAP_ENUM ch)
 	{
 	case CHAP_BASIC_TYPES:					// 基本类型章节
 	{
-		Hdll = LoadLibrary(L"chap_basicTypes.dll");
-		if (Hdll == nullptr)
+		g_Hdll = LoadLibrary(L"chap_basicTypes.dll");
+		if (g_Hdll == nullptr)
 		{
 			std::cout << "动态库加载失败" << std::endl;
 			return false;
 		}
-		pfunc = (pVV)(GetProcAddress(Hdll, "getChap"));
+		pfunc = (pVV)(GetProcAddress(g_Hdll, "getChap"));
 		if (pfunc == nullptr)
 		{
 			std::cout << "动态库函数获取失败" << std::endl;
@@ -90,13 +90,13 @@ bool reader::selectChap(const CHAP_ENUM ch)
 	}
 
 	case CHAP_DESIGN_PATTERN:				// 设计模式章节
-		Hdll = LoadLibrary(L"chap_designPattern.dll");
-		if (Hdll == nullptr)
+		g_Hdll = LoadLibrary(L"chap_designPattern.dll");
+		if (g_Hdll == nullptr)
 		{
 			std::cout << "动态库加载失败" << std::endl;
 			return false;
 		}
-		pfunc = (pVV)(GetProcAddress(Hdll, "getChap"));
+		pfunc = (pVV)(GetProcAddress(g_Hdll, "getChap"));
 		if (pfunc == nullptr)
 		{
 			std::cout << "动态库函数获取失败" << std::endl;
@@ -108,13 +108,13 @@ bool reader::selectChap(const CHAP_ENUM ch)
 
 
 	case CHAP_STL:
-		Hdll = LoadLibrary(L"chap_STL.dll");
-		if (Hdll == nullptr)
+		g_Hdll = LoadLibrary(L"chap_STL.dll");
+		if (g_Hdll == nullptr)
 		{
 			std::cout << "动态库加载失败" << std::endl;
 			return false;
 		}
-		pfunc = (pVV)(GetProcAddress(Hdll, "getChap"));
+		pfunc = (pVV)(GetProcAddress(g_Hdll, "getChap"));
 		if (pfunc == nullptr)
 		{
 			std::cout << "动态库函数获取失败" << std::endl;
@@ -126,13 +126,13 @@ bool reader::selectChap(const CHAP_ENUM ch)
 
 
 	case CHAP_SYNTAX:
-		Hdll = LoadLibrary(L"chap_syntax.dll");
-		if (Hdll == nullptr)
+		g_Hdll = LoadLibrary(L"chap_syntax.dll");
+		if (g_Hdll == nullptr)
 		{
 			std::cout << "动态库加载失败" << std::endl;
 			return false;
 		}
-		pfunc = (pVV)(GetProcAddress(Hdll, "getChap"));
+		pfunc = (pVV)(GetProcAddress(g_Hdll, "getChap"));
 		if (pfunc == nullptr)
 		{
 			std::cout << "动态库函数获取失败" << std::endl;
@@ -143,13 +143,13 @@ bool reader::selectChap(const CHAP_ENUM ch)
 		break;
 
 	case CHAP_FUNCTION:
-		Hdll = LoadLibrary(L"chap_function.dll");
-		if (Hdll == nullptr)
+		g_Hdll = LoadLibrary(L"chap_function.dll");
+		if (g_Hdll == nullptr)
 		{
 			std::cout << "动态库加载失败" << std::endl;
 			return false;
 		}
-		pfunc = (pVV)(GetProcAddress(Hdll, "getChap"));
+		pfunc = (pVV)(GetProcAddress(g_Hdll, "getChap"));
 		if (pfunc == nullptr)
 		{
 			std::cout << "动态库函数获取失败" << std::endl;
@@ -160,13 +160,13 @@ bool reader::selectChap(const CHAP_ENUM ch)
 		break;
 
 	case CHAP_STDLIB:
-		Hdll = LoadLibrary(L"chap_stdlib.dll");
-		if (Hdll == nullptr)
+		g_Hdll = LoadLibrary(L"chap_stdlib.dll");
+		if (g_Hdll == nullptr)
 		{
 			std::cout << "动态库加载失败" << std::endl;
 			return false;
 		}
-		pfunc = (pVV)(GetProcAddress(Hdll, "getChap"));
+		pfunc = (pVV)(GetProcAddress(g_Hdll, "getChap"));
 		if (pfunc == nullptr)
 		{
 			std::cout << "动态库函数获取失败" << std::endl;
@@ -177,13 +177,13 @@ bool reader::selectChap(const CHAP_ENUM ch)
 		break;
 
 	case CHAP_EXCEPTION:
-		Hdll = LoadLibrary(L"chap_errorHandling.dll");
-		if (Hdll == nullptr)
+		g_Hdll = LoadLibrary(L"chap_errorHandling.dll");
+		if (g_Hdll == nullptr)
 		{
 			std::cout << "动态库加载失败" << std::endl;
 			return false;
 		}
-		pfunc = (pVV)(GetProcAddress(Hdll, "getChap"));
+		pfunc = (pVV)(GetProcAddress(g_Hdll, "getChap"));
 		if (pfunc == nullptr)
 		{
 			std::cout << "动态库函数获取失败" << std::endl;
@@ -194,13 +194,13 @@ bool reader::selectChap(const CHAP_ENUM ch)
 		break;
 
 	case CHAP_DSA:
-		Hdll = LoadLibrary(L"chap_DSA.dll");
-		if (Hdll == nullptr)
+		g_Hdll = LoadLibrary(L"chap_DSA.dll");
+		if (g_Hdll == nullptr)
 		{
 			std::cout << "动态库加载失败" << std::endl;
 			return false;
 		}
-		pfunc = (pVV)(GetProcAddress(Hdll, "getChap"));
+		pfunc = (pVV)(GetProcAddress(g_Hdll, "getChap"));
 		if (pfunc == nullptr)
 		{
 			std::cout << "动态库函数获取失败" << std::endl;

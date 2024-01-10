@@ -151,7 +151,7 @@ void basicTypes_strings_module::test1(void)
 	std::cout << std::endl << std::endl;
 
 	// 5. 1 字符串转换为其他类型std::stoi(), std::stol(), std::stoll(), std::stof() ———— C风格字符串、字符串、宽字符串转为数值(c++11)：
-	char* cstr = "123";
+	const char* cstr = "123";
 	str1 = "123";
 	str2 = "1234567890";
 	str3 = "12fd132";
@@ -425,9 +425,9 @@ void basicTypes_strings_module::test6(void)
 	// wstring在<std::string>头文件中定义，其对应的字面量前面带有L
 	std::wstring str = L"abcde";
 	std::cout << str.size() << std::endl;
-	std::cout << str[0] << std::endl;
-	std::cout << str[1] << std::endl;
-	std::cout << str[2] << std::endl;
+	std::wcout << str[0] << std::endl;
+	std::wcout << str[1] << std::endl;
+	std::wcout << str[2] << std::endl;
 	std::cout << static_cast<unsigned char>(str[1]) << std::endl << std::endl;
 
 	// 1. 宽字符和普通字符的转换：

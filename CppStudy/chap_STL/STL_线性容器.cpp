@@ -37,11 +37,7 @@
 							改：
 									swap() 
 									assign()
-									resize()			// 输入是元素数，不是字节数。
-
-									
-									
-
+									resize()			// 输入是元素数，不是字节数。 
 				6. 底层结构
 							vector————			顺序表
 							list————			双向链表
@@ -50,8 +46,6 @@
 							
 
 */
-
-
 
 
 virtualModule* STL_linear_container_module::getInstance()		// 线程不安全的单例模式
@@ -63,8 +57,6 @@ virtualModule* STL_linear_container_module::getInstance()		// 线程不安全的单例模
 	p_moduleIns = new STL_linear_container_module;
 	return p_moduleIns;
 }
-
-
 
 
 // test0():向量构造函数、初始化方法。
@@ -110,7 +102,6 @@ void STL_linear_container_module::test0(void)
 	// 4. 输入数组来构造向量。
 	std::vector<int> vi5(arr, arr + 3);									
 }
-
 
 
 // test1(): 线性容器的增删查改
@@ -192,7 +183,6 @@ void STL_linear_container_module::test1(void)
 }
 
 
-
 // test2():vector，list的迭代器
 void STL_linear_container_module::test2(void)
 {
@@ -252,25 +242,23 @@ void STL_linear_container_module::test2(void)
 }
 
 
-
 // test3(): 优先使用容器操作区间的方法，而不是操作单个元素的方法——effective STL
 void STL_linear_container_module::test3(void)
 {
-	// assign()——范围性地初始化本容器。
+	// 1. assign()——范围性地初始化本容器。
 	std::vector<int> vi1, vi2;
-	vi1.assign(6, 999);				// 用六个999初始化vi1容器
+	vi1.assign(6, 999);							// 用六个999初始化vi1容器
 
 	auto iter1 = vi1.begin();
 	auto iter2 = vi1.end();
 	iter1 += 3;
-	vi2.assign(iter1, iter2);		// 用迭代器iter1,iter2指示的vi2中的区间初始化vi1;
+	vi2.assign(iter1, iter2);						// 用迭代器iter1,iter2指示的vi2中的区间初始化vi1;
 
 	traverseSTL(vi1, disp<decltype(vi1[0])>);
 	traverseSTL(vi2, disp<decltype(vi2[0])>);
  
+	debugDisp("test3() finished.");
 }
-
-
 
 
 // test4()——vector迭代器失效问题
@@ -284,8 +272,6 @@ void STL_linear_container_module::test4(void)
 	std::cout << *iter1 << std::endl;			// 此时程序会崩溃出错，因为迭代器已经失效。
 
 }
-
-
 
 
 // test5()——元素放入线性容器中的拷贝过程
@@ -323,24 +309,19 @@ void STL_linear_container_module::test5(void)
 }
 
 
-
-
 // test6()——应用场景
 void STL_linear_container_module::test6(void)
 {
 	// 应用场景——处理string对象，然后通过该对象生成相应的文件句柄。
+	
 	//		处理下面的string对象，希望在文件名后面添加后缀"_x", "_y"，表示x和y坐标的向量数据。
 	std::string str = "data.dat";
 
-
 	// 查——find()函数；线性容器本身没有find方法
 	auto iter = find(str.begin(), str.end(), 'x');
-	if (iter == str.end())
-	{
-		std::cout << "error" << std::endl;
-	}
+	if (iter == str.end()) 
+		std::cout << "error" << std::endl; 
 	auto dis = distance(str.begin(), iter);
-
 
 	// 增——insert()方法——任意位置插入，并且可以一次性插入多个元素
 	/*

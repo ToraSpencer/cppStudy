@@ -6,7 +6,7 @@ using std::cout;
 using std::endl;
 
 
-//********************************前置声明
+////////////////////////////////////////////////////////////////////////////////////////////////// 前置声明
 template <class ElemType>
 class AdjMatrixUndirGraph;
 
@@ -22,7 +22,8 @@ template <class ElemType>
 class AdjListDirGraph;
 
 
-//********************************类声明
+////////////////////////////////////////////////////////////////////////////////////////////////// 类声明
+
 struct DSA_graph_module : public virtualModule
 {
 protected:
@@ -210,12 +211,9 @@ struct CloseArcType
 	int nearvertex;
 };
 
+ 
 
-
-
-
-
-//********************************函数声明
+////////////////////////////////////////////////////////////////////////////////////////////////// 函数声明
 
 // 图的广度优先(breadth firsts)遍历
 template <class ElemType>
@@ -247,7 +245,7 @@ template <class ElemType, class WeightType>
 void MiniSpanTreePrim(const AdjMatrixUndirNetwork<ElemType, WeightType> &g, int u0);
 
 
-//********************************实现部分
+////////////////////////////////////////////////////////////////////////////////////////////////// 实现部分
 template <class ElemType>
 AdjMatrixUndirGraph<ElemType>::AdjMatrixUndirGraph(ElemType es[], int vertexNum, int vertexMaxNum)
 // 操作结果：构造数据元素为es[],顶点个数为vertexNum,允许的顶点最大数目为vertexMaxNum,边数为0的无向图
@@ -1408,9 +1406,10 @@ void BFSTraverse(const AdjMatrixUndirGraph<ElemType> &g, void(*Visit)(const Elem
 			BFS(g, v, Visit); 				// 从尚未访问的顶点v开始进行广度优先搜索
 }
 
+
 // 图的广度优先搜索(breadth first search)
 template <class ElemType>
-void BFS(const AdjMatrixUndirGraph<ElemType> &g, int v, void(*Visit)(const ElemType &))
+void BFS(const AdjMatrixUndirGraph<ElemType>& g, int v, void(*Visit)(const ElemType&))
 {
 	// 操作结果：从顶点v出发进行广度优先搜索
 	LinkQueue<int> q;
@@ -1505,6 +1504,7 @@ KruskalEdge<ElemType, WeightType> &KruskalEdge<ElemType, WeightType>::operator =
 }
 
 
+#if 0
 // 用Kruskal算法构造网g的最小代价生成树
 template <class ElemType, class WeightType>
 void MiniSpanTreeKruskal(const AdjMatrixUndirNetwork<ElemType, WeightType> &g)
@@ -1540,7 +1540,7 @@ void MiniSpanTreeKruskal(const AdjMatrixUndirNetwork<ElemType, WeightType> &g)
 		}
 	}
 }
-
+#endif
 
 // 用Prim算法从u0出发构造网g的最小生成树
 template <class ElemType, class WeightType>

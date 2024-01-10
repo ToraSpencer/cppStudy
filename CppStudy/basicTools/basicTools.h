@@ -14,7 +14,6 @@
 #include <cstdarg> 					// 支持变长函数参数	
 #include <cassert>					// 支持断言
 
-
 #include <vector>
 #include <map>
 #include <unordered_map>
@@ -38,6 +37,90 @@ constexpr float VF_EPS = 0.0001f;
 constexpr float VF_EPS_2 = 0.000001f;
 constexpr float VF_MAX = 10000.0f;
 constexpr float VF_MIN = -10000.0f;
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////// debug和disp接口：
+namespace MY_DEBUG
+{
+	// 函数子baseTypePrinter——打印基本类型变量
+	class baseTypePrinter
+	{
+	public:
+		baseTypePrinter() = default;
+
+		template<typename T>
+		void operator()(const T& arg)
+		{
+			std::cout << arg << "\t";
+		}
+
+	};
+
+
+	// 函数子pairPrinter————功能是打印pair对象
+	class pairPrinter
+	{
+	private:
+		unsigned int count = 0;
+
+	public:
+		pairPrinter() = default;
+
+		template<typename T1, typename T2>
+		void operator()(const std::pair<T1, T2>& p)
+		{
+			std::cout << "\t(" << p.first << ", " << p.second << ")";
+			this->count++;
+		}
+
+		unsigned int getCount(void)
+		{
+			return this->count;
+		}
+	};
+
+
+	// 传入函数子或函数指针遍历stl容器
+	template<typename T, typename F>
+	void traverseSTL(T& con, F f)
+	{
+		std::for_each(con.begin(), con.end(), f);
+		std::cout << std::endl;
+	}
+
+
+	// 反向遍历stl容器
+	template<typename T, typename F>
+	void revTraverseSTL(T& con, F f)
+	{
+		std::for_each(con.rbegin(), con.rend(), f);
+		std::cout << std::endl;
+	}
+
+
+	// lambda——打印std::cout支持的类型变量。
+	template <typename T>
+	auto disp = [](const T& arg)
+	{
+		std::cout << arg << ", ";
+	};
+
+
+	static void debugDisp()			// 递归终止
+	{						//		递归终止设为无参或者一个参数的情形都可以。
+		std::cout << std::endl;
+		return;
+	}
+
+	template <typename T, typename... Types>
+	static void debugDisp(const T& firstArg, const Types&... args)
+	{
+		std::cout << firstArg << " ";
+		debugDisp(args...);
+	}
+
+}
+using namespace MY_DEBUG;
 
 
 // 从输入流inStream中跳过空格及制表符获取一字符
@@ -122,73 +205,6 @@ public:
 };
 
 
-
-// 函数子baseTypePrinter——打印基本类型变量
-class baseTypePrinter
-{
-public:
-	baseTypePrinter() = default;
-
-	template<typename T>
-	void operator()(const T& arg)
-	{
-		std::cout << arg << "\t";
-	}
-
-};
-
-
-
-// 函数子pairPrinter————功能是打印pair对象
-class pairPrinter
-{
-private:
-	unsigned int count = 0;
-
-public:
-	pairPrinter() = default;
-
-	template<typename T1, typename T2>
-	void operator()(const std::pair<T1, T2>& p)
-	{
-		std::cout << "\t(" << p.first << ", " << p.second << ")";
-		this->count++;
-	}
-
-	unsigned int getCount(void)
-	{
-		return this->count;
-	}
-
-};
-
-
-// 传入函数子或函数指针遍历stl容器
-template<typename T, typename F>
-void traverseSTL(T& con, F f)
-{
-	std::for_each(con.begin(), con.end(), f);
-	std::cout << std::endl;
-}
-
-
-// 反向遍历stl容器
-template<typename T, typename F>
-void revTraverseSTL(T& con, F f)
-{
-	std::for_each(con.rbegin(), con.rend(), f);
-	std::cout << std::endl;
-}
-
-
-// lambda——打印std::cout支持的类型变量。
-template <typename T>
-auto disp = [](const T& arg)
-{
-	std::cout << arg << ", ";
-};
-
-
 // 自定义pointer-like字符串类
 struct myString
 {
@@ -208,16 +224,13 @@ public:
 
 
 
-//************工作项目中的网格相关的数据结构实现、和函数：
+/////////////////////////////////////////////////////////////////////////////////////////////// 工作项目中的网格相关的数据结构实现、和函数：
  
-
-
 //	是否约等于零
 inline constexpr bool vf_appro_zero(float r, float dThreshold = VF_EPS) { return r >= -dThreshold && r <= dThreshold; } 
 
 // 是否约等于零
 inline constexpr bool vf_appro_zero_2(float  r) { return vf_appro_zero(r, VF_EPS_2); } 
-
 
 // 三元数组类模板
 template< class T >

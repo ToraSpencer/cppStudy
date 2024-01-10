@@ -1,8 +1,9 @@
 ﻿  main.cpp
   reader.cpp
   正在生成代码
-  Previous IPDB was built with incompatible compiler, fall back to full compilation.
-G:\gitRepositories\cppStudy\CppStudy\reader.cpp(267): warning C4715: “reader::isNullModule”: 不是所有的控件路径都返回值
-  All 172 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+G:\gitRepositories\cppStudy\CppStudy\reader.cpp(253): warning C4715: “reader::isNullModule”: 不是所有的控件路径都返回值
+  51 of 172 functions (29.7%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
   已完成代码的生成
   CppStudy.vcxproj -> G:\gitRepositories\cppStudy\CppStudy\x64\Release\CppStudy.exe

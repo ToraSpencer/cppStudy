@@ -21,7 +21,6 @@
 #define PI 3.14159
 
 
-
 // C++标准库——工具库
 /*
 	工具库大致可以分为两类：语言支持库、通用库
@@ -39,7 +38,6 @@
 */
 
 
-
 virtualModule* stdlib_tools_module::getInstance()		// 线程不安全的单例模式
 {
 	if (nullptr != p_moduleIns)
@@ -55,10 +53,11 @@ virtualModule* stdlib_tools_module::getInstance()		// 线程不安全的单例模式
 void stdlib_tools_module::test0()
 {
 	// C++ 标准库没有提供所谓的日期类型，继承了C语言用于日期和时间操作的结构和函数
-	// windows系统提供的计时接口——GetTickCount();
+	
+	// 1. windows系统提供的计时接口——GetTickCount();
 	DWORD start = GetTickCount();			// typedef unsigned long DWORD
 
-	// C语言标准库中的计时接口——clock()——程序开始到此刻处理器时钟所记录的时间，单位为毫秒
+	// 2. C语言标准库中的计时接口——clock()——程序开始到此刻处理器时钟所记录的时间，单位为毫秒
 	clock_t start_c = clock();
 	Sleep(2000);
 	clock_t end_c = clock();
@@ -68,23 +67,18 @@ void stdlib_tools_module::test0()
 	std::cout << interval << std::endl;				// windows
 	std::cout << end_c - start_c << std::endl;		// c语言
 
-
-	// C语言标准库——time()——获取1970.1.1 00:00:00到此刻经历的秒数。					 
+	// 3. C语言标准库——time()——获取1970.1.1 00:00:00到此刻经历的秒数。					 
 	time_t now = time(0);
-
 	std::cout << "1970 到目前经过秒数:" << now << std::endl;
 
-
-	//  C语言标准库——格式化时间日期数据localtime()
+	// 4. C语言标准库——格式化时间日期数据localtime()
 	/*
 		std::tm* localtime( const std::time_t *time );
 		不是线程安全的，建议用WINDOWS提供的localtime_s(),或linux提供的localtime_r()
 	*/
 
-
 	//  C标准库中定义的日期时间结构体： struct tm;
 	tm *ltm = nullptr;
-
 
 	ltm = localtime(&now);			// 将毫秒数数据转换为tm对象。
 	std::cout << "年: " << 1900 + ltm->tm_year << std::endl;
@@ -94,7 +88,6 @@ void stdlib_tools_module::test0()
 	std::cout << ltm->tm_min << ":";
 	std::cout << ltm->tm_sec << std::endl;
 
-
 	struct tm now_tm;
 	localtime_s(&now_tm, &now);
 	std::cout << "年: " << 1900 + now_tm.tm_year << std::endl;
@@ -103,35 +96,44 @@ void stdlib_tools_module::test0()
 	std::cout << "时间: " << now_tm.tm_hour << ":";
 	std::cout << now_tm.tm_min << ":";
 	std::cout << now_tm.tm_sec << std::endl;
-
-
 }
 
 
-// c++中的时间工具：
+// c++11标准计时库<chrono>
 void stdlib_tools_module::test1() 
 {
-	using namespace std::chrono;
+	/*
+		<chrono>中提供了三种时钟：
+				steady_clock 
+						是单调的时钟，相当于教练手中的秒表；
+						只会增长，适合用于记录程序耗时；
+				system_clock 
+						是系统的时钟；
+						因为系统的时钟可以修改；甚至可以网络对时； 所以用系统时间计算时间差可能不准。
+				high_resolution_clock 
+						是当前系统能够提供的最高精度的时钟；
+						它也是不可以修改的。
+						相当于 steady_clock 的高精度版本。	
+	*/
+	using namespace std::chrono; 
+	time_point<steady_clock> start, end; 
+	microseconds duration;
 
 	//循环1：
-	auto start = system_clock::now();
-
+	start = steady_clock::now();
 	long int num = 10000000;
 	for (int i = 0; i != num; i++)
 	{
 		int* b = new int[10]();
 		delete[] b;
 	}
-
-	auto end = system_clock::now();
-	auto duration = duration_cast<microseconds>(end - start);
-	std::cout << "程序1花费了"
-		<< double(duration.count()) * microseconds::period::num / microseconds::period::den << "秒" << std::endl;
-
+	end = steady_clock::now();
+	duration = duration_cast<microseconds>(end - start);
+	debugDisp("程序1花费了", static_cast<double>(duration.count()) * \
+		microseconds::period::num / microseconds::period::den, "秒");
 
 	//循环2
-	start = system_clock::now();
-
+	start = steady_clock::now();
 	int num2 = num >> 1;
 	for (int i = 0; i != num2; i++)
 	{
@@ -143,22 +145,19 @@ void stdlib_tools_module::test1()
 		int* b = new int[10]();
 		delete[] b;
 	}
-
-	end = system_clock::now();
+	end = steady_clock::now();
 	duration = duration_cast<microseconds>(end - start);
-	std::cout << "程序2花费了"
-		<< double(duration.count()) * microseconds::period::num / microseconds::period::den << "秒" << std::endl;
+	debugDisp("程序2花费了", static_cast<double>(duration.count()) * \
+		microseconds::period::num / microseconds::period::den, "秒");
 
 	//循环3
-	start = system_clock::now();
-
-	//testfuc2(num);
-
-	end = system_clock::now();
+	start = steady_clock::now();
+	end = steady_clock::now();
 	duration = duration_cast<microseconds>(end - start);
-	std::cout << "程序3花费了"
-		<< double(duration.count()) * microseconds::period::num / microseconds::period::den << "秒" << std::endl;
+	debugDisp("程序3花费了", static_cast<double>(duration.count()) * \
+		microseconds::period::num / microseconds::period::den, "秒");
 
+	debugDisp("test3() finished.");
 }
 
 
