@@ -49,7 +49,9 @@
 
 # 忽略的文件夹
 x64/
+x86/
 Debug/
+Release/
 Bin_Debug/
 Win32_Debug/
- 
+.vs/
