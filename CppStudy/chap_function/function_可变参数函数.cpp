@@ -19,14 +19,12 @@
 // 知识点
 /*
 1. 实现函数参数数目可变的方法：
-C语言中可以使用<stdarg.h>中提供的可变参数列表va_list;
-C++11中可以使用initialize_list;
-C++中使用变参模板——见function_函数模板，OOP_类模板两个模块。
+	C语言中可以使用<stdarg.h>中提供的可变参数列表va_list;
+	C++11中可以使用initialize_list;
+	C++中使用变参模板——见function_函数模板，OOP_类模板两个模块。
 
-2. C语言中的可变参数列表
-详见下面的printArgs(）函数，test0;
-
-
+	2. C语言中的可变参数列表
+	详见下面的printArgs(）函数，test0;
 
 */
 

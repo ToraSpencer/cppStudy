@@ -4,7 +4,6 @@
 #include "basicTools/basicTools.h"
 
 
-
 struct stdlib_tools_module : public virtualModule
 {
 protected:

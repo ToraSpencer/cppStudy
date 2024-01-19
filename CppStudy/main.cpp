@@ -16,7 +16,7 @@
 // 层次结构：章节 → 模块 → 测试函数
 
 HMODULE g_Hdll = nullptr;				// 动态库句柄；
-bool blInputValid = false;								// 菜单界面中判断输入是否有效的标识符。
+bool blInputValid = false;					// 菜单界面中判断输入是否有效的标识符。
 int inputNum = 0;							// 菜单界面中用户输入的整数
 int interfaceLevel = 1;						// 当前菜单界面的层级，主菜单是一级。
 

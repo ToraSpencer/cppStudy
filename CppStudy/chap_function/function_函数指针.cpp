@@ -15,7 +15,6 @@
 #define PI 3.14159
 
 
-
 // ÖªÊ¶µã
 /*
 	º¯ÊýÖ¸ÕëµÄÉùÃ÷Óï·¨¡ª¡ª¡ª¡ªºÍº¯ÊýÉùÃ÷¸ñÊ½ÀàËÆ£¬Ö»ÊÇº¯ÊýÃû±ä³ÉÁË*pf
@@ -24,8 +23,6 @@
 
 	»Øµ÷º¯Êý
 		Èç¹ûÒ»¸öº¯Êý²¢²»»á±»ÏÔÊ½µØÖ±½Óµ÷ÓÃ£¬¶øÊÇ½«Æäº¯ÊýÖ¸Õë´«¸øÒ»¸öcallerº¯Êý£¬ÓÉcallerº¯Êýµ÷ÓÃ£¬Õâ¸öº¯Êý¾Í±»³ÉÎª»Øµ÷º¯Êý¡£
-
-
 
 */
 
@@ -44,7 +41,8 @@ virtualModule* function_function_pointer_module::getInstance()		// Ïß³Ì²»°²È«µÄµ
 // test0: º¯ÊýÖ¸Õë¡¢º¯ÊýÖ¸ÕëÊý×é¡£
 namespace FUNC_POINTER_EXAMPLE1
 {
-	void foo(void)
+	// ¶ÔÓ¦µÄº¯ÊýÖ¸ÕëÀàÐÍÎª£ºvoid (*)(void)
+	void foo(void)				
 	{
 		std::cout << "function foo is called." << std::endl;
 	}
@@ -59,29 +57,35 @@ namespace FUNC_POINTER_EXAMPLE1
 void function_function_pointer_module::test0(void)
 {
 	using namespace FUNC_POINTER_EXAMPLE1;
+	using PVV = void (*)(void);
 
 	// 1. ÉùÃ÷º¯ÊýÖ¸ÕëÊý×é
-	void(*pfv[10])(void) = { NULL };
+	void(*pfv[10])(void) = { nullptr };
+	PVV pfv2[10] = {nullptr};
 
 	// 2. ¶þ¼¶Ö¸Õë
-	void(**ppfv)(void) = NULL;
+	void(**ppfv)(void) = nullptr;
 
 	printf("\n\n\n\n");
-	printf("\ttest1: º¯ÊýÖ¸ÕëÊý×é¡¢¶þ¼¶º¯ÊýÖ¸Õë\n");
-
+	printf("test1: º¯ÊýÖ¸ÕëÊý×é¡¢¶þ¼¶º¯ÊýÖ¸Õë\n");
 
 	// 3. 
 	ppfv = &pfv[0];
 	*ppfv = foo;
 	ppfv++;
 	*ppfv = goo;
-
+	pfv2[0] = foo;
 
 	// 4.  
 	ppfv = &pfv[0];
 	(**ppfv)();
 	ppfv++;
 	(**ppfv)();
+	ppfv = &pfv2[0];
+	pfv2[0]();
+	(**ppfv)();
+
+	debugDisp("test0 finished.");
 }
 
 
@@ -131,6 +135,7 @@ namespace CALLBACK_FUNC
 
 }
 
+
 void function_function_pointer_module::test1(void)
 {
 	using namespace CALLBACK_FUNC;
@@ -142,8 +147,8 @@ void function_function_pointer_module::test1(void)
 	std::cout << MY_CALCULATOR::calculate((MY_CALCULATOR::add), 3.0f, 1.0f) << std::endl;
 	std::cout << MY_CALCULATOR::calculate((MY_CALCULATOR::sqrt), 3.0f) << std::endl;
 
+	debugDisp("test1 finished.");
 }
-
 
 
 void function_function_pointer_module::test2(void) {}

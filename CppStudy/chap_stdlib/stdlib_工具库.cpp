@@ -116,8 +116,8 @@ void stdlib_tools_module::test1()
 						相当于 steady_clock 的高精度版本。	
 	*/
 	using namespace std::chrono; 
-	time_point<steady_clock> start, end; 
-	microseconds duration;
+	time_point<steady_clock> start, end;			// std::chrono::time_point——表示一个时刻
+	microseconds dur;								// using microseconds = std::chrono::duration<long long, micro>——表示一段时间；
 
 	//循环1：
 	start = steady_clock::now();
@@ -127,10 +127,15 @@ void stdlib_tools_module::test1()
 		int* b = new int[10]();
 		delete[] b;
 	}
+
+	// 1. now()方法——获取当前时刻
 	end = steady_clock::now();
-	duration = duration_cast<microseconds>(end - start);
-	debugDisp("程序1花费了", static_cast<double>(duration.count()) * \
-		microseconds::period::num / microseconds::period::den, "秒");
+
+	// 2. duration_cast<>()——
+	std::chrono::duration<double, std::micro> dur0 = end - start;			// 直接相减，得到浮点型的时长
+	dur = duration_cast<microseconds>(dur0);										// cast成整型的市场；
+	debugDisp("dur0 == ", dur0.count(), ", 单位ms");
+	debugDisp("dur == ", dur.count(), ", 单位ms");
 
 	//循环2
 	start = steady_clock::now();
@@ -146,15 +151,15 @@ void stdlib_tools_module::test1()
 		delete[] b;
 	}
 	end = steady_clock::now();
-	duration = duration_cast<microseconds>(end - start);
-	debugDisp("程序2花费了", static_cast<double>(duration.count()) * \
+	dur = duration_cast<microseconds>(end - start);
+	debugDisp("程序2花费了", static_cast<double>(dur.count()) * \
 		microseconds::period::num / microseconds::period::den, "秒");
 
 	//循环3
 	start = steady_clock::now();
 	end = steady_clock::now();
-	duration = duration_cast<microseconds>(end - start);
-	debugDisp("程序3花费了", static_cast<double>(duration.count()) * \
+	dur = duration_cast<microseconds>(end - start);
+	debugDisp("程序3花费了", static_cast<double>(dur.count()) * \
 		microseconds::period::num / microseconds::period::den, "秒");
 
 	debugDisp("test3() finished.");

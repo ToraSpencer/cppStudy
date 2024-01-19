@@ -23,24 +23,18 @@ virtualModule* function_function_template_module::getInstance()		// 线程不安全的
 }
 
 
+// 函数模板实例1
 namespace FUNCTION_TEMPLATE_EXAMPLE1
 {
-	template <typename T, size_t N>
-	void foo(T(&arr)[N]);					// 函数模板示例，带有类型参数T，和非类型参数N
-
-
 	// foo——函数模板示例，带有类型参数T，和非类型参数N
 	template <typename T, size_t N>
-	void foo(T(&arr)[N])		// 使用范围for循环，遍历打印出传入数组中的所有元素。
+	void foo(T(&arr)[N])				// 使用范围for循环，遍历打印出传入数组中的所有元素。
 	{
-		for (T elem : arr)
-		{
-			std::cout << "\t" << elem;
-		}
+		for (T elem : arr) 
+			std::cout << "\t" << elem; 
 		std::cout << std::endl;
 	}
 }
-
 
 
 // test0: 函数模板的基本使用
@@ -53,10 +47,11 @@ void function_function_template_module::test0(void)
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test0: 函数模板的基本使用" << std::endl;
 
-	std::cout << "\t实例化函数模板foo<T, N>然后调用：" << std::endl;
+	std::cout << "实例化函数模板foo<T, N>然后调用：" << std::endl;
 	foo<int, 10>(arri);
 	foo<float, 5>(arrf);
 
+	debugDisp("test0 finished.");
 }
 
 

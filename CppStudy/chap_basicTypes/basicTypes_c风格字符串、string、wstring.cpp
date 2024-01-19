@@ -455,8 +455,7 @@ void basicTypes_strings_module::test6(void)
 
 
 	// 2. VC++中的宽字符TCHAR，及其相关接口
-
-		/*
+	/*
 		C++支持两种字符串，即常规的ANSI编码（使用""包裹）和Unicode编码（使用L""包裹）
 		TCHAR使用条件编译，对两套字符集及其操作进行了统一。
 		#ifdef   UNICODE
@@ -468,32 +467,31 @@ void basicTypes_strings_module::test6(void)
 	std::cout << typeid(wchar_t).name() << std::endl;
 	std::cout << typeid(TCHAR).name() << std::endl;
 	std::cout << typeid(WCHAR).name() << std::endl;
-
 	const TCHAR* wstr1 = L"阿斯顿发送到发送到发斯蒂芬";
  
-	// std::locale()——设置语言环境
+	// 2.1. std::locale()——设置语言环境
 	std::wcout.imbue(std::locale(std::locale(), "", LC_CTYPE));	// 设置wcout的语言环境，缺少这一步打印中文会有错误。
 	std::wcout << wstr1 << std::endl;
-
 	TCHAR modulePath[MAX_PATH + 1] = { 0 };
 	GetModuleFileName(NULL, modulePath, MAX_PATH);
 	std::wcout << L"当前运行模块为： "  << modulePath << std::endl;
 
-	// wcsrchr()——宽字符串搜索
+	// 2.2. wcsrchr()——宽字符串搜索
 	TCHAR* pc = wcsrchr(modulePath, TEXT('\\'));				// pc指向字符串modulePath中最后一次出现'\\'的位置；
 	std::wcout << L"当前运行模块名为：" << pc << std::endl;
 
+	//	2.3. wcscpy_s()——宽字符串拷贝
 	TCHAR tail[100] = { 0 };
-	//	wcscpy_s()——宽字符串拷贝
 	wcscpy_s(tail, sizeof(tail) / sizeof(TCHAR), pc);
 	std::wcout << L"当前运行模块名为：" << tail << std::endl;
 	std::wcout << tail << std::endl;
 
-	// 截断字符串
+	// 2.4. 截断字符串
 	*pc = L'\0';
 	std::wcout << L"当前运行模块所在目录为："  << modulePath << std::endl;
 	std::cout << wcscmp(tail, TEXT("\\mytest0.exe")) << std::endl;
 
+	debugDisp("test6() finished.");
 }
 
 
