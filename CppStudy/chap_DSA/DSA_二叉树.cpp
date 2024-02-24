@@ -12,10 +12,8 @@
 
 virtualModule* DSA_binary_tree_module::getInstance()		// 线程不安全的单例模式
 {
-	if (nullptr != p_moduleIns)
-	{
-		delete p_moduleIns;
-	}
+	if (nullptr != p_moduleIns) 
+		delete p_moduleIns; 
 	p_moduleIns = new DSA_binary_tree_module;
 	return p_moduleIns;
 }
