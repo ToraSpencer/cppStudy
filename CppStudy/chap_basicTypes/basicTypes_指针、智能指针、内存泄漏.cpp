@@ -15,7 +15,6 @@
 #define PI 3.14159
 
 
-
 // 知识点
 /*
 			1. 指针的三种状态——空指针、野指针、正常指针（指向实际数据对象）
@@ -141,7 +140,6 @@
 */
  
 
-
 virtualModule* basicTypes_pointers_module::getInstance()		// 线程不安全的单例模式
 {
 	if (nullptr != p_moduleIns)
@@ -159,57 +157,33 @@ void basicTypes_pointers_module::test0(void)
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test0: 使用关键字new和delete直接管理内存。" << std::endl;
  
-	int *p1 = new int; 							// 若开辟内存失败则抛出std::bad_alloc
-	int *p2 = new (std::nothrow) int; 		// 若开辟内存失败则返回一个空指针              
-	int *p0 = new int;        
-	                         
-	delete p0;   
+	// 1. new
+	int *p1 = new int; 								// 若申请内存失败则抛出std::bad_alloc
+	int *p2 = new (std::nothrow) int; 		// 若申请内存失败则返回一个空指针              
+	int *p0 = new int;        	            
 
-	int i(1024);              
-	std::string s(10, '9');
+	// 2. 
+	int *pi = new int(1024);									// 申请内存同时初始化
+	std::string *ps = new std::string(10, '9'); 
+	debugDisp("*pi == ", *pi);
+	debugDisp("*ps == ", *ps);
 
-
-	// 未命名，但是已初始化了的数据对象
-	int *pi = new int(1024);  
-	std::string *ps = new std::string(10, '9');
+	// 3. delete
+	delete p0;
+	delete p1;
+	delete p2;
+	delete pi;					// 内存使用完毕以后，需要删除其对应的指针，否则会造成内存泄漏 
+	delete ps;   
  
- 
-
-	std::vector<int> *pv = new std::vector<int>; 	// empty vector
-	for (int i = 0; i != 10; ++i)
-	{
-		pv->push_back(i);              // add elements to the allocated vector
-	}
-
-
-	std::cout << "*pi: " << *pi
-	     << "\ti: " << i << std::endl
-	     << "*ps: " << *ps
-	     << "\ts: " << s << std::endl;
-	
-	for (auto b = pv->begin(); b != pv->end(); ++b)
-	{
-		std::cout << *b << " ";
-	}
-	
-	std::cout << std::endl;
-
-
-	// 内存使用完毕以后，需要删除其对应的指针，否则会造成内存泄漏
-	delete pi;   
-	delete ps;  
-	delete pv;   
-	
- 
-	// 数组内存的开辟和释放：
+	// 4. 动态数组
 	int *pia = new int[42];  
-	delete [] pia; 			// 释放数组内存的时候，要在delete之后加上[]
 	typedef int arrT[42];   
 	int *p = new arrT;      
+	delete[] pia;						// 释放数组内存的时候，要在delete之后加上[]
 	delete [] p;           
 
+	debugDisp("test0() finished.");
 }
-
 
 
 // test1：智能指针shared_ptr, unique_ptr的基本使用
