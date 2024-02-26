@@ -103,12 +103,11 @@ public:
 template<class ElemType>
 class LinkQueue
 {
-protected:
-	//  链队列实现的数据成员:
+protected: 
 	LinkedListNode<ElemType> *front, *rear;					// 队头队尾指指
 
 public:
-	LinkQueue();									// 无参数的构造函数
+	LinkQueue();										// 无参数的构造函数
 	virtual ~LinkQueue();							// 析构函数
 	int GetLength() const;								// 求队列长度			 
 	bool IsEmpty() const;								// 判断队列是否为空
@@ -116,7 +115,7 @@ public:
 	void Traverse(void(*Visit)(const ElemType &)) const;	// 遍历队列
 	Status DelQueue(ElemType &e);				     // 出队操作
 	Status GetHead(ElemType &e) const;			     // 取队头操作
-	Status EnQueue(const ElemType e);			     // 入队操作
+	Status EnQueue(const ElemType e);						// 入队操作
 	LinkQueue(const LinkQueue<ElemType> &q);		// 复制构造函数
 	LinkQueue<ElemType> &operator =(const LinkQueue<ElemType> &q);// 赋值语句重载
 };
@@ -514,10 +513,10 @@ LinkStack<ElemType> &LinkStack<ElemType>::operator = (const LinkStack<ElemType> 
 
 
 template<class ElemType>
-LinkQueue<ElemType>::LinkQueue()
-// 操作结果：构造一个空队列
+LinkQueue<ElemType>::LinkQueue()					// 构造一个空队列
 {
-	rear = front = new LinkedListNode<ElemType>;	// 生成链队列头结点
+	front = new LinkedListNode<ElemType>;		// 生成链队列头结点
+	rear = front;
 }
 
 template<class ElemType>

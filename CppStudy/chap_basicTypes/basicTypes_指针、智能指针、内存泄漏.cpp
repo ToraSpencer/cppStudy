@@ -226,12 +226,12 @@ void basicTypes_pointers_module::test1(void)
 	std::cout << "test1：智能指针shared_ptr, unique_ptr" << std::endl;
 
 	std::cout << "\tpi1.use_count() == " << pi2.use_count() << std::endl;
-	std::cout << "\tpi1.unique() == " << pi2.unique() << std::endl;
+	//std::cout << "\tpi1.unique() == " << pi2.unique() << std::endl;
 
 	pi1 = pi2;
 	std::cout << "pi1 = pi2; → pi1,pi2共享同一个数据对象：" << std::endl;
 	std::cout << "\tpi1.use_count() == " << pi2.use_count() << std::endl;
-	std::cout << "\tpi1.unique() == " << pi2.unique() << std::endl;
+	//std::cout << "\tpi1.unique() == " << pi2.unique() << std::endl;
 
 }
 

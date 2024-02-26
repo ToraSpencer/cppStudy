@@ -1,6 +1,7 @@
 #include <algorithm>
-#include<functional>
+#include <functional>
 #include <numeric>
+#include <random>
 #include <vector>
 #include <deque>
 
@@ -19,14 +20,7 @@
 #define EPS 1e-10					//定义非常小的一个量EPSilon，当浮点数不大于这个值时，视为0
 #define PI 3.14159
 
-
-
-
-
-
-
-
-
+ 
 // C++标准库——算法库 
 /*
         <algorithm>
@@ -37,7 +31,6 @@
                         包含一些类模板，用以声明函数对象。
 
 */
-
 
 
 // <algorithm>中的所有函数
@@ -162,7 +155,6 @@
 */
 
 
-
 //  模板函数：find
 /*. BC------------------------------------------------------------------------
   模板函数：find
@@ -199,8 +191,6 @@
 */
 
 
-
-
 //  模板函数：accumulate
 /*. BC------------------------------------------------------------------------
   模板函数：accumulate
@@ -231,7 +221,6 @@
 */
 
 
-
 //  模板函数：equal
 /*. BC------------------------------------------------------------------------
   模板函数：equal
@@ -257,7 +246,6 @@
 */
 
 
-
 //  模板函数：for_each————遍历容器中的元素
 /*. BC------------------------------------------------------------------------
     描述：
@@ -281,7 +269,6 @@
 */
 
 
-
 virtualModule* STL_algorithm_module::getInstance()		// 线程不安全的单例模式
 {
 	if (nullptr != p_moduleIns)
@@ -291,10 +278,6 @@ virtualModule* STL_algorithm_module::getInstance()		// 线程不安全的单例模式
 	p_moduleIns = new STL_algorithm_module;
 	return p_moduleIns;
 }
-
- 
- 
-
 
 
 // test0：algorithm中一些常用的只读算法——find(), accumulate(), equal(), for_each(), max_element()
@@ -368,42 +351,31 @@ void STL_algorithm_module::test0(void)
 }
 
 
-
-
-// test1: algorithm中常用的非只读算法——random_shuffle()
+// test1: algorithm中常用的非只读算法——shuffle()
 void STL_algorithm_module::test1(void)
 {
     std::cout << "\n\n\n\n" << std::endl;
     std::cout << "test1: algorithm中常用的非只读算法" << std::endl;
 
-    // random_shuffle(iterBegin, iterEnd)————将一个元素序列随机打乱
-    //      作用于STL线性容器
+    // random_shuffle(iterBegin, iterEnd)————将一个元素序列随机打乱，作用于STL线性容器
+    std::random_device rd;
+    std::mt19937 g(rd());               // don't know what the fuck
 	std::vector<int> arri1 = {1,2,3,4,5,6,7,8,9,10};
-	std::random_shuffle(arri1.begin(), arri1.end());
-    for (std::vector<int>::iterator iter = arri1.begin(); iter != arri1.end(); iter++)
-    {
-        std::cout << "\t" << *iter;
-    }
+	std::shuffle(arri1.begin(), arri1.end(), g);
+    for (std::vector<int>::iterator iter = arri1.begin(); iter != arri1.end(); iter++) 
+        std::cout << "\t" << *iter; 
     std::cout << std::endl;
 
-
-
-
+   
     //      作用于数组
     int arri2[] = { 1,2,3,4,5,6,7,8,9,10 };
-	std::random_shuffle(std::begin(arri2), std::end(arri2));
+	std::shuffle(std::begin(arri2), std::end(arri2), g);
     for (int num : arri2)
     {
         std::cout << "\t" << num;
     }
-    std::cout << std::endl;
-
- 
-
-
-
+    std::cout << std::endl; 
 }
-
 
 
 // test2: 算法应用举例

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "basicTools/basicTools.h"
+#include "DSA_链表.h"
 
 using std::cout;
 using std::endl;
@@ -1412,14 +1413,16 @@ template <class ElemType>
 void BFS(const AdjMatrixUndirGraph<ElemType>& g, int v, void(*Visit)(const ElemType&))
 {
 	// 操作结果：从顶点v出发进行广度优先搜索
-	LinkQueue<int> q;
 	int u, w;
 	ElemType e;
 	g.SetTag(v, VISITED);						// 作访问标志
 	g.GetElem(v, e);							// 取顶点v的数据元素值 
-	Visit(e);									// 访问顶点v
+	Visit(e);											// 访问顶点v	
+
+	LinkQueue<int> q{};
 	q.EnQueue(v);	                            // 顶点v入队 
-	while (!q.IsEmpty()) {
+	while (!q.IsEmpty()) 
+	{
 		q.DelQueue(u);
 		for (w = g.FirstAdjVex(u); w != -1; w = g.NextAdjVex(u, w))
 			if (g.GetTag(w) == UNVISITED) 
@@ -1447,6 +1450,7 @@ void DFSTraverse(const AdjMatrixUndirGraph<ElemType> &g, void(*Visit)(const Elem
 		if (g.GetTag(v) == UNVISITED)
 			DFS(g, v, Visit);// 从尚未访问的顶点v开始进行深度优先搜索 
 }
+
 
 // 图的深度优先搜索(depth firsts search)
 template <class ElemType>
