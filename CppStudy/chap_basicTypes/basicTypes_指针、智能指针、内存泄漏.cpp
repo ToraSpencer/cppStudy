@@ -27,17 +27,11 @@
 									此时指针指向的位置未知，可能是随机的
 									一般使用野指针的话，编译器都会报错。
 
-
-
-
 			2. 引用和指针的区别
 							(1). 引用必须被初始化，指针不需要。
 							(2). 引用初始化之后不可改变，指针可以
 							(3). 不存在空引用，存在空指针。
-
-
-
-
+							 
 
 			3. 三个智能指针类模板shared_ptr, unique_ptr, weak_ptr的基本信息(C++11)
 							智能指针主要用来管理堆对象，对于栈对象没有必要使用，用的话可能还会引发异常。
@@ -48,10 +42,7 @@
 									一个对象的引用计数降到0时，会被销毁，内存会释放。
 							
 							unique——ptr
-									不可共享的，唯一的智能指针。
-			
-
-
+									不可共享的，唯一的智能指针。 
 
 			4. shared_ptr和unique_ptr的比较
 							(1) shared_ptr, unique_ptr相同的接口：
@@ -102,10 +93,7 @@
 
 			8. 检查内存泄漏的途径
 							1. 使用工具软件BoundsChecker——一个运行时错误检测工具，它主要定位程序运行时期发生的各种错误。
-
-
-			
-
+							 
 
 			9. 内存泄漏的修复途径
 
@@ -114,30 +102,7 @@
 */
 
 
-// make_shared<T>()————创建一个shared_ptr指针
-/* 
-描述：  
-	开辟动态内存空间，返回shared_ptr对象
-	源于头文件<memory>
-	生成的T类型对象的初始值是默认的。
-	例子：shared_ptr<int> p = make_shared<int>(42);
 
-						
-	重载1：
-		shared_ptr<T> make_shared( Args&&... args 			生成T对象的构造函数参数列表。
-															);	
-		返回值：
-			指向构造出来的T类型对象的shared_ptr指针。
-			
-
-	重载2：
-		shared_ptr<T> make_shared();
-
-		返回值：
-			同上。
-								 
-  
-*/
  
 
 virtualModule* basicTypes_pointers_module::getInstance()		// 线程不安全的单例模式
@@ -180,7 +145,7 @@ void basicTypes_pointers_module::test0(void)
 	typedef int arrT[42];   
 	int *p = new arrT;      
 	delete[] pia;						// 释放数组内存的时候，要在delete之后加上[]
-	delete [] p;           
+	delete[] p;           
 
 	debugDisp("test0() finished.");
 }
@@ -189,26 +154,51 @@ void basicTypes_pointers_module::test0(void)
 // test1：智能指针shared_ptr, unique_ptr的基本使用
 void basicTypes_pointers_module::test1(void)
 {
-	float f1 = 1.10;
-	std::shared_ptr<float> pf1;						// 默认构造函数，构造一个空的shared_ptr指针 
-	std::shared_ptr<float> pf2(&f1);					// 传递普通指针构造shared_ptr指针
-	std::shared_ptr<float> pf3(new float(1.11));		// 传递普通指针构造，配合关键字new
-	std::shared_ptr<int> pi1;
-	std::shared_ptr<int> pi2 = std::make_shared<int>(12);	// 使用make_shared函数生成shared_ptr指针
-
 	std::cout << "\n\n\n\n" << std::endl;
-	std::cout << "test1：智能指针shared_ptr, unique_ptr" << std::endl;
+	debugDisp("test1：智能指针shared_ptr, unique_ptr");
 
-	std::cout << "\tpi1.use_count() == " << pi2.use_count() << std::endl;
-	//std::cout << "\tpi1.unique() == " << pi2.unique() << std::endl;
+	float f1 = 1.10;
 
-	pi1 = pi2;
-	std::cout << "pi1 = pi2; → pi1,pi2共享同一个数据对象：" << std::endl;
-	std::cout << "\tpi1.use_count() == " << pi2.use_count() << std::endl;
-	//std::cout << "\tpi1.unique() == " << pi2.unique() << std::endl;
+	// 1. constructor
+	std::shared_ptr<float> pf1;								// 默认构造函数，构造一个空的shared_ptr指针 
+	// std::shared_ptr<float> pf2(&f1);					//  智能指针不能指向栈对象，否则析构的时候会抛出异常；
+	std::shared_ptr<float> pf3(new float(1.11));		// 传递普通指针构造，配合关键字new
 
+	// 2. make_shared<T>()————创建一个shared_ptr指针
+	/*
+		描述：
+			开辟动态内存空间，返回shared_ptr对象
+			源于头文件<memory>
+			生成的T类型对象的初始值是默认的。
+			例子：shared_ptr<int> p = make_shared<int>(42);
+
+			重载1：
+				shared_ptr<T> make_shared( Args&&... args 			生成T对象的构造函数参数列表。																	);
+				返回值：
+					指向构造出来的T类型对象的shared_ptr指针。
+
+			重载2：
+				shared_ptr<T> make_shared();
+				返回值：
+					同上。
+	*/
+	std::shared_ptr<int> pi1, pi2;
+	std::shared_ptr<int> pi3 = std::make_shared<int>(12);			// 使用make_shared函数生成shared_ptr指针
+
+	// 3. use_count()方法——返回当前管理的对象被多少个shared_ptr同时管理，若当前无管理对象则返回0；返回类型为long
+	debugDisp("\t", "pi1.use_count() == ", pi1.use_count());
+	debugDisp("\t", "pi2.use_count() == ", pi2.use_count());
+	debugDisp("\t", "pi3.use_count() == ", pi3.use_count());
+
+	pi1 = pi3;
+	pi2 = pi3;
+	debugDisp("pi1 = pi2; → pi1,pi2共享同一个数据对象：");
+	debugDisp("\t", "pi1.use_count() == ", pi1.use_count());
+	debugDisp("\t", "pi2.use_count() == ", pi2.use_count());
+	debugDisp("\t", "pi3.use_count() == ", pi3.use_count());
+
+	debugDisp("test1() finished.");
 }
-
 
 
 // test2: 自定义类型使用智能指针shared_ptr, unique_ptr
@@ -220,7 +210,6 @@ void basicTypes_pointers_module::test2(void)
 }
 
 
-
 // test3: 空指针
 void basicTypes_pointers_module::test3(void)
 {
@@ -228,20 +217,17 @@ void basicTypes_pointers_module::test3(void)
 	std::cout << "test3：空指针" << std::endl;
 
 	// 使用空指针来访问不存在的内存空间，会引发空指针异常，从而程序崩溃
-	// 可以使用p==NULL表达式返回的bool值来判断是否是空指针
 	int *pi1 = NULL;
 	int *pi2 = NULL;
 
-	if (pi1 == NULL && pi1 == NULL && pi2 == NULL && pi2 == NULL)
-	{
-		std::cout << "pi1和pi2都是空指针。写成NULL或nullptr都可以。" << std::endl;
-	}
+	// 可以使用p==NULL表达式返回的bool值来判断是否是空指针
+	if (pi1 == NULL && pi1 == NULL && pi2 == NULL && pi2 == NULL) 
+		debugDisp("pi1和pi2都是空指针。写成NULL或nullptr都可以。"); 
 
 	std::cout << "(int)(pi1 == NULL) == " << (int)(pi1 == NULL) << std::endl;
 	std::cout << "(int)(pi1 == NULL)" << (int)(pi2 == NULL) << std::endl;
 
-
-
+	debugDisp("test3() finished.");
 }
 
 
@@ -251,9 +237,4 @@ void basicTypes_pointers_module::test4(void) {}
 void basicTypes_pointers_module::test5(void) {}
 
 
-
-void basicTypes_pointers_module::test6(void)
-{
-
-
-}
+void basicTypes_pointers_module::test6(void) {} 

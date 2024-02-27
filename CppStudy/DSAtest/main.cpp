@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <algorithm>
 
+#include "myDSA.h"
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
 namespace MY_DEBUG
@@ -95,55 +97,52 @@ namespace ARRAY
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////// 字符串
+namespace STRING 
+{
+	// 回文串判断
+	/*
+		若在将所有大写字符转换为小写字符、并移除所有非字母数字字符之后，短语正着读和反着读都一样。则可以认为该短语是一个回文串 。
+				字母和数字都属于字母数字字符。
+
+		给你一个字符串 s，如果它是 回文串 ，返回 true ；否则，返回 false 。
+	示例 ：
+		输入: s = "A man, a plan, a canal: Panama"
+		输出：true
+		解释："amanaplanacanalpanama" 是回文串。
+		示例 2：
+
+		输入：s = "race a car"
+		输出：false
+		解释："raceacar" 不是回文串。
+		示例 3：
+
+		输入：s = " "
+		输出：true
+		解释：在移除非字母数字字符之后，s 是一个空字符串 "" 。
+		由于空字符串正着反着读都一样，所以是回文串。
+  
+	提示：1 <= s.length <= 2 * 10^5
+	
+	*/
+	void test0() 
+	{
+
+
+	}
+
+
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////// 二叉树
 namespace BINARY_TREE
 {
-	// TreeNode类——二叉树节点类
-	template <typename T>
-	class TreeNode
-	{
-	public:
-		T val;
-		TreeNode* left;
-		TreeNode* right;
-		TreeNode() : val(0), left(nullptr), right(nullptr) {}
-		TreeNode(const T x) : val(x), left(nullptr), right(nullptr) {}
-		TreeNode(const T x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
-	};
-
-
 	// 二叉树的最大深度：
 	/*
 		给定一个二叉树 root ，返回其最大深度。
 			二叉树的最大深度：从根节点到最远叶子节点的最长路径上的节点数。
-	*/
-	template <typename T>
-	int maxDepth(TreeNode<T>* root)
-	{
-		if (root == NULL)
-			return 0;
-
-		int depth = 0;
-		std::queue<TreeNode<T>*> que;
-		que.push(root);
-		while (!que.empty())
-		{
-			int size = que.size();
-			depth++;											  // 记录深度
-			for (int i = 0; i < size; i++)
-			{
-				TreeNode<T>* node = que.front();
-				que.pop();
-				if (node->left)
-					que.push(node->left);
-				if (node->right)
-					que.push(node->right);
-			}
-		}
-		return depth;
-	}
-
-
+	*/ 
 	void test0()
 	{
 		/* 
@@ -166,7 +165,8 @@ namespace BINARY_TREE
 		tn01.right = &tn011;
 		ptrRoot = &tn0;
 
-		debugDisp("maxDepth(ptrRoot) == ", maxDepth(ptrRoot)); 
+		debugDisp("ptrRoot->maxDepth() == ", ptrRoot->maxDepth()); 
+		debugDisp("ptrRoot->right->maxDepth() == ", ptrRoot->right->maxDepth());
 
 		debugDisp("test0 finished.");
 	}
@@ -280,10 +280,63 @@ namespace BINARY_TREE
 }
 
 
+namespace SORTING 
+{
+	// 合并两个有序数组（单调递增）
+	bool mergeSequence(std::vector<int>& vec1, const std::vector<int>& vec2)
+	{
+		int index1 = 0;
+		int index2 = 0;
+		const int count1 = vec1.size();
+		const int count2 = vec2.size();
+		std::vector<int> vecOut;
+		vecOut.reserve(count1 + count2);
+
+		while (index1 < count1 && index2 < count2)
+		{
+			if (vec1[index1] <= vec2[index2])
+			{
+				vecOut.push_back(vec1[index1]);
+				index1++;
+			}
+			else
+			{
+				vecOut.push_back(vec2[index2]);
+				index2++;
+			}
+		}
+		if (count1 == index1)
+			vecOut.insert(vecOut.end(), vec2.begin() + index2, vec2.end());
+		else
+			vecOut.insert(vecOut.end(), vec1.begin() + index1, vec1.end());
+
+		vec1.clear();
+		vec1 = std::move(vecOut);
+
+		return true;
+	}
+	
+	  
+	void test0() 
+	{
+		std::vector<int> vec1{ 1, 2, 3, };
+		std::vector<int> vec2{ 2, 5, 6 }; 
+		mergeSequence(vec1, vec2); 
+		
+		
+		traverseSTL(vec1, disp<int>);
+		debugDisp("test0() finished.");
+	}
+
+}
+
 
 int main(int argc, char** argv)
 {
-	BINARY_TREE::test1();
+	BINARY_TREE::test0();
+
+	// SORTING::test0();
+
 
 	debugDisp("main finished.");
 
