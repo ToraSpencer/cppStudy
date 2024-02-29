@@ -46,6 +46,7 @@
 
 */
 
+
 virtualModule* stdlib_numerical_module::getInstance()		// 线程不安全的单例模式
 {
 	if (nullptr != p_moduleIns)
@@ -55,8 +56,6 @@ virtualModule* stdlib_numerical_module::getInstance()		// 线程不安全的单例模式
 	p_moduleIns = new stdlib_numerical_module;
 	return p_moduleIns;
 }
-
-
 
 
 // test0: <cmath>中的无穷大宏定义，及相关函数
@@ -80,7 +79,6 @@ void stdlib_numerical_module::test0(void)
 	std::cout << "isinf(INFINITY) == " << isinf(INFINITY) << std::endl;
 
 }
-
 
 
 // test1: <cmath>中的常用普通数值函数
@@ -153,9 +151,7 @@ void stdlib_numerical_module::test3(void)
 
 	//			每次重新调用随机数产生器会产生新的随机数：
 	std::cout << URD_f(e) << std::endl;
-
-
-
+	 
 }
 
 

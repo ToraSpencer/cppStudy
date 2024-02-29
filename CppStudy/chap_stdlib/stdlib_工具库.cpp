@@ -133,7 +133,7 @@ void stdlib_tools_module::test1()
 
 	// 2. duration_cast<>()——
 	std::chrono::duration<double, std::micro> dur0 = end - start;			// 直接相减，得到浮点型的时长
-	dur = duration_cast<microseconds>(dur0);										// cast成整型的市场；
+	dur = duration_cast<microseconds>(dur0);										// cast成整型的时常；
 	debugDisp("dur0 == ", dur0.count(), ", 单位ms");
 	debugDisp("dur == ", dur.count(), ", 单位ms");
 
