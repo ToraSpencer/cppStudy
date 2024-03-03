@@ -1,6 +1,8 @@
 ﻿#include <iostream>
 #include <vector>
+#include <stack>
 #include <queue>
+#include <map>
 #include <unordered_map>
 #include <algorithm>
 
@@ -216,7 +218,7 @@ namespace BINARY_TREE
 	void printBT(TreeNode<T>* ptrNode)
 	{ 
 		// 1. 动态数组申请空间
-		int n = maxDepth(ptrNode);				 // 深度 
+		int n = ptrNode->maxDepth();				 // 深度 
 		int width = (2 << n) - 3;						 // 2^(n+1)-3；左移1位就相当于乘以2的1次方
 		int height = (2 << (n - 1)) - 1;				// 2^n-1 
 		T* a = new T[width *height];						
@@ -331,12 +333,151 @@ namespace SORTING
 }
 
 
+namespace STACK 
+{
+	// practice——有效的括号：
+	/*
+		给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+		有效字符串需满足：
+				左括号必须用相同类型的右括号闭合。
+				左括号必须以正确的顺序闭合。
+				每个右括号都有一个对应的相同类型的左括号。
+
+		示例 ：
+				输入：s = "()"
+				输出：true
+				输入：s = "()[]{}"
+				输出：true 
+				输入：s = "(]"
+				输出：false 
+
+		提示：
+				1 <= s.length <= 104
+				s 仅由括号 '()[]{}' 组成
+	*/
+	bool isValidParentheses(std::string s)
+	{
+		if (s.length() % 2 != 0) 
+			return false;					//一但是奇数说明不是有效的括号
+
+		std::map<char, char> wordbook;			//建立哈希表
+		wordbook.insert(std::map<char, char>::value_type(')', '('));
+		wordbook.insert(std::map<char, char>::value_type(']', '['));
+		wordbook.insert(std::map<char, char>::value_type('}', '{'));
+		std::stack<char> mystack;				//建立栈
+		for (int i = 0; i < s.length(); i++)
+		{
+			if (s[i] == '[' || s[i] == '{' || s[i] == '(')//匹配到左括号
+				mystack.push(s[i]);//放入栈中
+			else if (s[i] == ']' || s[i] == '}' || s[i] == ')')//匹配到右括号
+			{
+				if (mystack.empty()) return false;
+
+				//匹配到右括号，栈中应该存在左括号。否则就是无效的括号
+				if (wordbook[s[i]] == mystack.top())		//与栈顶元素进行匹配
+				{
+					mystack.pop();		//匹配成功删除栈顶元素
+					continue;
+				}
+				else 
+					return false;
+			}
+		}
+		if (mystack.empty()) 
+			return true;		//有效的括号到最后检测结束栈中应没有元素
+		else
+			return false;
+	}
+
+
+	void test0() 
+	{
+		debugDisp("test0() finished.");
+	}
+		
+
+	// practice——最小栈
+	/*
+		请你设计一个 最小栈 。它提供 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。
+		实现 MinStack 类:
+				MinStack() 初始化堆栈对象。
+				void push(int val) 将元素val推入堆栈。
+				void pop() 删除堆栈顶部的元素。
+				int top() 获取堆栈顶部的元素。
+				int getMin() 获取堆栈中的最小元素。
+
+		示例:
+				输入：
+						["MinStack","push","push","push","getMin","pop","top","getMin"]
+						[[],[-2],[2],[-3],[],[],[],[]]
+				输出：
+						[null,null,null,null,-3,null,2,-2]
+	
+	*/
+	void test1() 
+	{
+		debugDisp("test1() finished.");
+	}
+}
+
+
+namespace GRAPH 
+{
+	// practice——找到小镇的法官
+	/*
+		小镇里有 n 个人，按从 1 到 n 的顺序编号。传言称，这些人中有一个暗地里是小镇法官。
+		如果小镇法官真的存在，那么：
+				小镇法官不会信任任何人。
+				每个人（除了小镇法官）都信任这位小镇法官。
+				只有一个人同时满足属性 1 和属性 2 。
+				给你一个数组 trust ，其中 trust[i] = [ai, bi] 表示编号为 ai 的人信任编号为 bi 的人。
+		如果小镇法官存在并且可以确定他的身份，请返回该法官的编号；否则，返回 -1 。 
+
+		示例 ：
+				输入：n = 2, trust = [[1,2]]
+				输出：2 
+				输入：n = 3, trust = [[1,3],[2,3]]
+				输出：3 
+				输入：n = 3, trust = [[1,3],[2,3],[3,1]]
+				输出：-1
+	*/
+	int findJudge(int N, const std::vector<std::vector<int>>& trust)
+	{
+		const int k = N + 1;
+		std::vector<bool> trustPeople(k, false);
+		std::vector<int> beTrust(k, 0);  //被别人相信
+		for (auto& v : trust)
+		{
+			trustPeople[v[0]] = true;
+			beTrust[v[1]]++;
+		}
+		for (int i = 1; i <= N; ++i)
+			if (!trustPeople[i] && beTrust[i] == N - 1)
+				return i;
+		return -1;
+	}
+
+
+	void test0()
+	{
+		debugDisp("result == ", findJudge(3, std::vector<std::vector<int>>{ \
+				std::vector<int>{1, 3}, std::vector<int>{2, 3} }));
+
+		debugDisp("test0() finished.");
+	}
+
+}
+
+
+
+
 int main(int argc, char** argv)
 {
-	BINARY_TREE::test0();
+	// BINARY_TREE::test0();
 
 	// SORTING::test0();
-
+	
+	GRAPH::test0();
 
 	debugDisp("main finished.");
 
