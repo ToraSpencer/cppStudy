@@ -25,7 +25,9 @@ public:
 
 // get方法：
 
-	int maxDepth()						// 返回以当前节点为根节点的二叉树的最大深度；
+
+	// 返回以当前节点为根节点的二叉树的最大深度；
+	int maxDepth()						
 	{
 		int depth = 0; 
 		std::queue<TreeNode<T>*> que;

@@ -13,7 +13,8 @@
  * 编码森林的实现方式采用优先级队列时，编译前对应的工程只需设置相应标志：
  *    DSA_PQ_List、DSA_PQ_ComplHeap或DSA_PQ_LeftHeap
  ******************************************************************************************/
-int main ( int argc, char* argv[] ) { //Huffman编码算法统一测试
+int main ( int argc, char* argv[] )
+{ //Huffman编码算法统一测试
    /*DSA*/if ( 3 > argc ) { printf ( "Usage: %s <sample-text-file> <message#1> [message#2] ...\a\n", argv[0] ); return -1; }
    int* freq = statistics ( argv[1] ); //根据样本文件，统计各字符的出现频率
    HuffForest* forest = initForest ( freq ); release ( freq ); //创建Huffman森林

@@ -9,6 +9,7 @@
 #include "myDSA.h"
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
 namespace MY_DEBUG
 {
@@ -97,6 +98,7 @@ namespace ARRAY
 	}
 
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 字符串
@@ -358,7 +360,7 @@ namespace STACK
 	bool isValidParentheses(std::string s)
 	{
 		if (s.length() % 2 != 0) 
-			return false;					//一但是奇数说明不是有效的括号
+			return false;					// 一但是奇数说明不是有效的括号
 
 		std::map<char, char> wordbook;			//建立哈希表
 		wordbook.insert(std::map<char, char>::value_type(')', '('));
@@ -367,7 +369,7 @@ namespace STACK
 		std::stack<char> mystack;				//建立栈
 		for (int i = 0; i < s.length(); i++)
 		{
-			if (s[i] == '[' || s[i] == '{' || s[i] == '(')//匹配到左括号
+			if (s[i] == '[' || s[i] == '{' || s[i] == '(')			//匹配到左括号
 				mystack.push(s[i]);//放入栈中
 			else if (s[i] == ']' || s[i] == '}' || s[i] == ')')//匹配到右括号
 			{
@@ -384,7 +386,7 @@ namespace STACK
 			}
 		}
 		if (mystack.empty()) 
-			return true;		//有效的括号到最后检测结束栈中应没有元素
+			return true;					//	有效的括号到最后检测结束栈中应没有元素
 		else
 			return false;
 	}
@@ -427,8 +429,8 @@ namespace GRAPH
 	/*
 		小镇里有 n 个人，按从 1 到 n 的顺序编号。传言称，这些人中有一个暗地里是小镇法官。
 		如果小镇法官真的存在，那么：
-				小镇法官不会信任任何人。
-				每个人（除了小镇法官）都信任这位小镇法官。
+				1. 小镇法官不会信任任何人。
+				2. 每个人（除了小镇法官）都信任这位小镇法官。
 				只有一个人同时满足属性 1 和属性 2 。
 				给你一个数组 trust ，其中 trust[i] = [ai, bi] 表示编号为 ai 的人信任编号为 bi 的人。
 		如果小镇法官存在并且可以确定他的身份，请返回该法官的编号；否则，返回 -1 。 
@@ -443,9 +445,16 @@ namespace GRAPH
 	*/
 	int findJudge(int N, const std::vector<std::vector<int>>& trust)
 	{
+		/*
+			trust中的数对相当于graph中的有向边；
+			问题等价于：
+					判断n个节点的有向图中是否有某个节点同时满足：
+							1. 入度为(n - 1)；
+							2. 出度为0；
+		*/
 		const int k = N + 1;
 		std::vector<bool> trustPeople(k, false);
-		std::vector<int> beTrust(k, 0);  //被别人相信
+		std::vector<int> beTrust(k, 0);									 // 被别人相信
 		for (auto& v : trust)
 		{
 			trustPeople[v[0]] = true;
@@ -467,7 +476,6 @@ namespace GRAPH
 	}
 
 }
-
 
 
 

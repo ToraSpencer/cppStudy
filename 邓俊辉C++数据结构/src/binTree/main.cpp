@@ -1,9 +1,12 @@
 #include "binTree_test.h"
 
-int testID = 0;         //测试编号
+
+int testID = 0;         // 测试编号
+
 
 // 随机生成期望高度为h的二叉树
-template <typename T> bool randomBinTree ( BinTree<T> & bt, BinNodePosi<T> x, int h ) {
+template <typename T> bool randomBinTree ( BinTree<T> & bt, BinNodePosi<T> x, int h ) 
+{
    if ( 0 >= h ) return false; //至多h层
    if ( 0 < dice ( h ) ) //以1/h的概率终止当前分支的生长
       randomBinTree ( bt, bt.insertAsLC ( x, dice ( ( T ) h * h * h ) ), h - 1 );
@@ -12,8 +15,9 @@ template <typename T> bool randomBinTree ( BinTree<T> & bt, BinNodePosi<T> x, in
    return true;
 }
 
+
 // 在二叉树中随机确定一个节点位置
-template <typename T> BinNodePosi<T> randomPosiInBinTree ( BinNodePosi<T> root ) {
+template <typename T> BinNodePosi<T>randomPosiInBinTree ( BinNodePosi<T> root ) {
    if ( !HasChild ( *root ) ) return root;
    if ( !HasLChild ( *root ) )
       return dice ( 6 ) ? randomPosiInBinTree ( root->rc ) : root;
@@ -24,12 +28,17 @@ template <typename T> BinNodePosi<T> randomPosiInBinTree ( BinNodePosi<T> root )
           randomPosiInBinTree ( root->rc ) ;
 }
 
-template <typename T> void   testBinTree ( int h ) { //测试二叉树
-   printf ( "\n  ==== Test %2d. Generate a binTree of height <= %d \n", testID++, h );
+
+template <typename T> void   testBinTree ( int h ) 
+{
+    //测试二叉树
+   printf ( "\n  ==== Test %2d. Generate a binTree of height <= %d \n", testID++, h);
   
    BinTree<T> bt; print ( bt );
-   bt.insertAsRoot ( dice ( ( T ) h * h * h ) ); print ( bt );
-   randomBinTree<T> ( bt, bt.root(), h ); print ( bt );
+   bt.insertAsRoot ( dice ( ( T ) h * h * h ) ); 
+   print ( bt );
+   randomBinTree<T> ( bt, bt.root(), h ); 
+   print ( bt );
 
    printf ( "\n  ==== Test %2d. Double and increase all nodes by traversal\n", testID++ );
    bt.travPre ( Double<T>() ); bt.travPre ( Increase<T>() ); print ( bt );
@@ -46,23 +55,39 @@ template <typename T> void   testBinTree ( int h ) { //测试二叉树
       {
          printf ( "removing " ); print ( p->data ); printf ( " ...\n" );
          printf ( "%d node(s) removed\n", bt.remove ( p ) ); print ( bt );
-      } else
+      }
+      else
       {
-         printf ( "releasing " ); print ( p->data ); printf ( " ...\n" );
-         BinTree<T>* S = bt.secede ( p ); print ( S );
-         printf ( "%d node(s) released\n", S->size() ); release ( S ); print ( bt );
+         printf ( "releasing " ); 
+         print ( p->data ); 
+         printf ( " ...\n" );
+         BinTree<T>* S = bt.secede ( p ); 
+         print ( S );
+         printf ( "%d node(s) released\n", S->size() ); 
+         release ( S ); 
+         print ( bt );
       }
    }
 }
 
 
 
+
+void test0() 
+{
+
+}
+
+
+
+
 int main ( int argc, char* argv[] )
-{ 
-    //测试二叉树
-   if ( 2 > argc ) { printf ( "Usage: %s <size of test>\a\a\n", argv[0] ); return 1; }
+{  
   
    srand ( ( unsigned int ) time ( NULL ) );
-   testBinTree<int> ( atoi ( argv[1] ) );               //元素类型可以在这里任意选择
+   //testBinTree<int> ( atoi ( argv[1] ) );               // 元素类型可以在这里任意选择
+
+   testBinTree<int>(5);
+
    return 0;
 }
