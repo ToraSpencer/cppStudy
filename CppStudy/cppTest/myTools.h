@@ -12,6 +12,7 @@
 #include <vector>
 #include <list>
 #include <deque>
+#include <stack>
 #include <queue>
 #include <set>
 #include <unordered_set>

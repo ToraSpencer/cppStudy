@@ -15,7 +15,7 @@
 
 
 
-// STL——容器适配器：std::stack, std::queue, priority_queue,
+// STL——容器适配器：std::stack, std::queue, std::priority_queue,
 /*
 	 适配器的作用：
 				使用一套新的接口，覆盖掉原有程序的接口。
@@ -26,7 +26,7 @@
 
 
 
-// std::stack——栈模板类
+// std::stack——栈 
 /*
 	默认容器：deque
 
@@ -58,7 +58,7 @@
 */
 
 
-// std::queue——队列模板类
+// std::queue——队列 
 /*
 	默认容器：deque
 	其他可用容器：list
@@ -93,14 +93,13 @@
 
 
 
-// priority_queue——优先级队列类模板——元素有序排列的队列
+// priority_queue——优先级队列——元素有序排列的队列
 /*
 
 
 */
 
-
-
+ 
 
 virtualModule* STL_adapter_module::getInstance()		// 线程不安全的单例模式
 {
@@ -112,38 +111,37 @@ virtualModule* STL_adapter_module::getInstance()		// 线程不安全的单例模式
 	return p_moduleIns;
 }
 
+ 
 
-
-
-
-
-
-
-// test0:  std::stack类模板的成员
+// test0:  std::stack的常用成员
 void STL_adapter_module::test0(void)
 {
+
+	std::cout << "\n\n\n\n" << std::endl;
+	std::cout << "test0:  std::stack的常用成员" << std::endl;
 	std::stack<char> stack1;										// 默认情况下用deque构造std::stack
 	std::stack<int, std::vector<int>> sti1;						// 指定使用vector来构造std::stack
 	std::stack<float, std::list<float>> stf1;
 
-
-	std::cout << "\n\n\n\n" << std::endl;
-	std::cout << "test0:  std::stack类模板的成员" << std::endl;
-
-	stack1.push('a');																			// 压栈操作
+	// 1. push()——压栈操作
+	stack1.push('a');															 
 	stack1.push('b');
 	stack1.push('c');
 	stack1.push('d');
 	stack1.push('e');
  
+	// 2. 读方法
+	std::cout << "stack1.empty() = " << stack1.empty() << std::endl;				// 查看是否为空
+	std::cout << "stack1.size() = " << stack1.size() << std::endl;						// 查看当前元素数
 
-	std::cout << "\tstack1.empty() = " << stack1.empty() << std::endl;				// 查看是否为空
-	std::cout << "\tstack1.size() = " << stack1.size() << std::endl;						// 查看当前元素数
+	// 3. 写方法
+	stack1.pop();																								// 出栈操作
 
-	stack1.pop();																					// 出栈操作
-	std::cout << "\tstack1.top() = " << stack1.top() << std::endl;						// 访问栈顶元素
-	std::cout << std::endl;
+	//		3.1 top()方法——返回栈顶元素的引用；若此时栈为空则会抛出异常；
+	debugDisp("stack1.top() = ", stack1.top());							 
 	
+
+	debugDisp("test0() finished.");
 }
 
 

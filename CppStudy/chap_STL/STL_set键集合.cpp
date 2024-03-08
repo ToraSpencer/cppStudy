@@ -48,10 +48,7 @@ using namespace std;
 		所以可以说默认比较器本质上取决于operator<
 
 */
-
-
-
-
+ 
 
 // STL——关联容器：set, map, multiset, multimap
 /*

@@ -22,7 +22,7 @@
     <None Include="temInpletation.tpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="mainCppTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="myTools.h" />

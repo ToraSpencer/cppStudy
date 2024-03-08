@@ -83,44 +83,59 @@ void dispPerson(person& p)
 }
 
 
-
  
-
- 
-// test0: std::map的基本使用方法、API
+// test0: std::map, std::unordered_map常用成员：
 void STL_map_module::test0(void)
 {
 	std::cout << "\n\n\n\n" << std::endl;
-	std::cout << "test0: std::map的基本使用方法、API" << std::endl;
+	std::cout << "test0: std::map, std::unordered_map常用成员" << std::endl;
 
 	std::map<int, std::string>  mis;
 	std::map<int, std::string>::iterator iter1;
-	pairPrinter pp;
+	pairPrinter pp; 
 
-
-	// 增删查改
-	std::cout << "\tmap的增删查改：" << std::endl;
-
-	//			使用insert来插入元素
+	//	1. insert()——插入键值对：
 	mis.insert(std::make_pair(6, "xiaohong"));			// 插入pair对象
 	mis.insert(std::make_pair(5,"ali"));
 
-	//			使用下标运算符operator[]来增加、修改元素
-	mis[1] = "xiaoming";								// 下标运算符：无该键时创建该键，有该键时修改该键。						
-	mis[33] = "laowang";
-	mis[33] = "laoli";	
+
+	//	2.operator[]()——返回输入键对应值的引用；注：如果输入键不存在，则在字典中生成该键值对，用默认constructor构造其值对象；
+	debugDisp("\noperator[](): ");
+	debugDisp("mis[5] == ", mis[5]);
+
+	mis[5] = "bli";
+	debugDisp("mis[5] == ", mis[5]);
+	debugDisp("mis.size() == ", mis.size());
+
+	//			如果输入键不存在，则在字典中生成该键值对，用默认constructor构造其值对象；
+	debugDisp("mis[1] == ", mis[1]);
+	debugDisp("mis.size() == ", mis.size());
+	debugDisp("\n");
+
+
+	//	3. erase()——输入键或迭代器，删除对应的键值对；
+	/*
+		删除迭代器指向的键值对：
+				iterator erase( const_iterator pos ); 
+
+		删除两个迭代器指定范围内的键值对：
+				iterator erase( iterator first, iterator last ); 
+				iterator erase( const_iterator first, const_iterator last ); 
+
+		删除输入键对应的键值对，返回删除掉的键值对数量；
+				size_type erase( const Key& key );
+	*/
+	debugDisp("\nerase()方法: ");
+	debugDisp("mis.erase(1) == ", mis.erase(1));
 	for_each(mis.begin(), mis.end(), pp);
-	std::cout << std::endl;
-
-	//			erase()方法输入键删除元素
-	mis.erase(1);				
-	for_each(mis.begin(), mis.end(), pp);
-	std::cout << std::endl;
+	debugDisp("\n");
 
 
-	//			find()方法输入键查找元素
-	iter1 = mis.find(33);
-	mis.erase(iter1);				// erase()方法输入迭代器删除元素
+	//	4. find()——查找输入的键，返回对应的迭代器，如果没有找到则返回尾后迭代器；
+	debugDisp("\nfind()方法: ");
+	iter1 = mis.find(5);			
+	mis.erase(iter1);										// erase()方法输入迭代器删除元素
+	
 	for_each(mis.begin(), mis.end(), pp);
 	std::cout << std::endl;
 }
@@ -129,7 +144,6 @@ void STL_map_module::test0(void)
 // test1: multimap的基本使用方法、API
 void STL_map_module::test1(void)
 {
-
 	// multimap中可以有键相同的元素，相同键的元素会相邻存储。
 	// multimap没有下标运算，其他api和std::map类似。
 	std::cout << "\n\n\n\n" << std::endl;

@@ -110,6 +110,7 @@ namespace STRING
 				字母和数字都属于字母数字字符。
 
 		给你一个字符串 s，如果它是 回文串 ，返回 true ；否则，返回 false 。
+
 	示例 ：
 		输入: s = "A man, a plan, a canal: Panama"
 		输出：true
@@ -137,6 +138,7 @@ namespace STRING
 
 
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 排序
@@ -191,92 +193,6 @@ namespace SORTING
 }
 
 
-namespace STACK 
-{
-	// practice——有效的括号：
-	/*
-		给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
-		有效字符串需满足：
-				左括号必须用相同类型的右括号闭合。
-				左括号必须以正确的顺序闭合。
-				每个右括号都有一个对应的相同类型的左括号。
-
-		示例 ：
-				输入：s = "()"
-				输出：true
-				输入：s = "()[]{}"
-				输出：true 
-				输入：s = "(]"
-				输出：false 
-
-		提示：
-				1 <= s.length <= 104
-				s 仅由括号 '()[]{}' 组成
-	*/
-	bool isValidParentheses(std::string s)
-	{
-		if (s.length() % 2 != 0) 
-			return false;					// 一但是奇数说明不是有效的括号
-
-		std::map<char, char> wordbook;			//建立哈希表
-		wordbook.insert(std::map<char, char>::value_type(')', '('));
-		wordbook.insert(std::map<char, char>::value_type(']', '['));
-		wordbook.insert(std::map<char, char>::value_type('}', '{'));
-		std::stack<char> mystack;				//建立栈
-		for (int i = 0; i < s.length(); i++)
-		{
-			if (s[i] == '[' || s[i] == '{' || s[i] == '(')			//匹配到左括号
-				mystack.push(s[i]);//放入栈中
-			else if (s[i] == ']' || s[i] == '}' || s[i] == ')')//匹配到右括号
-			{
-				if (mystack.empty()) return false;
-
-				//匹配到右括号，栈中应该存在左括号。否则就是无效的括号
-				if (wordbook[s[i]] == mystack.top())		//与栈顶元素进行匹配
-				{
-					mystack.pop();		//匹配成功删除栈顶元素
-					continue;
-				}
-				else 
-					return false;
-			}
-		}
-		if (mystack.empty()) 
-			return true;					//	有效的括号到最后检测结束栈中应没有元素
-		else
-			return false;
-	}
-
-
-	void test0() 
-	{
-		debugDisp("test0() finished.");
-	}
-		
-
-	// practice——最小栈
-	/*
-		请你设计一个 最小栈 。它提供 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。
-		实现 MinStack 类:
-				MinStack() 初始化堆栈对象。
-				void push(int val) 将元素val推入堆栈。
-				void pop() 删除堆栈顶部的元素。
-				int top() 获取堆栈顶部的元素。
-				int getMin() 获取堆栈中的最小元素。
-
-		示例:
-				输入：
-						["MinStack","push","push","push","getMin","pop","top","getMin"]
-						[[],[-2],[2],[-3],[],[],[],[]]
-				输出：
-						[null,null,null,null,-3,null,2,-2]
-	
-	*/
-	void test1() 
-	{
-		debugDisp("test1() finished.");
-	}
-}
 
 
 namespace GRAPH 
@@ -337,11 +253,13 @@ namespace GRAPH
 
 int main(int argc, char** argv)
 {
-	TREE::test1();
+	// TREE::test1();
 
 	// SORTING::test0();
 	
-	GRAPH::test0();
+	// GRAPH::test0();
+
+	STACK::test1();
 
 	debugDisp("main finished.");
 

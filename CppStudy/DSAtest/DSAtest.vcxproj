@@ -152,10 +152,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="myDSA_stack.cpp" />
     <ClCompile Include="myDSA_tree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\myDSA.h" />
+    <ClInclude Include="myDSA_stack.h" />
     <ClInclude Include="myDSA_tree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
