@@ -370,7 +370,7 @@ using namespace MY_WIN_API;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 暂时不知如何分类：
-namespace TEST_UNKNOW 
+namespace TEST_UNKNOWN
 {
 	// const_cast
 	namespace CONSTCAST
@@ -867,7 +867,7 @@ namespace TEST_UNKNOW
 	}
 
 
-	// 位操作；
+	// 位运算：
 	namespace TEST_BIT
 	{
 		// std::bitset
@@ -898,12 +898,11 @@ namespace TEST_UNKNOW
 		void test1()
 		{
 			// 左移(<<)运算，a << b表示把a的二进制位向左移动b位，低位用0补上。等价于做运算a *= std::pow(2, b);
-			std::cout << (1 << 3) << std::endl;					// B1左移3位得到B100 == 8
+			debugDisp("(1 << 3) == ", 1 << 3);					// B1左移3位得到B100 == 8 
+			debugDisp("(2 << 3) == ", 2 << 3); 
 
-			std::cout << (1 << 5) << std::endl;
 
-
-			std::cout << "finished." << std::endl;
+			std::cout << "test1 finished." << std::endl;
 		}
 
 
@@ -1554,7 +1553,7 @@ namespace TEST_UNKNOW
 
  
 }
- 
+using namespace TEST_UNKNOWN;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// C++新特性：
@@ -3360,11 +3359,10 @@ namespace TEST_OOP
  
 
 int main()
-{   
-	// TEST_TEMPLATE::test1();
-	// TEST_STL::STL_STACK_QUEUE::test1();
+{    
+	TEST_BIT::test1();
 
-	TEST_STL::STL_SET_MAP::test3();
+	// TEST_STL::STL_SET_MAP::test3();
 
 	debugDisp("main() finished."); 
 

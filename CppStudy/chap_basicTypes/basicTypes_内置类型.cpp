@@ -54,15 +54,19 @@ void basicTypes_builtin_types_module::test0(void)
 {
 	// ！！！注意：使用std::numeric_limits<T>::max()和std::numeric_limits<T>::min()需要在预处理器中定义NOMINMAX;
 	std::cout << "test0: std::numeric_limits<>模板：查询各种算术类型的属性 " << std::endl;
-	auto ret1 = std::numeric_limits<int>::max();						
-	auto ret2 = std::numeric_limits<float>::max();
-	auto ret3 = std::numeric_limits<double>::max();
+	constexpr int ret1 = std::numeric_limits<int>::max();						
+	constexpr float ret2 = std::numeric_limits<float>::max();
+	constexpr double ret3 = std::numeric_limits<double>::max();
+	constexpr char ret4 = std::numeric_limits<char>::max();
+	debugDisp("std::numeric_limits<int>::max() == ", ret1);
+	debugDisp("std::numeric_limits<float>::max() == ", ret2);
+	debugDisp("std::numeric_limits<double>::max() == ", ret3);
+	debugDisp("std::numeric_limits<char>::max() == ", ret4);
 
-	// std::numeric_limits<T>::max()返回类型为constexpr T;
-	std::cout << "ret1 == " << ret1 << std::endl;
+	// std::numeric_limits<T>::max()返回类型为constexpr T; 
 	std::cout << "typeid(ret1).name() == " << typeid(ret1).name() << std::endl;
 
-	ret1 = 1;
+	debugDisp("test0 finished.");
 }
 
 

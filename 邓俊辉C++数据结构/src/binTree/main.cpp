@@ -29,7 +29,8 @@ template <typename T> BinNodePosi<T>randomPosiInBinTree ( BinNodePosi<T> root ) 
 }
 
 
-template <typename T> void   testBinTree ( int h ) 
+template <typename T> 
+void testBinTree ( int h ) 
 {
     //测试二叉树
    printf ( "\n  ==== Test %2d. Generate a binTree of height <= %d \n", testID++, h);
@@ -50,7 +51,7 @@ template <typename T> void   testBinTree ( int h )
    
    while ( !bt.empty() ) 
    {
-      BinNodePosi<T> p = randomPosiInBinTree ( bt.root() );             //随机选择一个节点
+      BinNodePosi<T> p = randomPosiInBinTree ( bt.root() );             // 随机选择一个节点
       if ( dice ( 2 ) ) 
       {
          printf ( "removing " ); print ( p->data ); printf ( " ...\n" );
@@ -69,8 +70,6 @@ template <typename T> void   testBinTree ( int h )
       }
    }
 }
-
-
 
 
 void test0() 

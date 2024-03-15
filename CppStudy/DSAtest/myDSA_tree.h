@@ -11,7 +11,8 @@
 template <typename T>
 class TreeNode
 {
-	// 成员数据
+
+// 成员数据
 public:
 	T val;
 	TreeNode* left;
@@ -23,10 +24,9 @@ public:
 	TreeNode(const T x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
 
 
-	// get方法：
+// get方法：
 
-
-		// 返回以当前节点为根节点的二叉树的最大深度；
+	// 返回以当前节点为根节点的二叉树的最大深度；
 	int maxDepth()
 	{
 		int depth = 0;
@@ -49,7 +49,188 @@ public:
 		return depth;
 	}
 
+// 写方法： 
 };
+
+
+ 
+// printBT()使用的序列化方法，看起来不是很标准；
+template <typename T>
+void BT2Array(TreeNode<T>* ptrNode, T* arrayHead, int i, int k, \
+	const std::pair<int, int>& size = std::make_pair(0, 0))
+{
+	// T为二叉树的根节点，arrayHead是数组的起始地址，ij表示当前节点在数组中的位置
+	int ti = 0;
+	int tk = 0;						// 如果节点有孩子,其孩子的k坐标为 k±(height-i+1)/2
+	int width = size.first;
+	int height = size.second;
+
+	if (nullptr != ptrNode)					// 如果该位置有节点
+	{
+		*(arrayHead + i * width + k) = ptrNode->val;			// 向数组该位置填入元素；
+		if (nullptr != ptrNode->left)			// 有左右孩子给对应的连接线,左右孩子的值在下一层递归赋
+		{
+			//将该点与其左孩子之间的连线全部填上'/'
+			for (ti = i + 1, tk = k - 1; tk > k - (height - i + 1) / 2; tk--)
+			{
+				*(arrayHead + ti * width + tk) = -1;
+				ti++;
+			}
+		}
+		if (nullptr != ptrNode->right)
+		{
+			for (ti = i + 1, tk = k + 1; tk < k + (height - i + 1) / 2; tk++)
+			{
+				*(arrayHead + ti * width + tk) = 1;
+				ti++;
+			}
+		}
+
+		// 经过循环,ti恰好指到其孩子所在的层
+		BT2Array(ptrNode->left, arrayHead, ti, k - (height - i + 1) / 2, std::make_pair(width, height));
+		BT2Array(ptrNode->right, arrayHead, ti, k + (height - i + 1) / 2, std::make_pair(width, height));
+	}
+} 
+
+
+// 控制台上打印二叉树
+template <typename T>
+void printBT(TreeNode<T>* ptrNode)
+{ 
+	// 1. 动态数组申请空间
+	int n = ptrNode->maxDepth();				 // 深度 
+	int width = (2 << n) - 3;						 // a << b表示把a的二进制位向左移动b位，低位用0补上。等价于做运算a *= std::pow(2, b);
+	int height = (2 << (n - 1)) - 1;				// 2^n-1 
+	T* a = new T[width * height];
+	for (int i = 0; i < height; i++)				// 空间初始化为0
+		for (int j = 0; j < width; j++)
+			*(a + (i * width) + j) = 0;
+
+	// 2. 二叉树序列化
+	BT2Array(ptrNode, a, 0, (width - 1) / 2, std::make_pair(width, height));
+
+	// 3. 打印
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			if (*(a + (i * width) + j) == -1)
+				printf("/");
+			else if (*(a + (i * width) + j) == 1)
+				printf("\\");
+			else if (*(a + (i * width) + j) == 0)
+				printf(" ");
+			else
+				std::cout << *(a + (i * width) + j);
+		}
+		printf("\n");
+	}
+	std::cout << std::endl;
+
+	// 释放内存
+	delete[] a;
+}
+ 
+
+template <typename T>
+void destroy(TreeNode<T>* ptrNode) 
+{
+	// 递归终止1——若当前节点为空，do nothing;
+	if (nullptr == ptrNode)
+		return;
+
+	// 递归终止2——若当前节点是叶子，将其delete
+	TreeNode<T>* pa = ptrNode->left;
+	TreeNode<T>* pb = ptrNode->right;
+	if (nullptr == pa && nullptr == pb)
+	{
+		delete ptrNode;
+		ptrNode = nullptr;
+		return;
+	}
+	else  // 递归递推——若当前节点不为空且不为叶子，则对其左右孩子节点递归调用本函数：
+	{
+		destroy(pa);
+		pa = nullptr;
+		destroy(pb);
+		pb == nullptr;
+	}	 
+}
+
+
+// BT的序列化——广度优先遍历（层序遍历），空节点用占位符占位；
+template <typename T>
+bool serializeBT(std::vector<T>& vecOut, TreeNode<T>* ptrRoot)
+{
+	vecOut.clear();
+
+	// 1. 
+	std::list<T> valList;
+	std::queue<TreeNode<T>*> queue; 
+	const T placeholder = std::numeric_limits<T>::max();			// 使用当前类型最大值来表示空节点占位符；
+	if (nullptr == ptrRoot)
+		return true;
+
+	// 2. 层序遍历的循环：
+	queue.push(ptrRoot);
+	while (!queue.empty())
+	{
+		TreeNode<T>* ptrCurrentNode = queue.front();
+		queue.pop(); 
+		if (nullptr == ptrCurrentNode)
+		{
+			valList.push_back(placeholder);
+			continue;
+		}
+		else
+		{
+			valList.push_back(ptrCurrentNode->val);
+			queue.push(ptrCurrentNode->left);
+			queue.push(ptrCurrentNode->right);
+		} 
+	}  
+
+	// 3. 输出：
+	vecOut.insert(vecOut.end(), valList.begin(), valList.end());
+
+	return true;
+}
+
+
+template <typename T>
+bool deserializeBT(TreeNode<T>* ptrRoot, const std::vector<T>& vecOut)
+{
+	destroy(ptrRoot);
+
+	
+
+	return true;
+}
+
+
+ // 翻转二叉树（二叉树镜像化）——将所有节点左右孩子颠倒
+template <typename T>
+void reverseBT(TreeNode<T>* ptrNode) 
+{
+	/*
+		递归递推：交换当前节点的左右孩子，然后对左右孩子继续调用本函数；
+		递归终止：当前节点是空的时，终止；
+	*/ 
+
+	// 1. 递归终止：
+	if (nullptr == ptrNode)
+		return;
+
+	// 2. 递归递推：
+	TreeNode<T>* pa = ptrNode->left;
+	TreeNode<T>* pb = ptrNode->right;	 
+	ptrNode->left = pb;
+	ptrNode->right = pa;
+	reverseBT(pa);
+	reverseBT(pb);
+}
+
+
 
 
 namespace TREE 
@@ -57,6 +238,18 @@ namespace TREE
 	void test0();
 	void test1();
 	void test2();
-
-
+	void test3();
+	void test4();
+	void test5();
+	void test6();
+	void test7();
+	void test8();
+	void test9();
+	void test10();
+	void test11();
+	void test12();
+	void test13();
+	void test14();
+	void test15();
+	void test16();
 }

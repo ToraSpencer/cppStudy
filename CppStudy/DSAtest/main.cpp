@@ -259,9 +259,12 @@ int main(int argc, char** argv)
 	
 	// GRAPH::test0();
 
-	STACK::test1();
+	TREE::test1();
 
 	debugDisp("main finished.");
+
+
+
 
 	return 0;
 }

@@ -13,6 +13,16 @@ namespace MY_DEBUG
 		std::cout << arg << ", ";
 	};
 
+	template <typename T>
+	static auto dispCorrected = [](const T& arg)
+	{
+		if(arg == std::numeric_limits<T>::max())			// 使用当前类型最大值来表示占位符；
+			std::cout << "placeholder, ";
+		else
+			std::cout << arg << ", ";
+	};
+
+
 	static void debugDisp()			// 递归终止
 	{						//		递归终止设为无参或者一个参数的情形都可以。
 		std::cout << std::endl;
@@ -84,84 +94,35 @@ namespace TREE
 	}
 
 
-	// 二叉树序列化（转换为1维数组）：
-	template <typename T>
-	void BT2Array(TreeNode<T>* ptrNode, T* arrayHead, int i, int j, \
-		const std::pair<int, int>& size = std::make_pair(0, 0))
+	// BT的序列化、反序列化。 
+	void test1() 
 	{
-		// T为二叉树的根节点，arrayHead是数组的起始地址，ij表示当前节点在数组中的位置
-		int ti = 0;
-		int tj = 0;						// 如果节点有孩子,其孩子的j坐标为 j±(height-i+1)/2
-		int width = size.first;
-		int height = size.second;
-
-		if (nullptr != ptrNode)					//如果该位置有节点
+		TreeNode<int>* ptrRoot = nullptr;
+		TreeNode<int> tn0, tn00, tn01, tn010, tn011;
 		{
-			*(arrayHead + i * width + j) = ptrNode->val;			// 向数组该点填入字符
-			if (nullptr != ptrNode->left)			// 有左右孩子给对应的连接线,左右孩子的值在下一层递归赋
-			{
-				//将该点与其左孩子之间的连线全部填上'/'
-				for (ti = i + 1, tj = j - 1; tj > j - (height - i + 1) / 2; tj--)
-				{
-					*(arrayHead + ti * width + tj) = -1;
-					ti++;
-				}
-			}
-			if (nullptr != ptrNode->right)
-			{
-				for (ti = i + 1, tj = j + 1; tj < j + (height - i + 1) / 2; tj++)
-				{
-					*(arrayHead + ti * width + tj) = 1;
-					ti++;
-				}
-			}
-
-			// 经过循环,ti恰好指到其孩子所在的层
-			BT2Array(ptrNode->left, arrayHead, ti, j - (height - i + 1) / 2, std::make_pair(width, height));
-			BT2Array(ptrNode->right, arrayHead, ti, j + (height - i + 1) / 2, std::make_pair(width, height));
+			tn0.val = 3;
+			tn00.val = 9;
+			tn01.val = 20;
+			tn010.val = 15;
+			tn011.val = 7;
+			tn0.left = &tn00;
+			tn0.right = &tn01;
+			tn01.left = &tn010;
+			tn01.right = &tn011;
+			ptrRoot = &tn0;
 		}
+
+		std::vector<int> valVec;
+		printBT(ptrRoot);
+		serializeBT(valVec, ptrRoot);
+		traverseSTL(valVec, dispCorrected<int>);
+
+		debugDisp("test1 finished.");
 	}
 
 
-	// 控制台上打印二叉树
-	template <typename T>
-	void printBT(TreeNode<T>* ptrNode)
-	{
-		// 1. 动态数组申请空间
-		int n = ptrNode->maxDepth();				 // 深度 
-		int width = (2 << n) - 3;						 // 2^(n+1)-3；左移1位就相当于乘以2的1次方
-		int height = (2 << (n - 1)) - 1;				// 2^n-1 
-		T* a = new T[width * height];
-		for (int i = 0; i < height; i++)				// 空间初始化为0
-			for (int j = 0; j < width; j++)
-				*(a + (i * width) + j) = 0;
-
-		// 2. 二叉树序列化
-		BT2Array(ptrNode, a, 0, (width - 1) / 2, std::make_pair(width, height));
-
-		// 3. 打印
-		for (int i = 0; i < height; i++)
-		{
-			for (int j = 0; j < width; j++)
-			{
-				if (*(a + (i * width) + j) == -1)
-					printf("/");
-				else if (*(a + (i * width) + j) == 1)
-					printf("\\");
-				else if (*(a + (i * width) + j) == 0)
-					printf(" ");
-				else
-					std::cout << *(a + (i * width) + j);
-			}
-			printf("\n");
-		}
-
-		// 释放内存
-		delete[] a;
-	}
-
-
-	void test1()
+	// print BT
+	void test2()
 	{
 		TreeNode<int>* ptrRoot = nullptr;
 		TreeNode<int> tn0, tn00, tn01, tn010, tn011;
@@ -189,4 +150,46 @@ namespace TREE
 
 	}
 
+
+	// 翻转二叉树
+	/*
+	给你一棵二叉树的根节点 root ，翻转这棵二叉树，并返回其根节点。 
+
+	示例 1：
+		输入：root = [4,2,7,1,3,6,9]
+		输出：[4,7,2,9,6,3,1]
+	示例 2：
+	输入：root = [2,1,3]
+	输出：[2,3,1]
+	示例 3：
+	输入：root = []
+	输出：[]
+	提示：
+	树中节点数目范围在 [0, 100] 内
+	-100 <= Node.val <= 100	
+	*/
+	void test3() 
+	{
+		TreeNode<int>* ptrRoot = nullptr;
+		TreeNode<int> tn0, tn00, tn01, tn010, tn011;
+		{
+			tn0.val = 3;
+			tn00.val = 9;
+			tn01.val = 20;
+			tn010.val = 15;
+			tn011.val = 7;
+			tn0.left = &tn00;
+			tn0.right = &tn01;
+			tn01.left = &tn010;
+			tn01.right = &tn011;
+			ptrRoot = &tn0;
+		}
+		printBT(ptrRoot);
+
+		reverseBT(ptrRoot);
+		printBT(ptrRoot);
+
+
+		debugDisp("test3 finished.");
+	}
 }
