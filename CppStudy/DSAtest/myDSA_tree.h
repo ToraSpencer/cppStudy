@@ -49,11 +49,97 @@ public:
 		return depth;
 	}
 
+
 // 写方法： 
 };
 
+template <typename T>
+static auto dispTreeNode = [](const TreeNode<T>* ptrNode)
+{
+	if(nullptr == ptrNode)
+		std::cout << "placeholder, ";
+	else
+		std::cout << ptrNode->val << ", ";
+};
 
- 
+
+enum class TRAVERSE_BT_TYPE
+{		
+	PreOrder,					// 先序遍历、深度优先遍历
+	InOrder,					// 中序遍历
+	PostOrder,				// 后序遍历
+	LevelOrder,				// 层序遍历、广度优先遍历
+};
+
+
+template <typename T, typename Func>
+void traverseBT(TreeNode<T>* ptrNode, Func func, const TRAVERSE_BT_TYPE type = TRAVERSE_BT_TYPE::PreOrder)
+{
+	TreeNode<T>* ptrCurrentNode = nullptr;
+	TreeNode<T>* pa = nullptr;
+	TreeNode<T>* pb = nullptr;
+	if (type == TRAVERSE_BT_TYPE::LevelOrder)		// 特殊情形——层序遍历，借助队列结构实现；
+	{
+		if (nullptr == ptrNode) 
+			return; 
+		std::queue<TreeNode<T>*> queue;
+		queue.push(ptrNode);
+		while (!queue.empty())
+		{
+			ptrCurrentNode = queue.front();
+			pa = ptrCurrentNode->left;
+			pb = ptrCurrentNode->right;
+			queue.pop();
+			func(ptrCurrentNode);
+			if (nullptr != pa)
+				queue.push(pa);
+			if (nullptr != pb)
+				queue.push(pb);
+		}
+	}
+	else   // 先、中、后序遍历——取决于是先访问节点（调用函数子func作用于节点）还是先执行递归（搜索节点）
+	{
+		// 递归终止1——若当前节点为空：
+		if (nullptr == ptrNode) 
+			return; 
+
+		// 递归终止2——若当前节点为叶子
+		pa = ptrNode->left;
+		pb = ptrNode->right;
+		if (nullptr == pa && nullptr == pb)
+		{
+			func(ptrNode);
+			return;
+		}
+
+		// 递归递推——对当前节点的左右孩子递归调用本函数：
+		switch (type)
+		{
+		case TRAVERSE_BT_TYPE::PreOrder:
+			func(ptrNode);
+			traverseBT(pa, func);
+			traverseBT(pb, func);
+			break;
+
+		case TRAVERSE_BT_TYPE::InOrder:
+			traverseBT(pa, func);
+			func(ptrNode);
+			traverseBT(pb, func);
+			break;
+
+		case TRAVERSE_BT_TYPE::PostOrder:
+			traverseBT(pa, func);
+			traverseBT(pb, func);
+			func(ptrNode);
+			break;
+
+		default:
+			break;
+		}
+	} 
+}
+
+
 // printBT()使用的序列化方法，看起来不是很标准；
 template <typename T>
 void BT2Array(TreeNode<T>* ptrNode, T* arrayHead, int i, int k, \
@@ -195,6 +281,7 @@ bool serializeBT(std::vector<T>& vecOut, TreeNode<T>* ptrRoot)
 
 	return true;
 }
+
 
 
 template <typename T>

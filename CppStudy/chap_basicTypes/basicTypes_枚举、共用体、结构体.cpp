@@ -131,7 +131,6 @@ void basicTypes_enum_union_struct_module::test0(void)
 }
 
 
-
 // test1：枚举类型的基本使用
 void basicTypes_enum_union_struct_module::test1(void)
 {
@@ -204,7 +203,6 @@ void basicTypes_enum_union_struct_module::test1(void)
 }
 
 
-
 // test2: 共用体的基本使用
 void basicTypes_enum_union_struct_module::test2(void)
 {
@@ -229,8 +227,6 @@ void basicTypes_enum_union_struct_module::test2(void)
 	
  
 }
-
-
 
 
 // test3: 结构体中的内存对齐
@@ -259,14 +255,12 @@ void basicTypes_enum_union_struct_module::test3(void)
 	
 	std::cout << "sizeof(s1) == " << sizeof(s1) << std::endl;
 	std::cout << "结构体实例s1内部数据分布：" << std::endl;
-	for(int i = 1; i<=32; i++)
+	for(int i = 1; i <= 32; i++)
 	{
 		printf("%d. 0x%x\n" , i, *pc);
 		pc++;
-		if(i>=32)
-		{
-			break;
-		}
+		if(i >= 32) 
+			break; 
 			
 	}
 

@@ -94,7 +94,7 @@ namespace TREE
 	}
 
 
-	// BT的序列化、反序列化。 
+	// 各种遍历方法
 	void test1() 
 	{
 		TreeNode<int>* ptrRoot = nullptr;
@@ -111,11 +111,17 @@ namespace TREE
 			tn01.right = &tn011;
 			ptrRoot = &tn0;
 		}
-
-		std::vector<int> valVec;
 		printBT(ptrRoot);
-		serializeBT(valVec, ptrRoot);
-		traverseSTL(valVec, dispCorrected<int>);
+
+		// 1. 先序遍历：
+		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PreOrder);
+		debugDisp("\n");
+		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::InOrder);
+		debugDisp("\n");
+		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PostOrder);
+		debugDisp("\n");
+		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::LevelOrder); 
+		debugDisp("\n");
 
 		debugDisp("test1 finished.");
 	}
@@ -191,5 +197,32 @@ namespace TREE
 
 
 		debugDisp("test3 finished.");
+	}
+
+
+	// BT的序列化、反序列化。 
+	void test4()
+	{
+		TreeNode<int>* ptrRoot = nullptr;
+		TreeNode<int> tn0, tn00, tn01, tn010, tn011;
+		{
+			tn0.val = 3;
+			tn00.val = 9;
+			tn01.val = 20;
+			tn010.val = 15;
+			tn011.val = 7;
+			tn0.left = &tn00;
+			tn0.right = &tn01;
+			tn01.left = &tn010;
+			tn01.right = &tn011;
+			ptrRoot = &tn0;
+		}
+
+		std::vector<int> valVec;
+		printBT(ptrRoot);
+		serializeBT(valVec, ptrRoot);
+		traverseSTL(valVec, dispCorrected<int>);
+
+		debugDisp("test4 finished.");
 	}
 }
