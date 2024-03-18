@@ -2892,20 +2892,17 @@ namespace TEST_STL
 		}
 
 
-		//  std::distance()————<iterator>， 反向迭代器。
+		//  std::distance()， 反向迭代器。
 		void test7()
 		{
 			std::vector<int> vi{ 1,2,3,4,5,6,7,8,9 };
 			auto iter1 = vi.cbegin() + 2;
 			auto iter2 = vi.crbegin();
 
-
-			// distance()的两个参数应该是相同类型的迭代器。
-			std::cout << "*iter1 == " << *iter1 << std::endl;
-			std::cout << distance(vi.cbegin(), iter1) << std::endl;		// distance()返回值——可以理解为前面一个迭代器往后移多少位和后面那个迭代器重合。
-			std::cout << distance(iter1, vi.cend()) << std::endl;
-			std::cout << distance(vi.crbegin(), iter2) << std::endl;
-
+			// distance()的两个参数应该是相同类型的迭代器或指针； 
+			debugDisp("distance(vi.cbegin(), iter1) == ", distance(vi.cbegin(), iter1));			// distance()返回值——可以理解为前面一个迭代器往后移多少位和后面那个迭代器重合。
+			debugDisp("distance(vi.crbegin(), iter2)) == ", distance(vi.crbegin(), iter2));
+			debugDisp("std::distance(&vi[0], &vi[6]) == ", std::distance(&vi[0], &vi[6]));
 
 			// 反向迭代器：
 			iter2++;

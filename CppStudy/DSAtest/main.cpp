@@ -9,7 +9,6 @@
 #include "myDSA.h"
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
 namespace MY_DEBUG
 {
@@ -177,24 +176,63 @@ namespace SORTING
 
 		return true;
 	}
-	
-	  
+	 
+
+	bool mergeSort(const std::vector<int>::iterator& begin, const std::vector<int>::iterator& end)
+	{
+		const size_t elemCount = std::distance(begin, end);
+
+		// 递归终止——需要排序的序列元素数目不大于2时：
+		if (elemCount < 0)
+			return false;
+		if (elemCount < 2)
+			return true;
+		if (2 == elemCount)
+			if (*begin > *(begin + 1))
+				std::swap(*begin, *(begin + 1));
+
+		// 递归递推——需要排序的序列元素数目大于2时，将其二分分别排列后，再整合成单调有序的序列；
+		if (elemCount > 2)
+		{
+			std::vector<int> vec1, vec2;
+			std::vector<int>::iterator middle = begin + elemCount / 2;
+			mergeSort(begin, middle);
+			mergeSort(middle, end);
+			vec1.insert(vec1.end(), begin, middle);
+			vec2.insert(vec2.end(), middle, end);
+			mergeSequence(vec1, vec2);
+			auto iter = begin;
+			for (size_t i = 0; i < elemCount; ++i)
+			{
+				*iter = vec1[i];
+				iter++;
+			}
+		}
+		 
+		return true;
+	}
+
+
 	void test0() 
 	{
 		std::vector<int> vec1{ 1, 2, 3, };
 		std::vector<int> vec2{ 2, 5, 6 }; 
 		mergeSequence(vec1, vec2); 
-		
-		
 		traverseSTL(vec1, disp<int>);
+		debugDisp("\n");
+
+		//
+		std::vector<int> numVec{54, 12, 45, -1, -99, 8, 9, 0, 12};
+		mergeSort(numVec.begin(), numVec.end());
+		traverseSTL(numVec, disp<int>);
+		 
 		debugDisp("test0() finished.");
 	}
 
 }
 
 
-
-
+////////////////////////////////////////////////////////////////////////////////////////////// 图
 namespace GRAPH 
 {
 	// practice——找到小镇的法官
@@ -250,18 +288,43 @@ namespace GRAPH
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////  
+namespace RECURSION
+{
+	int factorial(const int num) 
+	{
+		int result = 0;
+
+		// 递归终止1：
+		if (num < 0)
+			return -std::numeric_limits<int>::max(); 
+
+		// 递归终止2：
+		if (1 == num || 0 == num)
+			return 1;
+
+		// 递归递推：
+		return num * factorial(num - 1); 
+	}
+
+	void test0() 
+	{
+		debugDisp("result == ", factorial(-4));
+
+		debugDisp("test0 finished.");
+	}
+}
+
+
 
 int main(int argc, char** argv)
 {
-	// TREE::test1();
-
-	// SORTING::test0();
-	
-	// GRAPH::test0();
-
-	TREE::test1();
+	SORTING::test0();
+	 
 
 	debugDisp("main finished.");
+
+
 
 
 	return 0;
