@@ -53,6 +53,7 @@ public:
 // 写方法： 
 };
 
+
 template <typename T>
 static auto dispTreeNode = [](const TreeNode<T>* ptrNode)
 {
@@ -318,7 +319,18 @@ void reverseBT(TreeNode<T>* ptrNode)
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////// 基于树的排序算法
+/*
+	基于BST的排序算法
+		直接构建BST排序：
 
+		基于AVL树的排序：
+
+		基于红黑树的排序：
+
+	基于堆的排序算法：
+
+*/
 
 namespace TREE 
 {

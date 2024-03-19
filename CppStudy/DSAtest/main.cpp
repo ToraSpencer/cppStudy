@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <vector>
+#include <list>
 #include <stack>
 #include <queue>
 #include <map>
@@ -141,6 +142,17 @@ namespace STRING
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 排序
+/*
+	时间复杂度是 O(nlog⁡n)的排序算法：
+		归并排序
+				适用于链表
+		堆排序
+				
+		快速排序
+				最差时间复杂度是O(n^2)
+  
+
+*/
 namespace SORTING 
 {
 	// 合并两个有序数组（单调递增）
@@ -229,6 +241,118 @@ namespace SORTING
 		debugDisp("test0() finished.");
 	}
 
+
+#if 0
+	// 链表排序——给定链表的头结点，返回升序排列后的链表；目标时间复杂度O(nlogn)，常数空间复杂度
+	void test1() 
+	{
+		// 1. 创建，基础功能测试：
+		ListNode<int>* pn0 = new ListNode<int>(0);
+		ListNode<int>* pn1 = nullptr;
+		ListNode<int>* pn2 = nullptr;
+		pn0->push_back(2);
+		pn0->push_back(12); 
+		pn0->push_back(55);
+		pn0->push_back(-3);
+		pn0->push_back(-99);
+		pn0->push_back(12);
+		pn0->push_back(12);
+		debugDisp("pn0->size() == ", pn0->size());
+		debugDisp("pn0: ");
+		traverseList(pn0, [](ListNode<int>* pn)
+			{
+				std::cout << pn->getData() << ", ";
+			});
+		debugDisp("\n");
+
+		pn1 = pn0->getTail();
+		pn2 = new ListNode<int>(33);
+		pn1->insertNext(pn2);
+		pn1->extract();
+		pn0->erase(pn0->next);
+		debugDisp("pn0->size() == ", pn0->size());
+		debugDisp("pn1->size() == ", pn1->size());
+		debugDisp("pn0: ");
+		traverseList(pn0, [](ListNode<int>* pn)
+			{
+				std::cout << pn->getData() << ", ";
+			});
+		debugDisp("\n");
+		pn2 = pn0->getNode(2);
+		debugDisp("索引为2的节点：", pn2->data);
+
+		// 2. sorting:
+		int minData = std::numeric_limits<int>::max();
+		const int nodesCount = pn0->size();
+		ListNode<int>* ptrSorted = new ListNode<int>(0);
+		ListNode<int>* ptrUnsorted = new ListNode<int>(0);
+		ListNode<int>* ptrMin = nullptr; 
+		ListNode<int>* ptrUnsortedhead = nullptr;
+		ptrUnsorted->insertNext(pn0->getHead());
+		for(int i = 0; i < nodesCount; ++i)
+		{ 
+			ptrUnsortedhead = ptrUnsorted->getNext();
+			pn0 = ptrUnsortedhead;
+			for (int k = 0; k < nodesCount - i; ++k)
+			{
+				if (pn0->data < minData)
+				{
+					minData = pn0->data;
+					ptrMin = pn0;
+				}
+				pn0 = pn0->next;
+			}
+
+			ptrMin->extract();
+			ptrSorted->push_back(ptrMin);
+		}
+		ptrSorted->pop_front();
+
+		traverseList(ptrSorted, [](ListNode<int>* pn)
+			{
+				std::cout << pn->getData() << ", ";
+			});
+		debugDisp("\n");
+		 
+		debugDisp("test1 finished.");
+	}
+#endif
+
+
+	void test1() 
+	{
+		using ListNode = SLlistNode<int>;
+		ListNode* pHead = make_list<int>({2, 3, -1, -23, -1, -7, 99, -1, 0});
+		traverseList(pHead, [](ListNode* pn) 
+			{
+				std::cout << pn->val << ", ";
+			});
+		debugDisp("\n");
+
+		pHead = eraseNode(pHead, pHead->next);
+		traverseList(pHead, [](ListNode* pn)
+			{
+				std::cout << pn->val << ", ";
+			});
+		debugDisp("\n");
+
+		pHead = eraseNode(pHead, pHead);
+		traverseList(pHead, [](ListNode* pn)
+			{
+				std::cout << pn->val << ", ";
+			});
+		debugDisp("\n");
+
+		pHead = sortList(pHead);
+		traverseList(pHead, [](ListNode* pn)
+			{
+				std::cout << pn->val << ", ";
+			});
+		debugDisp("\n");
+
+		destroy(pHead);
+		debugDisp("test1 finished.");
+	}
 }
 
 
@@ -275,8 +399,7 @@ namespace GRAPH
 				return i;
 		return -1;
 	}
-
-
+	 
 	void test0()
 	{
 		debugDisp("result == ", findJudge(3, std::vector<std::vector<int>>{ \
@@ -284,7 +407,7 @@ namespace GRAPH
 
 		debugDisp("test0() finished.");
 	}
-
+ 
 }
 
 
@@ -319,7 +442,7 @@ namespace RECURSION
 
 int main(int argc, char** argv)
 {
-	SORTING::test0();
+	SORTING::test1();
 	 
 
 	debugDisp("main finished.");
