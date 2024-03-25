@@ -2391,23 +2391,24 @@ namespace TEST_STL
 		void test1()
 		{
 			// std::set的insert方法返回一个pair，第一项是插入元素的迭代器，第二项是指示是否插入成功的BOOL值
-			std::set<int> numSet1;
-			auto retPair = numSet1.insert(1);
-			auto iter = retPair.first;
+			std::set<int> numSet1;			
+			std::pair<std::set<int>::iterator, bool> retPair = numSet1.insert(1);
+			std::set<int>::iterator iter = retPair.first;
 			std::cout << "*iter == " << *iter << std::endl;
 			std::cout << "retPair.second == " << retPair.second << std::endl;
 
-			// 插入失败的话，返回阻止插入的元素的迭代器；
+			//		 插入失败的话，返回阻止插入的元素的迭代器；
 			retPair = numSet1.insert(1);
 			std::cout << "*retPair.first ==  " << *retPair.first << std::endl;
 			std::cout << "retPair.second == " << retPair.second << std::endl;
 
+			// std::map的insert()方法：
 			std::map<int, double > numMap;
 			numMap.insert({ 1, 1.0 });
 			numMap.insert({ 2, 2.0 });
 			numMap.insert({ 3, 3.0 });
 			numMap.insert({ 4, 4.0 });
-			auto ret = numMap.insert({ 5, 5.0 });
+			std::pair<std::map<int, double >::iterator, bool> ret = numMap.insert({ 5, 5.0 });
 			if (ret.second)
 				std::cout << "first insert succeeded: " << ret.first->first << ", " << ret.first->second << std::endl;
 			ret = numMap.insert({ 1, 1.1 });
@@ -3357,9 +3358,9 @@ namespace TEST_OOP
 
 int main()
 {    
-	TEST_BIT::test1();
+	// TEST_BIT::test1();
 
-	// TEST_STL::STL_SET_MAP::test3();
+	TEST_STL::STL_SET_MAP::test1();
 
 	debugDisp("main() finished."); 
 

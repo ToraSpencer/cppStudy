@@ -3,6 +3,7 @@
 #include <vector>
 #include <initializer_list>
 #include <queue>
+#include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
  
@@ -279,7 +280,7 @@ void destroy(ListNode<T>* ptrNode)
 #endif
 
 
-// 单向链表节点
+// SLlistNode类——单向链表节点类
 template <typename T>
 class SLlistNode
 {
@@ -292,6 +293,7 @@ public:
 };
 
 
+// 删除以head为首节点的整条链表；
 template <typename T>
 void destroy(SLlistNode<T>* head)
 {
@@ -336,6 +338,7 @@ SLlistNode<T>* eraseNode(SLlistNode<T>* ptrHead, SLlistNode<T>* ptrNode)
 }
 
 
+// 由std::vector<>生成链表
 template <typename T>
 SLlistNode<T>* make_list(const std::vector<T>& vec)
 {
@@ -356,6 +359,7 @@ SLlistNode<T>* make_list(const std::vector<T>& vec)
 }
 
 
+// 输入函数子遍历链表；
 template<typename T, typename Func>
 void traverseList(SLlistNode<T>* ptrHead, Func fun)
 {

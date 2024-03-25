@@ -244,6 +244,7 @@ namespace SORTING
 }
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////// 图
 namespace GRAPH 
 {
@@ -299,6 +300,7 @@ namespace GRAPH
 }
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////// 递归
 namespace RECURSION
 {
@@ -327,6 +329,7 @@ namespace RECURSION
 }
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////// 回溯法
 namespace BACKTRACKING 
 {
@@ -344,11 +347,17 @@ namespace BACKTRACKING
 	*/
 	void test0() {}
 
+
+	// 八皇后
+	void test1() {}
+
 }
+
+
 
 int main(int argc, char** argv)
 {
-	LIST::test0();
+	LIST::test1();
 	 
 
 	debugDisp("main finished.");
