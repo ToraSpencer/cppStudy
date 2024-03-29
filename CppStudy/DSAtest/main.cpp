@@ -347,9 +347,164 @@ namespace BACKTRACKING
 	*/
 	void test0() {}
 
+	 
+	// 组合求和问题(Combination Sum)
+	int combinationSum(std::list<int>& combList, const int target ) 
+	{
 
-	// 八皇后
-	void test1() {}
+		return 0;
+	}
+
+	using namespace std;
+
+
+	void CombinationSum(vector<int>& candidates, \
+		int target, vector<int>& combination, vector<vector<int>>& result, \
+		const int startIdx) 
+	{
+		// 如果 target 为 0，说明找到了一组组合
+		if (target == 0)
+		{
+			result.push_back(combination);
+			return;
+		}
+
+		// 递归递推——当前组合序列最后一个数字为num，递归
+
+		// 递归终止1——若当前组合序列和大于目标和，则
+
+
+		// 从 start 开始遍历 candidates 数组
+		for (int i = startIdx; i < candidates.size(); i++)
+		{
+			// 如果当前候选数字大于 target，结束本次循环
+			if (candidates[i] > target)
+				continue;
+
+			// 避免重复的数字
+			if (i > startIdx && candidates[i] == candidates[i - 1])
+				continue;
+
+			combination.push_back(candidates[i]);			// 将当前候选数字加入组合 
+			CombinationSum(candidates, target - candidates[i], combination, result, i + 1);	// 从当前位置的下一个位置开始寻找下一个组合
+			combination.pop_back();				// 回溯，将上一步加入的数字移出组合
+		}
+	} 
+
+
+	void test1() 
+	{
+		// 给定一个数组和一个目标数，从数组中选取若干个数字使它们的和等于目标数，找出所有可能的组合。
+		
+		// 0.
+		std::vector<int> candidates = { 2, 3, 6, 7, 11, 24, 23, 1, 10, -1, -2, -3 };
+		std::vector<std::vector<int>> results;
+		const int target = 24;
+
+		// 1. 
+		vector<int> combination;
+		std::sort(candidates.begin(), candidates.end());
+		CombinationSum(candidates, target, combination, results, 0); 
+		for (const auto& vec : results)
+		{
+			traverseSTL(vec, disp<int>);
+			std::cout << std::endl;
+		}
+
+		debugDisp("test1 finished.");
+	}
+
+
+	// 
+}
+
+
+namespace TMP 
+{
+	using namespace std;
+
+	// 检查在 (row, col) 位置放置皇后是否合法
+	bool isSafe(vector<vector<int>>& board, int row, int col) {
+		// 检查列是否安全
+		for (int i = 0; i < row; i++) {
+			if (board[i][col] == 1)
+				return false;
+		}
+
+		// 检查左上到右下对角线是否安全
+		for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+			if (board[i][j] == 1)
+				return false;
+		}
+
+		// 检查右上到左下对角线是否安全
+		for (int i = row, j = col; i >= 0 && j < board.size(); i--, j++) {
+			if (board[i][j] == 1)
+				return false;
+		}
+
+		return true;
+	}
+
+	// 解决八皇后问题
+	bool solveNQueens(vector<vector<int>>& board, int row) {
+		// 如果所有行都已经放置了皇后，则返回 true
+		if (row == board.size())
+			return true;
+
+		for (int col = 0; col < board.size(); col++)
+		{
+			// 检查当前位置是否安全
+			if (isSafe(board, row, col))
+			{
+
+				// 放置皇后
+				board[row][col] = 1;
+
+				// 递归尝试下一行
+				if (solveNQueens(board, row + 1))
+					return true;
+
+				// ！！！如果不能放置皇后，则回溯
+				board[row][col] = 0;
+			}
+		}
+
+		// 如果在该行的任何位置都不能放置皇后，则返回 false
+		return false;
+	}
+
+	// 打印棋盘
+	void printBoard(vector<vector<int>>& board)
+	{
+		for (int i = 0; i < board.size(); i++)
+		{
+			for (int j = 0; j < board.size(); j++)
+			{
+				cout << board[i][j] << " ";
+			}
+			cout << endl;
+		}
+	}
+
+
+	int testQueens()
+	{
+		int n = 8; // 棋盘大小
+		vector<vector<int>> board(n, vector<int>(n, 0)); // 初始化棋盘
+
+		// 解决八皇后问题
+		if (solveNQueens(board, 0))
+		{
+			cout << "Solution found:\n";
+			printBoard(board);
+		}
+		else
+			cout << "No solution exists!\n";
+
+
+		return 0;
+	}
 
 }
 
@@ -357,8 +512,9 @@ namespace BACKTRACKING
 
 int main(int argc, char** argv)
 {
-	LIST::test1();
-	 
+	// LIST::test1(); 
+
+	BACKTRACKING::test1();
 
 	debugDisp("main finished.");
 

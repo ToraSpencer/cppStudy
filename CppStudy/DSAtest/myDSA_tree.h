@@ -54,6 +54,7 @@ public:
 };
 
 
+// 控制台上打印二叉树节点的信息
 template <typename T>
 static auto dispTreeNode = [](const TreeNode<T>* ptrNode)
 {
@@ -73,8 +74,10 @@ enum class TRAVERSE_BT_TYPE
 };
 
 
+// 遍历二叉树
 template <typename T, typename Func>
-void traverseBT(TreeNode<T>* ptrNode, Func func, const TRAVERSE_BT_TYPE type = TRAVERSE_BT_TYPE::PreOrder)
+void traverseBT(TreeNode<T>* ptrNode, Func func, \
+	const TRAVERSE_BT_TYPE type = TRAVERSE_BT_TYPE::PreOrder)
 {
 	TreeNode<T>* ptrCurrentNode = nullptr;
 	TreeNode<T>* pa = nullptr;
@@ -317,6 +320,8 @@ void reverseBT(TreeNode<T>* ptrNode)
 	reverseBT(pa);
 	reverseBT(pb);
 }
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 基于树的排序算法
