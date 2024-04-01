@@ -45,7 +45,7 @@
 *.docx
 
 *.ilk
-
+Makefile
 
 # 忽略的文件夹
 x64/
