@@ -54,4 +54,6 @@ Debug/
 Release/
 Bin_Debug/
 Win32_Debug/
+CppStudy/DSAtest/buildOSX
+CppStudy/DSAtest/buildx64
 .vs/
