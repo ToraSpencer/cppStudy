@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -65,31 +64,41 @@ static auto dispTreeNode = [](const TreeNode<T>* ptrNode)
 };
 
 
+// 枚举类——BT的遍历类型
 enum class TRAVERSE_BT_TYPE
 {		
-	PreOrder,					// 先序遍历、深度优先遍历
+	// 深度优先遍历：
+	PreOrder,					// 先序遍历
 	InOrder,					// 中序遍历
 	PostOrder,				// 后序遍历
-	LevelOrder,				// 层序遍历、广度优先遍历
+
+	// 广度优先遍历（层序遍历）
+	LevelOrder,				
 };
 
 
 // 遍历二叉树
 template <typename T, typename Func>
 void traverseBT(TreeNode<T>* ptrNode, Func func, \
-	const TRAVERSE_BT_TYPE type = TRAVERSE_BT_TYPE::PreOrder)
+	const TRAVERSE_BT_TYPE type = TRAVERSE_BT_TYPE::PreOrder, const bool skipNP = true)
 {
 	TreeNode<T>* ptrCurrentNode = nullptr;
 	TreeNode<T>* pa = nullptr;
 	TreeNode<T>* pb = nullptr;
 	if (type == TRAVERSE_BT_TYPE::LevelOrder)		// 特殊情形——层序遍历，借助队列结构实现；
 	{
-		if (nullptr == ptrNode) 
-			return; 
 		std::queue<TreeNode<T>*> queue;
+		if (nullptr == ptrNode)
+		{
+			if (!skipNP)
+				func(ptrNode);
+			return;
+		}
+
 		queue.push(ptrNode);
 		while (!queue.empty())
 		{
+			// 取节点→自己入队→ 孩子入队→出队→ 访问节点；
 			ptrCurrentNode = queue.front();
 			pa = ptrCurrentNode->left;
 			pb = ptrCurrentNode->right;
@@ -101,11 +110,15 @@ void traverseBT(TreeNode<T>* ptrNode, Func func, \
 				queue.push(pb);
 		}
 	}
-	else   // 先、中、后序遍历——取决于是先访问节点（调用函数子func作用于节点）还是先执行递归（搜索节点）
+	else		 // 深度优先遍历——先、中、后序取决于是先访问节点（调用函数子func作用于节点）还是先执行递归（搜索节点）
 	{
 		// 递归终止1——若当前节点为空：
-		if (nullptr == ptrNode) 
-			return; 
+		if (nullptr == ptrNode)
+		{
+			if (!skipNP)
+				func(ptrNode);
+			return;
+		}
 
 		// 递归终止2——若当前节点为叶子
 		pa = ptrNode->left;
@@ -113,6 +126,11 @@ void traverseBT(TreeNode<T>* ptrNode, Func func, \
 		if (nullptr == pa && nullptr == pb)
 		{
 			func(ptrNode);
+			if (!skipNP)
+			{
+				func(pa);
+				func(pb);
+			}
 			return;
 		}
 
@@ -121,19 +139,19 @@ void traverseBT(TreeNode<T>* ptrNode, Func func, \
 		{
 		case TRAVERSE_BT_TYPE::PreOrder:
 			func(ptrNode);
-			traverseBT(pa, func);
-			traverseBT(pb, func);
+			traverseBT(pa, func, type, skipNP);
+			traverseBT(pb, func, type, skipNP);
 			break;
 
 		case TRAVERSE_BT_TYPE::InOrder:
-			traverseBT(pa, func);
+			traverseBT(pa, func, type, skipNP);
 			func(ptrNode);
-			traverseBT(pb, func);
+			traverseBT(pb, func, type, skipNP);
 			break;
 
 		case TRAVERSE_BT_TYPE::PostOrder:
-			traverseBT(pa, func);
-			traverseBT(pb, func);
+			traverseBT(pa, func, type, skipNP);
+			traverseBT(pb, func, type, skipNP);
 			func(ptrNode);
 			break;
 
@@ -196,7 +214,7 @@ void printBT(TreeNode<T>* ptrNode)
 		for (int j = 0; j < width; j++)
 			*(a + (i * width) + j) = 0;
 
-	// 2. 二叉树序列化
+	// 2. 序列化
 	BT2Array(ptrNode, a, 0, (width - 1) / 2, std::make_pair(width, height));
 
 	// 3. 打印
@@ -222,6 +240,7 @@ void printBT(TreeNode<T>* ptrNode)
 }
  
 
+// 删除以ptrNode为根节点的BT
 template <typename T>
 void destroy(TreeNode<T>* ptrNode) 
 {
@@ -248,9 +267,9 @@ void destroy(TreeNode<T>* ptrNode)
 }
 
 
-// BT的序列化——广度优先遍历（层序遍历），空节点用占位符占位；
+// BT的序列化——基于广度优先遍历（层序遍历），空节点用占位符占位；
 template <typename T>
-bool serializeBT(std::vector<T>& vecOut, TreeNode<T>* ptrRoot)
+bool serializeBT_levelOrder (std::vector<T>& vecOut, TreeNode<T>* ptrRoot)
 {
 	vecOut.clear();
 
@@ -287,19 +306,126 @@ bool serializeBT(std::vector<T>& vecOut, TreeNode<T>* ptrRoot)
 }
 
 
-
+// BT的反序列化——基于广度优先遍历；
 template <typename T>
-bool deserializeBT(TreeNode<T>* ptrRoot, const std::vector<T>& vecOut)
+TreeNode<T>* deserializeBT_levelOrder(const std::vector<T>& vecVal) 
 {
-	destroy(ptrRoot);
+	const T placeholder = std::numeric_limits<T>::max();
+	std::queue<TreeNode<T>*> QS, QF;
+	TreeNode<T>* ptrRoot = nullptr;
+	TreeNode<T>* pn = nullptr;
+	TreeNode<T>* pa = nullptr;
+	TreeNode<T>* pb = nullptr;
 
-	
+	// 0.
+	if (vecVal.empty())
+		return ptrRoot;
 
+	// 1. 生成所有节点；
+	for (const auto elem : vecVal)
+	{
+		if (placeholder == elem)
+			QS.push(nullptr);
+		else
+			QS.push(new TreeNode<T>(elem));
+	}
+
+	// 2. 链接父子的循环：
+	ptrRoot = QS.front();
+	pn = ptrRoot;
+	QS.pop();
+	QF.push(pn);
+	while (!QS.empty())			
+	{
+		pn = QF.front();
+		QF.pop();
+		pa = QS.front();
+		QS.pop();
+		pb = QS.front();
+		QS.pop();
+
+		pn->left = pa;
+		pn->right = pb;
+
+		if (nullptr != pa)
+			QF.push(pa);
+		if (nullptr != pb)
+			QF.push(pb);
+	}
+
+	return ptrRoot;
+} 
+
+
+// BT的序列化——基于先序遍历
+template <typename T>
+bool serializeBT_preOrder(std::vector<T>& vecOut, TreeNode<T>* ptrRoot)
+{
+	const T placeholder = std::numeric_limits<T>::max();
+	const int maxDepth = ptrRoot->maxDepth();
+	const int maxSize = std::pow(2, maxDepth) - 1;					// 深度为maxDepth的满二叉树的节点数；
+	TreeNode<T>* ptrCurrentNode = nullptr;
+	TreeNode<T>* pa = nullptr;
+	TreeNode<T>* pb = nullptr;
+	vecOut.reserve(maxSize); 
+	 
+	traverseBT(ptrRoot, [&vecOut, placeholder](TreeNode<T>* pn)\
+	{
+		if (nullptr == pn)
+			vecOut.push_back(placeholder);
+		else
+			vecOut.push_back(pn->val);
+	}, TRAVERSE_BT_TYPE::PreOrder, false);
+ 
 	return true;
+}
+ 
+
+// 递归函数——从序列化的向量中提取元素，反序列化BT，在deserializeBT_preOrder()中调用
+template <typename T>
+TreeNode<T>* buildBT(std::queue<T>& queue)
+{
+	const T placeholder = std::numeric_limits<T>::max();
+	TreeNode<T>* pn = nullptr;
+
+	// 递归终止1：序列向量中的元素已全部取完
+	if (queue.empty())
+		return pn;
+
+	// 递归终止2：当前元素为占位符，对应空节点；
+	const T elem = queue.front();
+	queue.pop();
+	if (placeholder == elem) 		
+		return pn; 
+
+	// 递归递推：创建当前节点，val赋值为序列向量中的当前元素； 
+	pn = new TreeNode<T>(elem);
+	pn->left = buildBT(queue);
+	pn->right = buildBT(queue); 
+
+	return pn;
+}
+ 
+
+// BT的反序列化——基于先序遍历；
+template <typename T>
+TreeNode<T>* deserializeBT_preOrder(const std::vector<T>& vecVal)
+{
+	const T placeholder = std::numeric_limits<T>::max();
+	TreeNode<T>* ptrRoot = nullptr;
+
+	if (vecVal.empty())
+		return ptrRoot;
+	
+	std::queue<T> queue;
+	for (const auto& elem : vecVal)
+		queue.push(elem);
+	ptrRoot = buildBT(queue);
+	return ptrRoot;
 }
 
 
- // 翻转二叉树（二叉树镜像化）——将所有节点左右孩子颠倒
+ // 翻转BT（BT镜像化）——将所有节点左右孩子颠倒
 template <typename T>
 void reverseBT(TreeNode<T>* ptrNode) 
 {
@@ -323,7 +449,6 @@ void reverseBT(TreeNode<T>* ptrNode)
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////// 基于树的排序算法
 /*
 	基于BST的排序算法
@@ -337,6 +462,9 @@ void reverseBT(TreeNode<T>* ptrNode)
 
 */
 
+
+
+////////////////////////////////////////////////////////////////////////////////////////////// 测试函数：
 namespace TREE 
 {
 	void test0();

@@ -203,25 +203,50 @@ namespace TREE
 	// BT的序列化、反序列化。 
 	void test4()
 	{
+		// 0. prepare data:
+		const int placeholder = std::numeric_limits<int>::max();
 		TreeNode<int>* ptrRoot = nullptr;
-		TreeNode<int> tn0, tn00, tn01, tn010, tn011;
+		TreeNode<int> tn0, tn00, tn01, tn010, tn011, tn0101, tn0111;
 		{
 			tn0.val = 3;
 			tn00.val = 9;
 			tn01.val = 20;
 			tn010.val = 15;
 			tn011.val = 7;
+			tn0101.val = 88;
+			tn0111.val = -5;
+
 			tn0.left = &tn00;
 			tn0.right = &tn01;
 			tn01.left = &tn010;
 			tn01.right = &tn011;
+			tn010.right = &tn0101;
+			tn011.right = &tn0111;
 			ptrRoot = &tn0;
 		}
 
 		std::vector<int> valVec;
-		printBT(ptrRoot);
-		serializeBT(valVec, ptrRoot);
+		printBT(ptrRoot); 
+
+		// 1. 基于先序遍历
+		serializeBT_preOrder(valVec, ptrRoot);
 		traverseSTL(valVec, dispCorrected<int>);
+		TreeNode<int>* ptrRoot1 = deserializeBT_preOrder(valVec);
+		printBT(ptrRoot1);
+		destroy(ptrRoot1);
+		
+		// 2. 基于层序遍历：
+		valVec.clear();
+		serializeBT_levelOrder(valVec, ptrRoot);
+		traverseSTL(valVec, dispCorrected<int>);
+		TreeNode<int>* ptrRoot2 = deserializeBT_levelOrder(valVec);
+		printBT(ptrRoot2);
+		destroy(ptrRoot2);
+
+		// 3. 
+		TreeNode<int>* ptrRoot3 = deserializeBT_levelOrder(std::vector<int>{ 9, 2, 3, placeholder, placeholder, 4, 5});
+		printBT(ptrRoot3);
+		destroy(ptrRoot3);
 
 		debugDisp("test4 finished.");
 	}

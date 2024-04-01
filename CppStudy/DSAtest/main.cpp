@@ -512,9 +512,9 @@ namespace TMP
 
 int main(int argc, char** argv)
 {
-	// LIST::test1(); 
+	TREE::test4(); 
 
-	BACKTRACKING::test1();
+	// BACKTRACKING::test1();
 
 	debugDisp("main finished.");
 
