@@ -419,7 +419,7 @@ namespace BACKTRACKING
 }
 
 
-namespace TMP 
+namespace TMP_QUEENS
 {
 	using namespace std;
 
@@ -510,15 +510,50 @@ namespace TMP
 
 
 
+
+namespace TMP_BST
+{
+	using namespace std;
+	using treeNode = TreeNode<int>; 
+
+# if 0
+	template<typename T>
+	BiTree<T>* insert_bst(T data, BiTree<T>*& bst)
+	{
+		if (!bst) 
+		{ 
+
+			bst = new BiTree<T>;
+			bst->data = data;
+			bst->right = bst->left = NULL;
+		}
+		else     //开始找要插入元素的位置
+		{
+			if (data < bst->data) //递归插入左子树
+				bst->left = insert_bst(data, bst->left);
+
+			if (data > bst->data)//递归插入右子树
+				bst->right = insert_bst(data, bst->right);
+		}
+
+		return bst;
+	} 
+#endif
+
+	void test0() {}
+}
+
+
 int main(int argc, char** argv)
 {
-	TREE::test4(); 
+	TREE::test7(); 
 
 	// BACKTRACKING::test1();
 
+	// TMP_BST::test0();
+
+
 	debugDisp("main finished.");
-
-
 
 
 	return 0;

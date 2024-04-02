@@ -1,9 +1,13 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <string>
+#include <stack>
 #include <queue>
 #include <unordered_map>
 #include <algorithm>
+#include <exception>
+#include <stdexcept>
 
 
 // TreeNode类——二叉树节点类
@@ -77,7 +81,7 @@ enum class TRAVERSE_BT_TYPE
 };
 
 
-// 遍历二叉树
+// 遍历BT
 template <typename T, typename Func>
 void traverseBT(TreeNode<T>* ptrNode, Func func, \
 	const TRAVERSE_BT_TYPE type = TRAVERSE_BT_TYPE::PreOrder, const bool skipNP = true)
@@ -201,7 +205,7 @@ void BT2Array(TreeNode<T>* ptrNode, T* arrayHead, int i, int k, \
 } 
 
 
-// 控制台上打印二叉树
+// 控制台上打印BT
 template <typename T>
 void printBT(TreeNode<T>* ptrNode)
 { 
@@ -242,15 +246,15 @@ void printBT(TreeNode<T>* ptrNode)
 
 // 删除以ptrNode为根节点的BT
 template <typename T>
-void destroy(TreeNode<T>* ptrNode) 
+void destroy(TreeNode<T>*& ptrNode) 
 {
 	// 递归终止1——若当前节点为空，do nothing;
 	if (nullptr == ptrNode)
 		return;
 
 	// 递归终止2——若当前节点是叶子，将其delete
-	TreeNode<T>* pa = ptrNode->left;
-	TreeNode<T>* pb = ptrNode->right;
+	TreeNode<T>*& pa = ptrNode->left;
+	TreeNode<T>*& pb = ptrNode->right;
 	if (nullptr == pa && nullptr == pb)
 	{
 		delete ptrNode;
@@ -335,16 +339,21 @@ TreeNode<T>* deserializeBT_levelOrder(const std::vector<T>& vecVal)
 	pn = ptrRoot;
 	QS.pop();
 	QF.push(pn);
-	while (!QS.empty())			
+	while (!QF.empty())			
 	{
 		pn = QF.front();
 		QF.pop();
+
+		if (QS.empty())			// 子节点栈空了的话，代表剩下的父节点全都是叶子节点；
+			continue;
 		pa = QS.front();
 		QS.pop();
+		pn->left = pa;
+
+		if (QS.empty())
+			continue;
 		pb = QS.front();
 		QS.pop();
-
-		pn->left = pa;
 		pn->right = pb;
 
 		if (nullptr != pa)
@@ -449,7 +458,131 @@ void reverseBT(TreeNode<T>* ptrNode)
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////// 基于树的排序算法
+////////////////////////////////////////////////////////////////////////////////////////////// BST相关：
+
+// 判断一个BT对象是否是BST
+template<typename T>
+bool isBST(TreeNode<T>* ptrRoot)
+{
+	/*
+		BT的充要条件：其中序遍历生成的序列是单调递增的；
+	*/
+
+	std::vector<T> valVec;
+	if (nullptr == ptrRoot)
+		return true;
+
+	const int maxDepth = ptrRoot->maxDepth();
+	valVec.reserve(std::pow(2, maxDepth) - 1);
+	traverseBT(ptrRoot, [&valVec](TreeNode<T>* np)
+		{
+			valVec.push_back(np->val);
+
+		}, TRAVERSE_BT_TYPE::InOrder);
+	valVec.shrink_to_fit();
+	for (int i = 0; i < valVec.size() - 1; ++i) 
+		if (valVec[i] >= valVec[i + 1])
+			return false; 
+
+	return true;
+}
+
+
+// BST中插入新节点
+template<typename T>
+TreeNode<T>* insert_BST(TreeNode<T>*& pn, const T data) 
+{
+	/*
+		TreeNode<T>* insert_BST(				返回当前BST对象的根节点（是绝对的根节点，往上再没有了）；
+			TreeNode<T>*& ptrRoot,			被插入节点的BST的根节点；如果此项为nullptr，则生成一个BST节点对象；
+			const T data									插入节点的值；
+			)
+
+	*/
+	TreeNode<T>* pnNew = nullptr;
+
+	// 递归终止——当前节点指针为空，生成一个新节点
+	if (nullptr == pn)
+	{
+		pn = new TreeNode<T>(data);
+		return pn;
+	}
+
+	// 递归递推——若data小于当前节点值，则对其左子树插入此节点；
+	if (data == pn->val) 
+		throw(std::invalid_argument("BST cannot have two nodes with same value."));							// !!!error: BST不可以有相同值的节点，抛出异常；
+	else if (data < pn->val)
+		insert_BST(pn->left, data);
+	else 
+		insert_BST(pn->right, data);
+}
+
+
+// 生成一个BST对象
+template <typename T>
+TreeNode<T>* buildBST(const T headVal, const std::vector<T>& valVec)
+{
+	TreeNode<T>* ptrRoot = new TreeNode<T>(headVal);
+	for (const auto& elem : valVec)
+		insert_BST(ptrRoot, elem);
+	return ptrRoot;
+}
+
+
+// 在BST中搜索值为data的节点
+template <typename T>
+TreeNode<T>* searchBST(TreeNode<T>* ptrRoot, const T data) 
+{ 	
+	// 递归终止1：	
+	if (nullptr == ptrRoot)
+		return nullptr;
+
+	// 递归终止2：
+	if (data == ptrRoot->val)
+		return ptrRoot;
+	
+	// 递归递推：
+	if (data < ptrRoot->val)
+		searchBST(ptrRoot->left, data);
+	else
+		searchBST(ptrRoot->right, data); 
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////// 平衡BT相关：
+   
+// 判断以pn为根节点的BT是否是平衡的；
+template<typename T>
+bool isBalanced(TreeNode<T>* ptrRoot)
+{
+	/*
+		每个节点的左右子树的高度差的绝对值不超过1，
+			一棵BT是平衡BT，当且仅当其所有子树也都是平衡BT， 
+	*/
+
+	// 可以后序遍历此BT， 如果前面的子树是非平衡的，后面的就肯定是非平衡的；
+	std::list<TreeNode<T>*> nodePtrList;
+	if (nullptr == ptrRoot)
+		return true;
+
+	traverseBT(ptrRoot, [&nodePtrList](TreeNode<T>* np)
+		{
+			nodePtrList.push_back(np);
+		}, TRAVERSE_BT_TYPE::PostOrder);
+
+	for (auto np : nodePtrList)
+	{
+		int DL = (nullptr == np->left) ? 0 : np->left->maxDepth();
+		int DR = (nullptr == np->right) ? 0 : np->right->maxDepth();
+		if (std::abs(DL - DR) > 1)
+			return false;
+	}
+	return true;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////// 基于BT的排序算法
 /*
 	基于BST的排序算法
 		直接构建BST排序：
@@ -460,7 +593,28 @@ void reverseBT(TreeNode<T>* ptrNode)
 
 	基于堆的排序算法：
 
-*/
+*/ 
+
+
+#if 0
+template <typename T>
+TreeNode<T>* buildHeap(const std::vector<T>& valVec)
+{
+	TreeNode<T>* ptrRoot = nullptr;
+	if (valVec.empty())
+		return nullptr;
+
+	const T max = valVec[0];
+	for (const auto elem : valVec)
+		if (max < elem)
+			max = elem;
+
+	ptrRoot = new TreeNode<T>(max);
+	
+
+	return ptrRoot;
+}
+#endif
 
 
 

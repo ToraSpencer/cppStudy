@@ -908,6 +908,127 @@ namespace TEST_UNKNOWN
 
 	}
 
+	//  指针：
+	namespace POINTER
+	{
+		// 智能指针
+	/*
+		make_shared()
+
+		shared_ptr的常用接口
+			use_count()
+			unique()
+			reset()
+
+		unique_ptr的常用接口
+
+	*/
+
+		void test0()
+		{
+			// shared_ptr
+
+			// make_shared<T>()——创建一个堆对象，返回其智能指针
+			std::shared_ptr<int> pi1 = std::make_shared<int>(99);
+			std::shared_ptr<int> pi2(pi1);
+
+			// 类方法use_count()——显示指向对象被多少个智能指针共享
+			std::cout << pi1.use_count() << std::endl;
+
+			// get()——返回shared_ptr封装的指针；
+			int* intPtr1 = pi1.get();
+			std::cout << "*intPtr1 == " << *intPtr1 << std::endl;
+
+			// 类方法unique()——是否独占指向对象
+
+			// 类方法reset()——释放，或释放后指向别的对象。
+			pi1.reset();
+			std::cout << "pi1.use_count() == " << pi1.use_count() << std::endl;
+			std::cout << "pi2.use_count() == " << pi2.use_count() << std::endl;
+
+			int* intPtr2 = new int(88);
+			pi2.reset(intPtr2);				// reset普通指针；
+			std::cout << "*pi2 == " << *pi2 << std::endl;
+
+
+			// 智能指针空了以后再reset()也不会有问题，普通堆对象的指针在delete之后再次delete会报错；
+			pi1.reset();
+			pi1.reset();
+			pi1.reset();
+			int* tempPtr = new int(100);
+			delete tempPtr;
+			// delete tempPtr;
+
+
+			// 可以直接用if和!来判断只能指针是否为空；
+			if (pi1)
+				std::cout << "pi1不为空" << std::endl;
+			else
+				std::cout << "pi1为空" << std::endl;
+
+			if (!pi2)
+				std::cout << "pi2为空" << std::endl;
+			else
+				std::cout << "pi2不为空" << std::endl;
+
+
+
+			// 智能指针接管传统指针，不要用智能指针指向栈对象，虽然指向的时候不报错，但是reset()的时候会产生异常。
+			float* opf1 = new float(3.1415);
+			std::shared_ptr<float> pf1(opf1);
+
+
+			// unique_ptr
+
+					// allocator<T>类模板
+			std::allocator<char> ch_allo;
+			ch_allo.allocate(9);						// 开辟堆内存，大小为9个char
+
+		}
+
+
+		// 指针的引用
+		void test1()
+		{
+			auto foo = [](int* ptrNum)->int
+			{
+				ptrNum++;
+				return *ptrNum;
+			};
+
+			auto goo = [](int*& ptrNum)->int			// 接受指针引用，返回int值
+			{
+				ptrNum++;
+				return *ptrNum;			// 返回值时实际创建了新的数据对象；
+			};
+
+			auto hoo = [](int*& ptrNum)->int&		// 接受指针引用，返回int引用
+			{	
+				ptrNum++;
+				return *ptrNum;			// 返回引用时没有创建新的数据对象；
+			};
+			std::vector<int> numVec{ 1,2,3,4,5 };
+
+
+			int* ptrNum1 = &numVec[0];
+			// int& ret1 = foo(ptrNum1);
+			debugDisp("*ptrNum1 == ", *ptrNum1);
+			
+			goo(ptrNum1);
+			// int& ret2 = goo(ptrNum1);
+			debugDisp("*ptrNum1 == ", *ptrNum1);
+			
+			int& ret = hoo(ptrNum1);
+			debugDisp("*ptrNum1 == ", *ptrNum1);
+			traverseSTL(numVec, disp<int>()); 
+			ret++;
+			traverseSTL(numVec, disp<int>()); 
+
+			debugDisp("test1 finished.");
+		}
+	}
+
+
 	 
 	// 变参模板
 	namespace VAR_TEMP
@@ -1792,85 +1913,6 @@ namespace TEST_NEW_FEATURES
 
 	}
 
-
-	// 智能指针：
-	namespace SMART_POINTER
-	{
-		// 智能指针
-	/*
-		make_shared()
-
-		shared_ptr的常用接口
-			use_count()
-			unique()
-			reset()
-
-		unique_ptr的常用接口
-
-	*/
-
-		void test0()
-		{
-			// shared_ptr
-
-			// make_shared<T>()——创建一个堆对象，返回其智能指针
-			std::shared_ptr<int> pi1 = std::make_shared<int>(99);
-			std::shared_ptr<int> pi2(pi1);
-
-			// 类方法use_count()——显示指向对象被多少个智能指针共享
-			std::cout << pi1.use_count() << std::endl;
-
-			// get()——返回shared_ptr封装的指针；
-			int* intPtr1 = pi1.get();
-			std::cout << "*intPtr1 == " << *intPtr1 << std::endl;
-
-			// 类方法unique()——是否独占指向对象
-
-			// 类方法reset()——释放，或释放后指向别的对象。
-			pi1.reset();
-			std::cout << "pi1.use_count() == " << pi1.use_count() << std::endl;
-			std::cout << "pi2.use_count() == " << pi2.use_count() << std::endl;
-
-			int* intPtr2 = new int(88);
-			pi2.reset(intPtr2);				// reset普通指针；
-			std::cout << "*pi2 == " << *pi2 << std::endl;
-
-
-			// 智能指针空了以后再reset()也不会有问题，普通堆对象的指针在delete之后再次delete会报错；
-			pi1.reset();
-			pi1.reset();
-			pi1.reset();
-			int* tempPtr = new int(100);
-			delete tempPtr;
-			// delete tempPtr;
-
-
-			// 可以直接用if和!来判断只能指针是否为空；
-			if (pi1)
-				std::cout << "pi1不为空" << std::endl;
-			else
-				std::cout << "pi1为空" << std::endl;
-
-			if (!pi2)
-				std::cout << "pi2为空" << std::endl;
-			else
-				std::cout << "pi2不为空" << std::endl;
-
-
-
-			// 智能指针接管传统指针，不要用智能指针指向栈对象，虽然指向的时候不报错，但是reset()的时候会产生异常。
-			float* opf1 = new float(3.1415);
-			std::shared_ptr<float> pf1(opf1);
-
-
-			// unique_ptr
-
-					// allocator<T>类模板
-			std::allocator<char> ch_allo;
-			ch_allo.allocate(9);			// 开辟堆内存，大小为9个char
-
-		}
-	}
 
 
 }
@@ -3360,7 +3402,10 @@ int main()
 {    
 	// TEST_BIT::test1();
 
-	TEST_STL::STL_SET_MAP::test1();
+	// TEST_STL::STL_SET_MAP::test1();
+
+	TEST_UNKNOWN::POINTER::test1();
+
 
 	debugDisp("main() finished."); 
 

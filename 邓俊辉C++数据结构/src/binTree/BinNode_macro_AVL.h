@@ -1,12 +1,6 @@
-/******************************************************************************************
- * Data Structures in C++
- * ISBN: 7-302-33064-6 & 7-302-33065-3 & 7-302-29652-2 & 7-302-26883-3
- * Junhui DENG, deng@tsinghua.edu.cn
- * Computer Science & Technology, Tsinghua University
- * Copyright (c) 2003-2020. All rights reserved.
- ******************************************************************************************/
-
 #pragma once
+
+// AVL——自平衡二叉搜索树
 
 /*DSA*/#define HeightUpdated(x) /*高度更新常规条件*/ \
 /*DSA*/        ( (x).height == 1 + max( stature( (x).lc ), stature( (x).rc ) ) )

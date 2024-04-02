@@ -5,7 +5,7 @@
 
 #include <string>
 #include <iostream>
-#include <vector>						//vector类模板在头文件<vector>中
+#include <vector>						// vector类模板在头文件<vector>中
 #include <algorithm>
 #include <iterator>
 #include <atlstr.h>
@@ -150,7 +150,7 @@ void basicTypes_strings_module::test1(void)
 	for_each(str3.rbegin(), str3.rend(), disp<char>);
 	std::cout << std::endl << std::endl;
 
-	// 5. 1 字符串转换为其他类型std::stoi(), std::stol(), std::stoll(), std::stof() ———— C风格字符串、字符串、宽字符串转为数值(c++11)：
+	// 5. 1 字符串转换为其他类型std::stoi(), std::stol(), std::stoll(), std::stof() ———— 字符串、宽字符串、C风格字符串转为数值(c++11)：
 	const char* cstr = "123";
 	str1 = "123";
 	str2 = "1234567890";

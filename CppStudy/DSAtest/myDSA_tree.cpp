@@ -97,32 +97,22 @@ namespace TREE
 	// 各种遍历方法
 	void test1() 
 	{
-		TreeNode<int>* ptrRoot = nullptr;
-		TreeNode<int> tn0, tn00, tn01, tn010, tn011;
-		{
-			tn0.val = 3;
-			tn00.val = 9;
-			tn01.val = 20;
-			tn010.val = 15;
-			tn011.val = 7;
-			tn0.left = &tn00;
-			tn0.right = &tn01;
-			tn01.left = &tn010;
-			tn01.right = &tn011;
-			ptrRoot = &tn0;
-		}
+		constexpr int placeholder = std::numeric_limits<int>::max();
+		TreeNode<int>* ptrRoot = deserializeBT_levelOrder(std::vector<int>{\
+			8, 3, 10, 2, 6, placeholder, 14, placeholder, placeholder, \
+			4, 7, 13, placeholder});
 		printBT(ptrRoot);
+		 
+		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::LevelOrder);  
+		debugDisp("\n");
+		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PreOrder); 
+		debugDisp("\n");
+		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::InOrder); 
+		debugDisp("\n");
+		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PostOrder); 
+		debugDisp("\n");
 
-		// 1. 先序遍历：
-		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PreOrder);
-		debugDisp("\n");
-		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::InOrder);
-		debugDisp("\n");
-		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PostOrder);
-		debugDisp("\n");
-		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::LevelOrder); 
-		debugDisp("\n");
-
+		destroy(ptrRoot);
 		debugDisp("test1 finished.");
 	}
 
@@ -204,7 +194,7 @@ namespace TREE
 	void test4()
 	{
 		// 0. prepare data:
-		const int placeholder = std::numeric_limits<int>::max();
+		constexpr int placeholder = std::numeric_limits<int>::max();
 		TreeNode<int>* ptrRoot = nullptr;
 		TreeNode<int> tn0, tn00, tn01, tn010, tn011, tn0101, tn0111;
 		{
@@ -252,7 +242,7 @@ namespace TREE
 	}
 
 
-	// 二叉树的所有路径：
+	// BT的所有路径：
 	/*
 		给你一个二叉树的根节点 root ，按 任意顺序 ，返回所有从根节点到叶子节点的路径。 
 		 vector<string> binaryTreePaths(TreeNode* root) {}
@@ -270,7 +260,7 @@ namespace TREE
 	}
 
 
-	// 不同的二叉搜索树
+	// 不同的BST
 	/*
 		给你一个整数 n ，请你生成并返回所有由 n 个节点组成且节点值从 1 到 n 互不相同的不同 二叉搜索树 。
 				可以按 任意顺序 返回答案。
@@ -285,6 +275,59 @@ namespace TREE
 	*/
 	void test6() 
 	{
+		// 0. 使用层序序列化的方式构建一个BST:
+		constexpr int placeholder = std::numeric_limits<int>::max();
+		TreeNode<int>* pn = nullptr;
+		TreeNode<int>* ptrRoot1 = deserializeBT_levelOrder(std::vector<int>{\
+			8, 3, 10, 2, 6, placeholder, 14, placeholder, placeholder, \
+			4, 7, 13, placeholder});
+		TreeNode<int>* ptrRoot2 = deserializeBT_levelOrder(std::vector<int>{1, 2, 3, 4, 5, 6, 7});
+		printBT(ptrRoot1);
+		printBT(ptrRoot2);
 
+		// 1. 如果一个BT是BST，则其中序遍历得到的序列是单调递增序列；
+		traverseBT(ptrRoot1, dispTreeNode<int>, TRAVERSE_BT_TYPE::InOrder); 
+		traverseBT(ptrRoot2, dispTreeNode<int>, TRAVERSE_BT_TYPE::InOrder); 
+		debugDisp("isBST(ptrRoot1) == ", isBST(ptrRoot1));
+		debugDisp("isBST(ptrRoot2) == ", isBST(ptrRoot2));
+		destroy(ptrRoot1);
+		destroy(ptrRoot2);
+
+		// 2. 
+		ptrRoot1 = buildBST(8, std::vector<int>{3, 10, 2, 6, 14, 4, 7, 13});
+		ptrRoot2 = buildBST(8, std::vector<int>{4, 13, 7, 3, 2, 10, 6, 14});
+		printBT(ptrRoot1);
+		printBT(ptrRoot2);
+		debugDisp("isBST(ptrRoot1) == ", isBST(ptrRoot1));
+		debugDisp("isBST(ptrRoot2) == ", isBST(ptrRoot2));
+		pn = searchBST(ptrRoot1, 7);
+		debugDisp("pn->val == ", pn->val);
+		pn = searchBST(ptrRoot1, 99);
+		debugDisp("(nullptr == pn) == ", nullptr == pn);
+
+		destroy(ptrRoot1);
+		destroy(ptrRoot2);
+		debugDisp("test6 finished.");
+	}
+
+
+	// 平衡BT
+	void test7() 
+	{
+		constexpr int placeholder = std::numeric_limits<int>::max();
+		TreeNode<int>* ptrRoot1 = deserializeBT_levelOrder(std::vector<int>{\
+			8, 3, 10, 2, 6, placeholder, 14, placeholder, placeholder, \
+			4, 7, 13, placeholder});
+		TreeNode<int>* ptrRoot2 = deserializeBT_levelOrder(std::vector<int>{\
+			1,2,3,4,5,6,7,8,9});
+		printBT(ptrRoot1);
+		printBT(ptrRoot2);
+
+		debugDisp("isBalanced(ptrRoot1) == ", isBalanced(ptrRoot1));
+		debugDisp("isBalanced(ptrRoot2) == ", isBalanced(ptrRoot2));
+
+		destroy(ptrRoot1);
+		destroy(ptrRoot2);
+		debugDisp("test7 finished.");
 	}
 }

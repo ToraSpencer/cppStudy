@@ -22,5 +22,14 @@
     <ClInclude Include="BinTree_test.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="BinNode.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="BinNode_implementation.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UniPrint\print.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
