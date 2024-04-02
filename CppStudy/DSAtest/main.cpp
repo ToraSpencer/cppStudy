@@ -546,7 +546,7 @@ namespace TMP_BST
 
 int main(int argc, char** argv)
 {
-	TREE::test7(); 
+	TREE::test1(); 
 
 	// BACKTRACKING::test1();
 

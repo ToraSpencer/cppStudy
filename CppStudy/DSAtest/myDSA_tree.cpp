@@ -103,6 +103,7 @@ namespace TREE
 			4, 7, 13, placeholder});
 		printBT(ptrRoot);
 		 
+		// 1. 各种遍历方法：
 		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::LevelOrder);  
 		debugDisp("\n");
 		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PreOrder); 
@@ -112,7 +113,13 @@ namespace TREE
 		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PostOrder); 
 		debugDisp("\n");
 
+		// 2. 使用先序序列、中序序列来重建BT:
+		TreeNode<int>* ptrRoot1 = buildBT(std::vector<int>{8, 3, 2, 6, 4, 7, 10, 14, 13},\
+			std::vector<int>{2, 3, 4, 6, 7, 8, 10, 13, 14});
+		printBT(ptrRoot1);
+
 		destroy(ptrRoot);
+		destroy(ptrRoot1);
 		debugDisp("test1 finished.");
 	}
 

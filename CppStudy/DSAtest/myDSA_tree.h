@@ -457,6 +457,99 @@ void reverseBT(TreeNode<T>* ptrNode)
 }
 
 
+template <typename T>
+TreeNode<T>* buildBT(std::vector<TreeNode<T>*>& npsPRO, std::vector<TreeNode<T>*>& npsIO)
+{
+	const int nodesCount = npsPRO.size();				// 不会有0节点的情形；
+	TreeNode<T>* ptrRoot = nullptr;
+
+	// 递归终止：
+	if (0 == nodesCount)
+		return nullptr;
+
+	if (1 == nodesCount)
+		return npsPRO[0];
+
+	if (2 == nodesCount)
+	{ 
+		ptrRoot = npsPRO[0];
+		if (ptrRoot == npsIO[0]) 
+			ptrRoot->right = npsIO[1]; 
+		else 
+			ptrRoot->left = npsIO[0]; 
+		return ptrRoot;
+	}
+
+	// 递归递推：
+	std::vector<TreeNode<T>*> npsPRO_left, npsPRO_right, npsIO_left, npsIO_right;
+	int nodesCountLeft = 0; 
+	int pos = 0;
+	ptrRoot = npsPRO[0];
+	for (; pos < nodesCount; ++pos)
+		if (ptrRoot == npsIO[pos])
+			break;
+	nodesCountLeft = pos; 
+
+	if (nodesCountLeft > 0)
+	{
+		npsPRO_left.insert(npsPRO_left.end(), npsPRO.begin() + 1, npsPRO.begin() + 1 + nodesCountLeft);
+		npsIO_left.insert(npsIO_left.end(), npsIO.begin(), npsIO.begin() + nodesCountLeft);
+	}
+
+	if (nodesCount - nodesCountLeft - 1 > 0)
+	{
+		npsPRO_right.insert(npsPRO_right.end(), npsPRO.begin() + 1 + nodesCountLeft, npsPRO.end());
+		npsIO_right.insert(npsIO_right.end(), npsIO.begin() + nodesCountLeft + 1, npsIO.end());
+	}
+	ptrRoot->left = buildBT(npsPRO_left, npsIO_left);
+	ptrRoot->right = buildBT(npsPRO_right, npsIO_right);
+
+	return ptrRoot;
+}
+
+
+// 输入不含占位符的先序遍历序列、中序遍历序列，重建BT对象；
+template <typename T>
+TreeNode<T>* buildBT(const std::vector<T>& vecPRO, const std::vector<T>& vecIO)
+{
+	/*
+		对于任意一颗树而言，前序遍历的形式总是
+				根节点, [左子树的前序遍历结果], [右子树的前序遍历结果]
+				即根节点总是前序遍历中的第一个节点。
+		中序遍历的形式总是
+				[左子树的中序遍历结果], 根节点, [右子树的中序遍历结果]
+
+		重建BT对象需要对上面两个括号进行定位；
+
+		重建的递归过程：
+				递归终止：
+						若当前节点数不大于3：
+								可直接得到这棵树；
+				递归递推：
+
+	*/
+	TreeNode<T>* ptrRoot = nullptr;
+	if (vecPRO.empty())
+		return nullptr;
+
+	// 1. 生成所有节点；
+	const int nodesCount = vecPRO.size();
+	std::unordered_map<T, TreeNode<T>*> map;
+	std::vector<TreeNode<T>*> npsPRO(nodesCount), npsIO(nodesCount);
+	for (int i = 0; i < nodesCount; ++i)
+	{
+		npsPRO[i] = new TreeNode<T>(vecPRO[i]);
+		map.insert(std::make_pair(vecPRO[i], npsPRO[i]));
+	}
+	for (int i = 0; i < nodesCount; ++i)
+		npsIO[i] = map[vecIO[i]];
+	
+	// 2. 
+	ptrRoot = buildBT(npsPRO, npsIO);
+
+
+	return ptrRoot;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////// BST相关：
 
@@ -549,9 +642,10 @@ TreeNode<T>* searchBST(TreeNode<T>* ptrRoot, const T data)
 }
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////// 平衡BT相关：
    
-// 判断以pn为根节点的BT是否是平衡的；
+// 判断BT是否是平衡的；
 template<typename T>
 bool isBalanced(TreeNode<T>* ptrRoot)
 {
@@ -577,6 +671,26 @@ bool isBalanced(TreeNode<T>* ptrRoot)
 		if (std::abs(DL - DR) > 1)
 			return false;
 	}
+	return true;
+}
+
+
+// 将BST变平衡（to be completed）
+template<typename T>
+bool makeBalanced(TreeNode<T>& ptrRoot)
+{
+	/*
+	方法一：贪心构造
+	思路
+		「平衡」要求它是一棵空树或它的左右两个子树的高度差的绝对值不超过 111，
+		这很容易让我们产生这样的想法——左右子树的大小越「平均」，这棵树会不会越平衡？
+		于是一种贪心策略的雏形就形成了：我们可以通过中序遍历将原来的二叉搜索树转化为一个有序序列，
+			然后对这个有序序列递归建树，对于区间 [L,R][L, R][L,R]：
+			 
+	
+	*/
+
+
 	return true;
 }
 
