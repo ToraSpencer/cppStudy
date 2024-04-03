@@ -16,6 +16,7 @@
 *.pdb
 		
 *.ipdb
+*.idb
 *.exp
 *.log
 *.recipe
