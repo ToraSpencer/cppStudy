@@ -163,7 +163,6 @@ public:
 	AdjListDirGraph(const AdjListDirGraph<ElemType> &g);
 	~AdjListDirGraph();
 
-
 	bool IsEmpty();
 	int GetOrder(ElemType &e) const;            // 求顶点e的索引	
 	Status GetElem(int v, ElemType &e) const;
@@ -1138,21 +1137,20 @@ void AdjListDirGraph<ElemType>::InsertArc(int v1, int v2)
 	if (v1 == v2)
 		throw Error("v1不能等于v2!"); 
 
-	AdjListGraphArc* p = nullptr;
-	AdjListGraphArc* q = nullptr;
-	p = vexTable[v1].firstArc;
-	while (p != NULL && p->adjVex != v2) 
+	AdjListGraphArc* pe1 = vexTable[v1].firstArc;
+	AdjListGraphArc* pe2 = nullptr; 
+	while (pe1 != NULL && pe1->adjVex != v2) 
 	{
-		q = p;
-		p = p->nextArc;
+		pe2 = pe1;
+		pe1 = pe1->nextArc;
 	}
 
-	if (p == NULL) 
+	if (pe1 == NULL) 
 	{
 		if (vexTable[v1].firstArc == NULL)
 			vexTable[v1].firstArc = new AdjListGraphArc(v2);
 		else
-			q->nextArc = new AdjListGraphArc(v2);
+			pe2->nextArc = new AdjListGraphArc(v2);
 		arcNum++;
 	}
 	else

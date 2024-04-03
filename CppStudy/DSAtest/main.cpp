@@ -242,63 +242,7 @@ namespace SORTING
 	}
  
 }
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////// 图
-namespace GRAPH 
-{
-	// practice——找到小镇的法官
-	/*
-		小镇里有 n 个人，按从 1 到 n 的顺序编号。传言称，这些人中有一个暗地里是小镇法官。
-		如果小镇法官真的存在，那么：
-				1. 小镇法官不会信任任何人。
-				2. 每个人（除了小镇法官）都信任这位小镇法官。
-				只有一个人同时满足属性 1 和属性 2 。
-				给你一个数组 trust ，其中 trust[i] = [ai, bi] 表示编号为 ai 的人信任编号为 bi 的人。
-		如果小镇法官存在并且可以确定他的身份，请返回该法官的编号；否则，返回 -1 。 
-
-		示例 ：
-				输入：n = 2, trust = [[1,2]]
-				输出：2 
-				输入：n = 3, trust = [[1,3],[2,3]]
-				输出：3 
-				输入：n = 3, trust = [[1,3],[2,3],[3,1]]
-				输出：-1
-	*/
-	int findJudge(int N, const std::vector<std::vector<int>>& trust)
-	{
-		/*
-			trust中的数对相当于graph中的有向边；
-			问题等价于：
-					判断n个节点的有向图中是否有某个节点同时满足：
-							1. 入度为(n - 1)；
-							2. 出度为0；
-		*/
-		const int k = N + 1;
-		std::vector<bool> trustPeople(k, false);
-		std::vector<int> beTrust(k, 0);									 // 被别人相信
-		for (auto& v : trust)
-		{
-			trustPeople[v[0]] = true;
-			beTrust[v[1]]++;
-		}
-		for (int i = 1; i <= N; ++i)
-			if (!trustPeople[i] && beTrust[i] == N - 1)
-				return i;
-		return -1;
-	}
-	 
-	void test0()
-	{
-		debugDisp("result == ", findJudge(3, std::vector<std::vector<int>>{ \
-				std::vector<int>{1, 3}, std::vector<int>{2, 3} }));
-
-		debugDisp("test0() finished.");
-	}
  
-}
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 递归
@@ -543,10 +487,11 @@ namespace TMP_BST
 	void test0() {}
 }
 
+ 
 
 int main(int argc, char** argv)
 {
-	TREE::test1(); 
+	GRAPH::test0(); 
 
 	// BACKTRACKING::test1();
 

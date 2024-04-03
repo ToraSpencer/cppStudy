@@ -287,6 +287,8 @@ class SLlistNode
 public:
 	T val;
 	SLlistNode* next;
+
+public:
 	SLlistNode() :val(0), next(nullptr) {}
 	SLlistNode(const T x) : val(x), next(nullptr) {}
 	SLlistNode(const T x, SLlistNode* next) : val(x), next(next) {}

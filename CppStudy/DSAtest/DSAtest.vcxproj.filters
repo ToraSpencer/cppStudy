@@ -27,6 +27,9 @@
     <ClCompile Include="myDSA_list.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="myDSA_graph.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\myDSA.h">
@@ -39,6 +42,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="myDSA_list.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="myDSA_graph.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
