@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <list>
 #include <string>
 #include <stack>
 #include <queue>
@@ -84,7 +85,8 @@ enum class TRAVERSE_BT_TYPE
 // ±È¿˙BT
 template <typename T, typename Func>
 void traverseBT(TreeNode<T>* ptrNode, Func func, \
-	const TRAVERSE_BT_TYPE type = TRAVERSE_BT_TYPE::PreOrder, const bool skipNP = true)
+	const TRAVERSE_BT_TYPE type = TRAVERSE_BT_TYPE::PreOrder, \
+	const bool skipNP = true)
 {
 	TreeNode<T>* ptrCurrentNode = nullptr;
 	TreeNode<T>* pa = nullptr;

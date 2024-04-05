@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
  
 
 # 0. blah blah blah
-project(DAStest VERSION 1.0)                     # 设定项目名称是helloWorld，版本是1.0
+project(DSAtest VERSION 1.0)                     # 设定项目名称是helloWorld，版本是1.0
 set(CMAKE_CXX_STANDARD 11)                          # 指定项目的C++标准：
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -15,7 +15,7 @@ message(STATUS "CMAKE_CONFIGURATION_TYPES == ${CMAKE_CONFIGURATION_TYPES}")
 
 # 1. 导入源代码文件：
 #       include_directories()——指定源代码的头文件所在目录；
-include_directories(${PROJECT_SOURCE_DIR}/..)       # PROJECT_SOURCE_DIR——此CMakeLists.txt所在目录；
+include_directories(${PROJECT_SOURCE_DIR})       # PROJECT_SOURCE_DIR——此CMakeLists.txt所在目录；
 
 #       aux_source_directory()——查找某路径下所有源文件：
 aux_source_directory(${PROJECT_SOURCE_DIR} SRC_FILES)    # aux_source_directory(路径，存储源文件列表的变量)

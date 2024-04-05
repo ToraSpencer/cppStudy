@@ -97,6 +97,17 @@ namespace ARRAY
 		debugDisp("test0 finished.");
 	}
 
+
+	// JZOF3: 二维数组查找：
+	/*
+		在一个二维数组中，每一行都按照从左到右递增的顺序排序，
+			每一列都按照从上到下递增的顺序排序。
+			请完成一个函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
+	*/
+	void test1()
+	{
+
+	}
 }
 
 
@@ -137,11 +148,20 @@ namespace STRING
 	}
 
 
+	// JZOF4: 字符串中替换空格：
+	/*
+		请实现一个函数，把字符串中的每个空格替换成"%20"。
+			例如输入“We are happy.”，则输出“We%20are%20happy.”。
+	*/
+	void test1()
+	{
+
+	}
 }
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////// 排序
+////////////////////////////////////////////////////////////////////////////////////////////// 排序&查找
 /*
 	时间复杂度是 O(nlog⁡n)的排序算法：
 		归并排序
@@ -153,7 +173,7 @@ namespace STRING
   
 
 */
-namespace SORTING 
+namespace SORTING_SEARCHING 
 {
 	// 合并两个有序数组（单调递增）
 	bool mergeSequence(std::vector<int>& vec1, const std::vector<int>& vec2)
@@ -241,6 +261,15 @@ namespace SORTING
 		debugDisp("test0() finished.");
 	}
  
+
+	// JZOF8: 查找旋转数组中的最小数字
+	/*
+		把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。
+			输入一个递增排序的数组的一个旋转，输出旋转数组的最小元素。
+			例如数组{3,4,5,1,2}为{1,2,3,4,5}的一个旋转，该数组的最小值为1。
+	*/
+	void test1()
+	{}
 }
  
 
@@ -248,6 +277,7 @@ namespace SORTING
 ////////////////////////////////////////////////////////////////////////////////////////////// 递归
 namespace RECURSION
 {
+	// 尾递归求阶乘：
 	int factorial(const int num) 
 	{
 		int result = 0;
@@ -269,6 +299,87 @@ namespace RECURSION
 		debugDisp("result == ", factorial(-4));
 
 		debugDisp("test0 finished.");
+	}
+
+
+	// JZOF9: 求斐波那契数列
+	/*
+		写一个函数，输入n，求斐波那契（Fibonacci）数列的第n项。
+			斐波那契数列的定义如下
+				f(0) ==0, f(1) == 1, 
+				n > 1时：f(n) == f(n-1) + f(n-2)
+	*/
+	unsigned long long fibonacci(const unsigned n)
+	{
+		/*
+			直接递归的话，n很大时会生成海量的递归实例，时间复杂度会达到指数级？？？
+			下面给出时间复杂度为O(n)的方法：
+		*/
+		if(0 == n)
+			return 0;
+		if(1 == n)
+			return 1;
+
+		// 要点1: 输出数据应该为上限很大的类型，防止上溢出；
+		unsigned long long a = 0;
+		unsigned long long b = 1;
+		unsigned long long result = 0;
+
+		// 要点2：不需要空间复杂度为O(n)，只需要记录前两个结果就行了；
+		for(int i = 2; i <= n; ++i)
+		{
+			result = a + b;
+			a = b;
+			b = result;
+		}
+
+		return result; 
+	}
+
+
+	void test1()
+	{
+		for(int i = 0; i <= 10; ++i)
+		{
+			char str[256];
+			sprintf(str, "fibonacci(%d) == ", i);
+			debugDisp(str, fibonacci(i));
+		} 
+
+		debugDisp("test1 finished.");
+	}
+
+
+	// JZOF11: 求数值的整数次方：
+	/*
+		实现函数 double Power（double base, int exponent），
+			求 base 的exponent次方。不得使用库函数，同时不需要考虑大数问题。
+	*/
+	double myPower(const double base, const int exponent)
+	{
+		/*
+			直接递归的话，时间复杂度是O(n);
+			如果使用二分的思想的话，可以实现O(logn)的时间复杂度：
+				若n为偶数：f(n) = f(n/2) * f(n/2);
+				若n为级数：f(n) = base * f((n-1)/2) *f((n-2)/2)
+		*/
+		double result = 0;
+		const bool notNeg = (exponent >= 0);
+		const int N = notNeg ? exponent: (-exponent);
+		if(0 == N % 2)
+		{
+						
+		}
+		else
+		{
+			
+		}
+
+		return result;
+	}
+	void test2()
+	{
+
 	}
 }
 
@@ -361,6 +472,7 @@ namespace BACKTRACKING
 
 	// 
 }
+
 
 
 namespace TMP_QUEENS
@@ -491,7 +603,7 @@ namespace TMP_BST
 
 int main(int argc, char** argv)
 {
-	GRAPH::test0(); 
+	RECURSION::test1(); 
 
 	// BACKTRACKING::test1();
 

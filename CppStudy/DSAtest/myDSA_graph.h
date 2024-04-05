@@ -17,12 +17,31 @@
  
 
 template <typename T>
+struct Doublet
+{
+	T x;
+	T y;
+	Doublet():x(0), y(0){}
+	Doublet(const T x0, const T y0): x(x0), y(y0){}
+};
+
+
+// 枚举类——BT的遍历类型
+enum class TRAVERSE_GRAPH_TYPE
+{		
+	depthFirst,
+	breadthFirst,
+};
+
+
+// GraphNode类——图顶点类
+template <typename T>
 class GraphNode 
 { 
 	using GraphEdge = SLlistNode<GraphNode*>;		// 用存储顶点指针的链表节点来表示边；
 public:
-	T val;
-	GraphEdge* pFirstEdge;						// 邻接边链表的首个结点的指针；
+	T val;									// 节点值
+	GraphEdge* pFirstEdge;					// 邻接边链表的首个结点的指针；
 
 public:
 	GraphNode():val(0), pFirstEdge(nullptr) {}
@@ -51,7 +70,7 @@ public:
 		this->edgeNum = 0;
 		this->pnVec.reserve(ilist.size());
 		for (const auto& elem : ilist)
-			pnVec.push_back(new GraphNode(elem)); 
+			pnVec.push_back(new GraphNode<T>(elem)); 
 	}
 	~Graph()
 	{
@@ -104,7 +123,32 @@ public:
 	}
 };
 
- 
+
+// 遍历图(to be completed)
+template <typename T, typename Func>
+void traverseGraph(GraphNode<T>* ptrNode, Func func, \
+	const TRAVERSE_GRAPH_TYPE type = TRAVERSE_GRAPH_TYPE::depthFirst, \
+	const bool skipNP = true)
+{
+	GraphNode<T>* pn1 = nullptr;
+	GraphNode<T>* pn2 = nullptr;
+	std::unordered_map<GraphNode<T>*, bool> visited;
+	if(TRAVERSE_GRAPH_TYPE::depthFirst == type)
+	{
+		
+	}
+}
+
+
+// 控制台上打印图顶点的信息
+template <typename T>
+static auto dispGraphNode = [](const GraphNode<T>* ptrNode)
+{
+	if(nullptr == ptrNode)
+		std::cout << "placeholder, ";
+	else
+		std::cout << ptrNode->val << ", ";
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 测试函数：
 namespace GRAPH

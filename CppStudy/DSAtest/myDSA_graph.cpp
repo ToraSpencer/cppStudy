@@ -64,7 +64,7 @@ namespace GRAPH
 	// build graph
 	void test0() 
 	{
-		Graph g1({0, 1,2,3,4,5});
+		Graph<int> g1({0, 1,2,3,4,5});
 
 		g1.insertEdge(0, 1);
 		g1.insertEdge(0, 2);
