@@ -54,6 +54,39 @@ namespace MY_DEBUG
 		std::for_each(con.rbegin(), con.rend(), f);
 		std::cout << std::endl;
 	}
+
+
+	static void debugWriteVers(const char* fileName, const std::vector<verF>& vers)
+	{
+		char path[512] = { 0 };
+		snprintf(path, 512, "%s%s.obj", g_debugPath.c_str(), fileName);
+		writeOBJ(path, vers);
+	}
+
+
+	static void debugWriteVers(const char* fileName, const std::vector<verD>& vers)
+	{
+		char path[512] = { 0 };
+		snprintf(path, 512, "%s%s.obj", g_debugPath.c_str(), fileName);
+		writeOBJ(path, vers);
+	}
+
+
+	static void debugWriteMesh(const char* fileName, const triMeshD& triMesh)
+	{
+		char path[512] = { 0 };
+		snprintf(path, 512, "%s%s.obj", g_debugPath.c_str(), fileName);
+		writeOBJ(path, triMesh);
+	}
+
+
+	static void debugWriteMesh(const char* fileName, const triMeshF& triMesh)
+	{
+		char path[512] = { 0 };
+		snprintf(path, 512, "%s%s.obj", g_debugPath.c_str(), fileName);
+		writeOBJ(path, triMesh);
+	}
+
 }
 using namespace MY_DEBUG;
 
@@ -62,29 +95,120 @@ using namespace MY_DEBUG;
 namespace GRAPH
 { 
 	// build graph
+	void getCircleVers3D(std::vector<verF>& vers, const size_t versCount) 
+	{
+		const float pi = 3.14159;
+		vers.clear(); 
+		vers.resize(versCount, verF{0, 0, 0});
+		for (size_t i = 1; i < versCount; ++i)
+		{
+			const float radius = ((i - 1) / 6 + 1) * 1.0;
+			const float theta = (i - 1) % 6 * pi / 3;
+			vers[i].x = radius * cos(theta);
+			vers[i].y = radius * sin(theta);
+		}
+	}
+
+
 	void test0() 
 	{
-		Graph<int> g1({0, 1,2,3,4,5});
+		using GraphEdge = SLlistNode<GraphNode<int>*>;		// 用存储顶点指针的链表节点来表示边；
+		const float pi = 3.14159;
 
-		g1.insertEdge(0, 1);
-		g1.insertEdge(0, 2);
-		g1.insertEdge(0, 3);
-		g1.insertEdge(0, 4);
-		g1.insertEdge(0, 5);
-		g1.insertEdge(1, 2);
-		g1.insertEdge(2, 3);
-		g1.insertEdge(3, 4);
-		g1.insertEdge(4, 5);
-		g1.insertEdge(0, 5);
+		Graph<int> g1({0, 1,2,3,4, 5});
+		g1.addEdge(0, 1);
+		g1.addEdge(0, 2);
+		g1.addEdge(0, 3);
+		g1.addEdge(0, 4);
+		g1.addEdge(0, 5);
+		g1.addEdge(1, 2);
+		g1.addEdge(2, 3);
+		g1.addEdge(3, 4);
+		g1.addEdge(4, 5);
+		g1.addEdge(0, 5);
+
+		// 
+		const int nodesCount = g1.pnVec.size();
+
+		// 建立图节点-节点索引映射表：
+		std::unordered_map<GraphNode<int>*, int> map;
+		for (int i = 0; i < g1.pnVec.size(); ++i)
+			map.insert(std::make_pair(g1.pnVec[i], i));
+
+		// 节点按索引映射为XOY平面上的坐标点；
+		std::vector<verF> poses;
+		getCircleVers3D(poses, g1.pnVec.size());
+
+		// 所有节点格式的边数据转换为edgeI格式： 
+		std::vector<edgeI> edges; 
+		for (const auto pn : g1.pnVec)					// 收集每个顶点发出的第一条边；
+		{
+			if (nullptr == pn->pFirstEdge)
+				continue;
+			traverseList(pn->pFirstEdge, [&map, &edges, &pn](GraphEdge* pe)
+				{
+					if (nullptr == pe)
+						return;
+					int vaIdx = pn->val;
+					int vbIdx = map[pe->val];
+					edges.push_back(edgeI(vaIdx, vbIdx));
+				});
+		}
+
+		writeOBJ("E:/g1.obj", poses, edges);
 
 		debugDisp("test0 finished.");
 	}
 
 
-	// graph的各种遍历
+	void test00() 
+	{
+		triMeshD mesh;
+		readOBJ(mesh, "./myData/roundSurf.obj");
+		Graph<verF> g;
+		triMesh2Graph(g, mesh);
+		objWriteGraph3D("E:/graph.obj", g);
+
+		debugDisp("test00 finished.");
+	}
+
+
+	// graph的各种遍历—— to be completed
 	void test1() 
 	{
+		// 生成深度优先遍历的路径，转换为边的形式打印出来：
+		triMeshD mesh;
+		std::vector<edgeI> path; 
 
+		std::vector<verF> vers;
+		getCircleVers3D(vers, 8);
+		Graph<verF> g(vers);
+		g.addEdge(0, 1);
+		g.addEdge(0, 2);
+		g.addEdge(0, 3);
+		g.addEdge(0, 4);
+		g.addEdge(0, 5);
+		g.addEdge(1, 2);
+		g.addEdge(2, 3);
+		g.addEdge(3, 4);
+		g.addEdge(4, 5);
+		g.addEdge(0, 5);
+		g.addEdge(5, 6);
+		g.addEdge(6, 7); 
+
+		const int versCount = static_cast<int>(g.pnVec.size());
+		int vaIdx = 0;
+		int vbIdx = 0;
+		objWriteGraph3D("E:/graph.obj", g);
+
+		// 顶点-索引映射表：
+		std::unordered_map<GraphNode<verF>*, int> map;
+		for (int i = 0; i < versCount; ++i)
+			map.insert(std::make_pair(g.pnVec[i], i));
+		 
+		 
+
+		debugDisp("test1 finished.");
 	}
 
 
@@ -173,34 +297,34 @@ namespace GRAPH
 				输入：n = 3, trust = [[1,3],[2,3],[3,1]]
 				输出：-1
 	*/
-	int findJudge(int N, const std::vector<std::vector<int>>& trust)
-	{
-		/*
-			trust中的数对相当于graph中的有向边；
-			问题等价于：
-					判断n个节点的有向图中是否有某个节点同时满足：
-							1. 入度为(n - 1)；
-							2. 出度为0；
-		*/
-		const int k = N + 1;
-		std::vector<bool> trustPeople(k, false);
-		std::vector<int> beTrust(k, 0);									 // 被别人相信
-		for (auto& v : trust)
-		{
-			trustPeople[v[0]] = true;
-			beTrust[v[1]]++;
-		}
-		for (int i = 1; i <= N; ++i)
-			if (!trustPeople[i] && beTrust[i] == N - 1)
-				return i;
-		return -1;
-	}
-
 	void test4()
 	{
+		auto findJudge = [](int N, const std::vector<std::vector<int>>&trust)->int
+		{
+			/*
+				trust中的数对相当于graph中的有向边；
+				问题等价于：
+						判断n个节点的有向图中是否有某个节点同时满足：
+								1. 入度为(n - 1)；
+								2. 出度为0；
+			*/
+			const int k = N + 1;
+			std::vector<bool> trustPeople(k, false);			// 
+			std::vector<int> beTrust(k, 0);							// 被别人相信
+			for (auto& v : trust)
+			{
+				trustPeople[v[0]] = true;
+				beTrust[v[1]]++;
+			}
+			for (int i = 1; i <= N; ++i)
+				if (!trustPeople[i] && beTrust[i] == N - 1)
+					return i;
+			return -1;
+		};
+
 		debugDisp("result == ", findJudge(3, std::vector<std::vector<int>>{ \
-			std::vector<int>{1, 3}, std::vector<int>{2, 3} }));
+			std::vector<int>{1, 3}, std::vector<int>{2, 3}, std::vector<int>{3, 1}}));
 		 
 	}
-
+	 
 }

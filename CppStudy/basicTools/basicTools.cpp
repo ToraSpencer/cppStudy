@@ -706,7 +706,7 @@ myString::myString(const myString& str)                                // £¡£¡£¡
 		{
 			char szBuf[256] = { 0 };
 			VFVECTOR3 vert = this->vVertice[j];
-			sprintf_s(szBuf, 256, "v %f %f %f", vert.x, vert.y, vert.z);
+			snprintf(szBuf, 256, "v %f %f %f", vert.x, vert.y, vert.z);
 			dstFile << szBuf << "\n";
 		}
 
@@ -715,7 +715,7 @@ myString::myString(const myString& str)                                // £¡£¡£¡
 		{
 			char szBuf[256] = { 0 };
 			const VNVECTOR3UI& tri = this->vSurface[j];
-			sprintf_s(szBuf, 256, "f %d %d %d", tri.x + 1, tri.y + 1, tri.z + 1);
+			snprintf(szBuf, 256, "f %d %d %d", tri.x + 1, tri.y + 1, tri.z + 1);
 			dstFile << szBuf << "\n";
 		}
 	}

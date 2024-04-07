@@ -292,6 +292,36 @@ public:
 	SLlistNode() :val(0), next(nullptr) {}
 	SLlistNode(const T x) : val(x), next(nullptr) {}
 	SLlistNode(const T x, SLlistNode* next) : val(x), next(next) {}
+
+// 
+	SLlistNode* append(const T x)
+	{
+		SLlistNode<T>* pn0 = this;
+		SLlistNode<T>* pn1 = this->next;
+		while (nullptr != pn1)
+		{
+			pn0 = pn1;
+			pn1 = pn1->next;
+		}
+		pn1 = new SLlistNode(x);
+		
+		return pn1;
+	}
+
+	SLlistNode* append(SLlistNode* pn)
+	{
+		SLlistNode<T>* pn0 = this;
+		SLlistNode<T>* pn1 = this->next;
+		while (nullptr != pn1)
+		{
+			pn0 = pn1;
+			pn1 = pn1->next;
+		}
+		pn1 = pn;
+
+		return pn1;
+	}
+
 };
 
 

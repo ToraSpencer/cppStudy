@@ -601,13 +601,40 @@ namespace TMP_BST
 
  
 
+namespace TEST_MY_IO 
+{
+	void test0() 
+	{
+		triMeshF mesh;
+		bool ret = readOBJ(mesh, "./myData/roundSurf.obj");
+		writeOBJ("E:/versIn.obj", mesh);
+
+		// 打印边：
+		std::vector<triangleI> tris0(10);
+		std::vector<edgeI> edges0;
+		for (size_t i = 0; i < 10; ++i)
+			tris0[i] = mesh.triangles[i];
+		tris2edges(edges0, tris0);
+		writeOBJ("E:/edges0.obj", mesh.vertices, edges0);
+		
+
+		debugDisp("test0 finished.");
+	}
+
+
+
+}
+
+
+
+
 int main(int argc, char** argv)
 {
-	RECURSION::test1(); 
+	// RECURSION::test1(); 
 
-	// BACKTRACKING::test1();
+	GRAPH::test4();
 
-	// TMP_BST::test0();
+	// TEST_MY_IO::test0();
 
 
 	debugDisp("main finished.");

@@ -6,24 +6,17 @@
 #include <stack>
 #include <queue>
 #include <unordered_map>
+#include <iterator>
 #include <algorithm>
 #include <exception>
 #include <stdexcept>
 
+#include "triMesh.h"
 #include "myDSA_list.h"
 
 
 #define DEFAULT_SIZE 1000					 
  
-
-template <typename T>
-struct Doublet
-{
-	T x;
-	T y;
-	Doublet():x(0), y(0){}
-	Doublet(const T x0, const T y0): x(x0), y(y0){}
-};
 
 
 // 枚举类——BT的遍历类型
@@ -40,8 +33,8 @@ class GraphNode
 { 
 	using GraphEdge = SLlistNode<GraphNode*>;		// 用存储顶点指针的链表节点来表示边；
 public:
-	T val;									// 节点值
-	GraphEdge* pFirstEdge;					// 邻接边链表的首个结点的指针；
+	T val;											// 节点值
+	GraphEdge* pFirstEdge;				// 邻接边链表的首个结点的指针；
 
 public:
 	GraphNode():val(0), pFirstEdge(nullptr) {}
@@ -55,8 +48,9 @@ template<typename T>
 struct Graph 
 {
 	using GraphEdge = SLlistNode<GraphNode<T>*>;		// 用存储顶点指针的链表节点来表示边；
+
 public:
-	int nodeNum, nodeMaxNum, edgeNum;		// 节点数目、允许的顶点最大数目和边数
+	int nodeNum, nodeMaxNum, edgeNum;				// 节点数目、允许的顶点最大数目和边数
 	std::vector<GraphNode<T>*> pnVec;					// 节点指针数组；
 
 public:
@@ -72,16 +66,62 @@ public:
 		for (const auto& elem : ilist)
 			pnVec.push_back(new GraphNode<T>(elem)); 
 	}
+	Graph(const std::vector<T>& vec)			
+	{
+		this->nodeNum = vec.size();
+		this->nodeMaxNum = DEFAULT_SIZE;
+		this->edgeNum = 0;
+		this->pnVec.reserve(vec.size());
+		for (const auto& elem : vec)
+			pnVec.push_back(new GraphNode<T>(elem));
+	}
+
+
+	// 拷贝构造函数（深拷贝）
+	Graph(const Graph& g) :nodeNum(g.nodeNum), \
+		nodeMaxNum(g.nodeMaxNum), edgeNum(g.edgeNum)			 
+	{		 
+		std::unordered_map<GraphNode<T>*, GraphNode<T>*> map;	// 老-新顶点指针的映射表；
+		
+		// 1. 深拷贝顶点，生成老-新顶点指针的映射表；
+		this->pnVec.resize(nodeNum);
+		for (int i = 0; i < nodeNum; ++i)
+		{
+			this->pnVec[i] = new GraphNode<T>(g.pnVec[i]->val);
+			map.insert(std::make_pair(g.pnVec[i], this->pnVec[i]));
+		}
+
+		// 2. 生成边数据：
+		GraphNode<T>* pnOld = nullptr;
+		GraphNode<T>* pnNew = nullptr;
+		GraphNode<T>* pnConn = nullptr;
+		for (int i = 0; i < nodeNum; ++i)
+		{
+			pnOld = g.pnVec[i];
+			pnNew = this->pnVec[i];
+			traverseList(pnOld->pFirstEdge, [&](GraphEdge* pe) 
+				{
+					pnConn = map[pe->val];		// 老的顶点索引映射成新的；
+					pnNew->pFirstEdge->append(pnConn);
+				});
+		}
+	}
+
 	~Graph()
 	{
-		for (auto& pn : pnVec)
+		for (auto& pn : this->pnVec)
+		{
+			destroy(pn->pFirstEdge);
 			delete pn;
+		}
+		this->pnVec.clear();
 	}
+
 
 // create methods:
 
 	// 插入一条有向边：
-	GraphEdge* insertEdge(const int vaIdx, const int vbIdx) 
+	GraphEdge* addEdge(const int vaIdx, const int vbIdx) 
 	{
 		// 0. 错误检查
 		if (vaIdx > this->nodeNum || vbIdx > this->nodeNum || vaIdx < 0 || vbIdx < 0)
@@ -121,21 +161,83 @@ public:
 			return pe2->next;
 		}		 
 	}
+
+
+// operator override:
+	const Graph& operator=(const Graph& g)
+	{
+		this->nodeNum = g.nodeNum;
+		this->nodeMaxNum = g.nodeMaxNum;
+		this->edgeNum = g.edgeNum;		
+
+		// 1. 深拷贝顶点，生成老-新顶点指针的映射表；
+		std::unordered_map<GraphNode<T>*, GraphNode<T>*> map;	// 老-新顶点指针的映射表；
+		this->pnVec.resize(nodeNum);
+		for (int i = 0; i < nodeNum; ++i)
+		{
+			this->pnVec[i] = new GraphNode<T>(g.pnVec[i]->val);
+			map.insert(std::make_pair(g.pnVec[i], this->pnVec[i]));
+		}
+
+		// 2. 生成边数据：
+		GraphNode<T>* pnOld = nullptr;
+		GraphNode<T>* pnNew = nullptr;
+		GraphNode<T>* pnConn = nullptr;
+		for (int i = 0; i < nodeNum; ++i)
+		{
+			pnOld = g.pnVec[i];
+			pnNew = this->pnVec[i];
+			traverseList(pnOld->pFirstEdge, [&](GraphEdge* pe)
+				{
+					pnConn = map[pe->val];		// 老的顶点索引映射成新的；
+					pnNew->pFirstEdge->append(pnConn);
+				});
+		}
+
+		return *this;
+	}
 };
+using Graph3D = Graph<verF>;						// 三维点云构成的图
 
 
 // 遍历图(to be completed)
 template <typename T, typename Func>
-void traverseGraph(GraphNode<T>* ptrNode, Func func, \
+void traverseGraph(Graph<T>& g, Func func, \
 	const TRAVERSE_GRAPH_TYPE type = TRAVERSE_GRAPH_TYPE::depthFirst, \
 	const bool skipNP = true)
 {
-	GraphNode<T>* pn1 = nullptr;
-	GraphNode<T>* pn2 = nullptr;
-	std::unordered_map<GraphNode<T>*, bool> visited;
+	using GraphEdge = SLlistNode<GraphNode<T>*>;				// 用存储顶点指针的链表节点来表示边；
+
+	GraphNode<T>* pnCurr = nullptr;
+	GraphNode<T>* pnNbr = nullptr;
+	const int nodesCount = g.nodeNum;
+	std::unordered_set<GraphNode<T>*> visited; 
+	std::stack<GraphNode<T>*> st;
+	st.push(g.pnVec[0]);
 	if(TRAVERSE_GRAPH_TYPE::depthFirst == type)
 	{
-		
+		while (!st.empty())
+		{
+			pnCurr = st.top();
+			st.pop();
+
+			auto iter = visited.find(pnCurr);
+			if (iter != visited.end())
+				continue;
+			if (iter == visited.end())
+				visited.insert(pnCurr); 
+
+			// 1. 访问当前顶点；
+			func(pnCurr);
+
+			// 2. 当前顶点1领域内的顶点压入栈：
+			traverseList(pnCurr->pFirstEdge, [&](GraphEdge* pe) 
+				{
+					pnNbr = pe->val;
+					if (visited.end() == visited.find(pnNbr))			// 未访问过的顶点压入栈；
+						st.push(pnNbr);
+				});
+		} 
 	}
 }
 
@@ -149,11 +251,118 @@ static auto dispGraphNode = [](const GraphNode<T>* ptrNode)
 	else
 		std::cout << ptrNode->val << ", ";
 };
+ 
+
+// 数组表示的三维点云图转换为Graph表示——to be completed;
+template <typename T>
+bool getGraph3D(Graph3D& g, const std::vector<TRIANGLE_MESH::triplet<T>>& poses, \
+	const std::vector<edgeI>& edges)
+{
+
+
+
+	return true;
+}
+
+ 
+
+////////////////////////////////////////////////////////////////////////////////////////////// 表象变换：
+template <typename TVO, typename TVI>
+bool triMesh2Graph(Graph<TRIANGLE_MESH::triplet<TVO>>& g, \
+	const TRIANGLE_MESH::triMesh<TVI, int>& mesh) 
+{
+	using verO = TRIANGLE_MESH::triplet<TVO>;
+	const int versCount = mesh.vertices.size();
+	const int trisCount = mesh.triangles.size();
+	std::vector<verO> versTmp(versCount);
+	for (int i = 0; i < versCount; ++i)
+		versTmp[i] = mesh.vertices[i].cast<TVO>();
+
+	g = Graph<verO>{versTmp};
+	for (const auto& t : mesh.triangles)
+	{
+		g.addEdge(t.x, t.y);
+		g.addEdge(t.y, t.z);
+		g.addEdge(t.z, t.x);
+	}
+
+	return true;
+}
+
+
+template <typename TVO, typename TVI>
+bool graph2Array(std::vector<TRIANGLE_MESH::triplet<TVO>>& vers, \
+	std::vector<edgeI>& edges, const Graph<TRIANGLE_MESH::triplet<TVI>>& g) 
+{
+	using verO = TRIANGLE_MESH::triplet<TVO>;
+	using GraphEdge = SLlistNode<GraphNode<TRIANGLE_MESH::triplet<TVI>>*>;			// 用存储顶点指针的链表节点来表示边；
+	const int n = static_cast<int>(g.pnVec.size());
+	if (n <= 0)
+		return false;
+	vers.clear();
+	edges.clear();
+	vers.reserve(n);
+	edges.reserve(n * (n - 1));					// n个节点的有向图多有n*(n -1)条边；
+
+	// 1. 建立图节点-节点索引映射表：
+	std::unordered_map<GraphNode<TRIANGLE_MESH::triplet<TVI>>*, int> map;
+	for (int i = 0; i < g.pnVec.size(); ++i)
+		map.insert(std::make_pair(g.pnVec[i], i));
+
+	// 2. 生成数组表示的顶点、边数据：
+	for (const auto& pn : g.pnVec)
+	{
+		vers.push_back(pn->val.cast<TVO>());
+		if (nullptr == pn->pFirstEdge)
+			continue;
+		int vaIdx = map[pn];			// 当前顶点的索引；
+		traverseList(pn->pFirstEdge, [&map, &edges, vaIdx](GraphEdge* pe)
+			{
+				if (nullptr == pe)
+					return;
+				int vbIdx = map[pe->val];
+				edges.push_back(edgeI(vaIdx, vbIdx));
+			});
+	}
+	edges.shrink_to_fit();
+	 
+	return true;
+}
+
+
+// 三维坐标顶点图写入到OBJ文件中——to be completed;
+template <typename T>
+bool objWriteGraph3D(const char* fileName, const Graph<TRIANGLE_MESH::triplet<T>>& g)
+{
+	std::vector<verF> vers;
+	std::vector<edgeI> edges;
+	if (!graph2Array(vers, edges, g))
+		return false;
+	writeOBJ(fileName, vers, edges);
+
+	return true;
+}
+
+
+// Double表示的边数据转换为std::vector<int>表示的边数据 
+template <typename TI>
+bool edges2VVedges(std::vector<std::vector<int>>& vvEdges,\
+	const std::vector<TRIANGLE_MESH::doublet<TI>>& edges) 
+{
+	vvEdges.clear();
+	vvEdges.reserve(edges.size());
+	for (const auto& e : edges) 
+		vvEdges.push_back(std::vector<int>{static_cast<int>(e.x), static_cast<int>(e.y)});
+ 
+	return true;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 测试函数：
 namespace GRAPH
 {
 	void test0();
+	void test00();
 	void test1();
 	void test2();
 	void test3();
