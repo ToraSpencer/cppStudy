@@ -50,7 +50,7 @@ using namespace MY_DEBUG;
 
 
 namespace LIST
-{ 
+{
 	using ListNode = SLlistNode<int>;
 
 
@@ -180,7 +180,7 @@ namespace LIST
 	*/
 
 	// 版本1——可查询环所在位置；
-	bool hasCycle(ListNode* head) 
+	bool hasCycle(ListNode* head)
 	{
 		int pos = -1;					// 标识环的位置；
 		ListNode* pn = head;
@@ -192,7 +192,7 @@ namespace LIST
 			return false;
 
 		map.insert(std::make_pair(reinterpret_cast<unsigned long>(head), 0));
-		while (nullptr != pn->next) 
+		while (nullptr != pn->next)
 		{
 			retIter = map.insert(std::make_pair(reinterpret_cast<unsigned long>(pn->next), index));
 			if (!retIter.second)
@@ -214,24 +214,24 @@ namespace LIST
 	{
 		ListNode* pn = head;
 		std::unordered_set<ListNode*> seen;
-		while (pn != nullptr) 
+		while (pn != nullptr)
 		{
 			if (seen.count(pn))				// 查询当前节点是否在哈希表中已存在；
-				return true; 
+				return true;
 			seen.insert(pn);
 			pn = pn->next;
 		}
 		return false;
 	}
-	 
 
-	void test1() 
-	{ 
+
+	void test1()
+	{
 		ListNode* head = make_list<int>({ 3, 2, 0, -4 });
 		ListNode* pn1 = head->next;
 		ListNode* pn2 = head->next->next->next;
 		pn2->next = pn1;
-		
+
 		debugDisp("ret1 == ", hasCycle(head));
 
 		debugDisp("ret2 == ", hasCycle2(head));
@@ -239,6 +239,151 @@ namespace LIST
 
 		debugDisp("test1 finished.");
 	}
+
+
+	// JZOF13: 在O（1）时间删除链表结点
+	/*
+		给定单向链表的头指针和一个结点指针，定义一个函数在 O（1）时间删除该结点。
+		链表结点与函数的定义如下：
+		struct ListNode
+		{
+			int       m_nValue;
+			ListNode＊ m_pNext;
+		};
+		void DeleteNode（ListNode＊＊ pListHead, ListNode＊ pToBeDeleted）;
+
+		在单向链表中删除一个结点，最常规的做法无疑是从链表的头结点开始，顺序遍历查找要删除的结点，并在链表中删除该结点。
+		比如在图3.3（a）所示的链表中，我们想删除结点i，可以从链表的头结点a开始顺序遍历，发现结点h的m_pNext指向要删除的结点i，于是我们可以把结点h的m_pNext指向i的下一个结点即结点j。指针调整之后，我们就可以安全地删除结点i并保证链表没有断开（如图3.3（b）所示）。这种思路由于需要顺序查找，时间复杂度自然就是O（n）了。
+
+	*/
+	void test2()
+	{
+		/*
+
+	void DeleteNode（ListNode＊＊ pListHead, ListNode＊ pToBeDeleted）
+	{
+		if（!pListHead || !pToBeDeleted）
+			return;
+
+		// 要删除的结点不是尾结点
+		if（pToBeDeleted->m_pNext != NULL）
+		{
+			ListNode＊ pNext = pToBeDeleted->m_pNext;
+			pToBeDeleted->m_nValue = pNext->m_nValue;
+			pToBeDeleted->m_pNext = pNext->m_pNext;
+
+			delete pNext;
+			pNext = NULL;
+		}
+		// 链表只有一个结点，删除头结点（也是尾结点）
+		else if（＊pListHead == pToBeDeleted）
+		{
+			delete pToBeDeleted;
+			pToBeDeleted = NULL;
+			＊pListHead = NULL;
+		}
+		// 链表中有多个结点，删除尾结点
+		else
+		{
+			ListNode＊ pNode = ＊pListHead;
+			while（pNode->m_pNext != pToBeDeleted）
+			{
+				pNode = pNode->m_pNext;
+			}
+
+			pNode->m_pNext = NULL;
+			delete pToBeDeleted;
+			pToBeDeleted = NULL;
+		}
+	}
+		*/
+	}
+
+
+	// JZOF15: 链表中倒数第k个结点
+	/*
+			输入一个链表，输出该链表中倒数第 k 个结点。
+			为了符合大多数人的习惯，本题从1 开始计数，即链表的尾结点是倒数第1 个结点。
+			例如一个链表有6个结点，从头结点开始它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个结点是值为4的结点。
+			struct ListNode
+			{
+				int       m_nValue;
+				ListNode＊ m_pNext;
+			};
+
+
+	*/
+	void test3()
+	{
+		/*
+		ListNode＊ FindKthToTail（ListNode＊ pListHead, unsigned int k）
+	{
+		if（pListHead == NULL || k == 0）
+			return NULL;
+
+		ListNode ＊pAhead = pListHead;
+		ListNode ＊pBehind = NULL;
+
+		for（unsigned int i = 0; i < k - 1; ++ i）
+		{
+			if（pAhead->m_pNext != NULL）
+				pAhead = pAhead->m_pNext;
+			else
+			{
+				return NULL;
+			}
+		}
+
+		pBehind = pListHead;
+		while（pAhead->m_pNext != NULL）
+		{
+			pAhead = pAhead->m_pNext;
+			pBehind = pBehind->m_pNext;
+		}
+
+		return pBehind;
+	}
+
+		*/
+	}
+
+
+	// JZOF16: 反转链表
+	/*
+		定义一个函数，输入一个链表的头结点，反转该链表并输出反转后链表的头结点。链表结点定义如下：
+			struct ListNode
+			{
+				int       m_nKey;
+				ListNode＊ m_pNext;
+			};
+	*/
+	void test4()
+	{
+		/*
+		 ListNode＊ ReverseList（ListNode＊ pHead）
+		 {
+            ListNode＊ pReversedHead = NULL;
+            ListNode＊ pNode = pHead;
+            ListNode＊ pPrev = NULL;
+            while（pNode != NULL）
+            {
+                  ListNode＊ pNext = pNode->m_pNext;
+                  if（pNext == NULL）
+                          pReversedHead = pNode;
+
+                  pNode->m_pNext = pPrev;
+
+                  pPrev = pNode;
+                  pNode = pNext;
+            }
+
+            return pReversedHead;
+    } 
+		
+		*/
+
+	}
+
 
 }
 

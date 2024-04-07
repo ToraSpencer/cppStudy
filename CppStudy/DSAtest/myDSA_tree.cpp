@@ -337,4 +337,267 @@ namespace TREE
 		destroy(ptrRoot2);
 		debugDisp("test7 finished.");
 	}
+
+
+	// JZOF18: 树的子结构
+	/*
+		输入两棵二叉树A和B，判断B是不是A的子结构。二叉树结点的定义如下：
+			struct BinaryTreeNode
+			{
+				int                    m_nValue;
+				BinaryTreeNode＊       m_pLeft;
+				BinaryTreeNode＊       m_pRight;
+			};
+	
+	*/
+	void test8() 
+	{
+		/*
+			    bool DoesTree1HaveTree2（BinaryTreeNode＊ pRoot1, BinaryTreeNode＊
+    pRoot2）
+    {
+        if（pRoot2 == NULL）
+            return true;
+
+        if（pRoot1 == NULL）
+            return false;
+
+        if（pRoot1->m_nValue != pRoot2->m_nValue）
+            return false;
+
+
+        return DoesTree1HaveTree2（pRoot1->m_pLeft, pRoot2->m_pLeft） &&
+            DoesTree1HaveTree2（pRoot1->m_pRight, pRoot2->m_pRight）;
+    }
+		*/
+	}
+
+	// JZOF24: 二叉搜索树的后序遍历序列
+	/*
+		输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。
+		如果是则返回 true，否则返回 false。假设输入的数组的任意两个数字都互不相同。
+		输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。
+		如果是则返回 true，否则返回 false。假设输入的数组的任意两个数字都互不相同。
+	*/
+	void test9() 
+	{
+		/*
+		    void FindPath（BinaryTreeNode＊ pRoot, int expectedSum）
+    {
+        if（pRoot == NULL）
+            return;
+
+        std::vector<int> path;
+        int currentSum = 0;
+        FindPath（pRoot, expectedSum, path, currentSum）;
+    }
+
+    void FindPath
+    （
+        BinaryTreeNode＊   pRoot,
+        int                expectedSum,
+        std::vector<int>& path,
+        int&               currentSum
+    ）
+    {
+        currentSum += pRoot->m_nValue;
+        path.push_back（pRoot->m_nValue）;
+
+        // 如果是叶结点，并且路径上结点的和等于输入的值
+        // 打印出这条路径
+        bool isLeaf = pRoot->m_pLeft == NULL && pRoot->m_pRight == NULL;
+        if（currentSum == expectedSum && isLeaf）
+        {
+            printf（"A path is found: "）;
+            std::vector<int>::iterator iter = path.begin（）;
+            for（; iter != path.end（）; ++ iter）
+                printf（"%d\t", ＊iter）;
+
+            printf（"\n"）;
+        }
+
+        // 如果不是叶结点，则遍历它的子结点
+        if（pRoot->m_pLeft != NULL）
+            FindPath（pRoot->m_pLeft, expectedSum, path, currentSum）;
+        if（pRoot->m_pRight != NULL）
+            FindPath（pRoot->m_pRight, expectedSum, path, currentSum）;
+
+        // 在返回到父结点之前，在路径上删除当前结点，
+        // 并在currentSum中减去当前结点的值
+        currentSum -= pRoot->m_nValue;
+        path.pop_back（）;
+    }
+		
+		*/
+	}
+
+	// JZOF27: 二叉搜索树与双向链表
+	/*
+		输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。
+		要求不能创建任何新的结点，只能调整树中结点指针的指向。
+		比如输入图4.12中左边的二叉搜索树，则输出转换之后的排序双向链表。
+			struct BinaryTreeNode
+			{
+				int                    m_nValue;
+				BinaryTreeNode＊       m_pLeft;
+				BinaryTreeNode＊       m_pRight;
+			};
+	*/
+	void test10() 
+	{
+		/*
+				    BinaryTreeNode＊ Convert（BinaryTreeNode＊ pRootOfTree）
+    {
+        BinaryTreeNode ＊pLastNodeInList = NULL;
+        ConvertNode（pRootOfTree, &pLastNodeInList）;
+
+        // pLastNodeInList指向双向链表的尾结点，
+        // 我们需要返回头结点
+        BinaryTreeNode ＊pHeadOfList = pLastNodeInList;
+        while（pHeadOfList != NULL && pHeadOfList->m_pLeft != NULL）
+            pHeadOfList = pHeadOfList->m_pLeft;
+
+        return pHeadOfList;
+    }
+
+    void ConvertNode（BinaryTreeNode＊ pNode, BinaryTreeNode＊＊
+    pLastNodeInList）
+    {
+        if（pNode == NULL）
+            return;
+
+        BinaryTreeNode ＊pCurrent = pNode;
+
+        if （pCurrent->m_pLeft != NULL）
+            ConvertNode（pCurrent->m_pLeft, pLastNodeInList）;
+
+        pCurrent->m_pLeft = ＊pLastNodeInList;
+        if（＊pLastNodeInList != NULL）
+            （＊pLastNodeInList）->m_pRight = pCurrent;
+
+        ＊pLastNodeInList = pCurrent;
+
+        if （pCurrent->m_pRight != NULL）
+            ConvertNode（pCurrent->m_pRight, pLastNodeInList）;
+    }
+
+		*/
+	}
+
+
+	// JZOF39: 题目二：判断平衡二叉树：
+	/*
+		输入一棵二叉树的根结点，判断该树是不是平衡二叉树。
+		如果某二叉树中任意结点的左右子树的深度相差不超过1，那么它就是一棵平衡二叉树。
+			struct BinaryTreeNode
+			{
+				int                    m_nValue;
+				BinaryTreeNode＊       m_pLeft;
+				BinaryTreeNode＊       m_pRight;
+			};
+	*/
+	void test11() 
+	{
+		/*
+			    bool IsBalanced（BinaryTreeNode＊ pRoot, int＊ pDepth）
+			{
+				if（pRoot == NULL）
+				{
+					＊pDepth = 0;
+					return true;
+				}
+
+				int left, right;
+				if（IsBalanced（pRoot->m_pLeft, &left）
+					&& IsBalanced（pRoot->m_pRight, &right））
+				{
+					int diff = left - right;
+					if（diff <= 1 && diff >= -1）
+					{
+						＊pDepth = 1 + （left > right ? left : right）;
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+		bool IsBalanced（BinaryTreeNode＊ pRoot）
+		{
+			int depth = 0;
+			return IsBalanced（pRoot, &depth）;
+		}
+
+		*/
+
+	}
+
+
+	// JZOF50: 树中两个结点的最低公共祖先
+	/*
+		输入两个树结点，求它们的最低公共祖先。
+	*/
+	void test12() 
+	{
+		/*
+			    bool GetNodePath（TreeNode＊ pRoot, TreeNode＊ pNode, list<TreeNode＊>&
+    path）
+    {
+        if（pRoot == pNode）
+            return true;
+
+        bool found = false;
+
+        vector<TreeNode＊>::iterator i = pRoot->m_vChildren.begin（）;
+        while（!found && i < pRoot->m_vChildren.end（））
+        {
+            found = GetNodePath（＊i, pNode, path）;
+            ++i;
+        }
+
+        if（!found）
+            path.pop_back（）;
+        return found;
+    }
+
+    TreeNode＊ GetLastCommonNode
+    （
+        const list<TreeNode＊>& path1,
+        const list<TreeNode＊>& path2
+    ）
+    {
+        list<TreeNode＊>::const_iterator iterator1 = path1.begin（）;
+        list<TreeNode＊>::const_iterator iterator2 = path2.begin（）;
+
+        TreeNode＊ pLast = NULL;
+
+        while（iterator1 != path1.end（） && iterator2 != path2.end（））
+        {
+            if（＊iterator1 == ＊iterator2）
+                pLast = ＊iterator1;
+
+            iterator1++;
+            iterator2++;
+        }
+
+        return pLast;
+    }
+
+    TreeNode＊ GetLastCommonParent（TreeNode＊ pRoot, TreeNode＊ pNode1,
+    TreeNode＊ pNode2）
+    {
+        if（pRoot == NULL || pNode1 == NULL || pNode2 == NULL）
+            return NULL;
+
+        list<TreeNode＊> path1;
+        GetNodePath（pRoot, pNode1, path1）;
+
+        list<TreeNode＊> path2;
+        GetNodePath（pRoot, pNode2, path2）;
+
+        return GetLastCommonNode（path1, path2）;
+    }
+		
+		*/
+	}
 }

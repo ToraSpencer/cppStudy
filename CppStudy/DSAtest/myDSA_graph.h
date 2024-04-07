@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <iterator>
 #include <algorithm>
+#include <numeric>
 #include <exception>
 #include <stdexcept>
 
@@ -200,7 +201,20 @@ public:
 using Graph3D = Graph<verF>;						// 三维点云构成的图
 
 
-// 遍历图(to be completed)
+// 遍历（搜索）图(to be completed)
+/*
+ 	广度优先搜索BFS和队列queue紧密关联
+			一个节点pn被访问
+			→ 该节点的一系列1领域节点被压入队列，逐个访问
+			→ 上述一系列顶点的1领域节点——即pn的2领域节点——被压入队列，逐个访问；
+
+	深度优先搜索DFS和栈stack紧密关联
+			一个节点pn被访问
+			→ 该节点的一系列的1领域节点被压入栈，栈顶节点——即这一系列节点的最后一个——出栈、被访问；
+			→ 上面的栈顶节点的一系列1领域节点被压入栈，栈顶节点出栈、被访问；
+			*	栈结构和递归紧密关联，深度优先搜索通常可以写为递归形式；
+			
+*/
 template <typename T, typename Func>
 void traverseGraph(Graph<T>& g, Func func, \
 	const TRAVERSE_GRAPH_TYPE type = TRAVERSE_GRAPH_TYPE::depthFirst, \
@@ -344,15 +358,29 @@ bool objWriteGraph3D(const char* fileName, const Graph<TRIANGLE_MESH::triplet<T>
 }
 
 
-// Double表示的边数据转换为std::vector<int>表示的边数据 
+// Double表示的边数据转换为std::vector<int>表示的邻接表 
 template <typename TI>
-bool edges2VVedges(std::vector<std::vector<int>>& vvEdges,\
+bool edges2vvList(std::vector<std::vector<int>>& vvList,\
 	const std::vector<TRIANGLE_MESH::doublet<TI>>& edges) 
 {
-	vvEdges.clear();
-	vvEdges.reserve(edges.size());
-	for (const auto& e : edges) 
-		vvEdges.push_back(std::vector<int>{static_cast<int>(e.x), static_cast<int>(e.y)});
+	vvList.clear();
+	std::vector<TI> tmpVec;
+	int n = 0;
+	int index = 0;
+	tmpVec.reserve(2 * edges.size());
+	for (const auto& e : edges)
+	{
+		tmpVec.push_back(e.x);
+		tmpVec.push_back(e.y);
+	}
+
+	n = static_cast<int>(std::max(tmpVec.begin(), tmpVec.end()));
+	vvList.resize(n);
+	for (const auto& e : edges)
+	{
+		index = static_cast<int>(e.x);
+		vvList[index].push_back(static_cast<int>(e.y));
+	} 
  
 	return true;
 }

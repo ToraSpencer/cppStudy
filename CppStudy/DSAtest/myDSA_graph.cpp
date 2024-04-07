@@ -90,7 +90,7 @@ namespace MY_DEBUG
 }
 using namespace MY_DEBUG;
 
-
+ 
 
 namespace GRAPH
 { 
@@ -309,15 +309,15 @@ namespace GRAPH
 								2. 出度为0；
 			*/
 			const int k = N + 1;
-			std::vector<bool> trustPeople(k, false);			// 
-			std::vector<int> beTrust(k, 0);							// 被别人相信
+			std::vector<bool> trustPeople(k, false);			// 第i个元素表示节点i是否相信某一个人
+			std::vector<int> beTrust(k, 0);							// 第i个元素表示节点i被多少个人相信；
 			for (auto& v : trust)
 			{
 				trustPeople[v[0]] = true;
 				beTrust[v[1]]++;
 			}
 			for (int i = 1; i <= N; ++i)
-				if (!trustPeople[i] && beTrust[i] == N - 1)
+				if (!trustPeople[i] && beTrust[i] == N - 1)		// 验证这个不相信任何人的节点，是否被N-1个人相信；
 					return i;
 			return -1;
 		};
@@ -327,4 +327,174 @@ namespace GRAPH
 		 
 	}
 	 
+
+	// practice——课程表：
+	/*
+		你这个学期必须选修 numCourses 门课程，记为 0 到 numCourses - 1 。
+		在选修某些课程之前需要一些先修课程。
+		先修课程按数组 prerequisites 给出，其中 prerequisites[i] = [ai, bi] ，表示如果要学习课程 ai 则 必须 先学习课程  bi 。
+		例如，先修课程对 [0, 1] 表示：想要学习课程 0 ，你需要先完成课程 1 。
+		请你判断是否可能完成所有课程的学习？如果可以，返回 true ；否则，返回 false 。
+
+		示例 1：
+				输入：numCourses = 2, prerequisites = [[1,0]]
+				输出：true
+				解释：总共有 2 门课程。学习课程 1 之前，你需要完成课程 0 。这是可能的
+
+		示例 2：
+				输入：numCourses = 2, prerequisites = [[1,0],[0,1]]
+				输出：false
+
+		
+		bool canFinish(int numCourses, vector<vector<int>>& prerequisites) 
+	*/
+	void test5() 
+	{
+		/*
+			只要在prerequisites对应的有向图中，不存在环，就可以完成所有课程的学习；否则不可以；
+		*/
+
+		auto canFinish = [](const int numCourses, \
+			const std::vector<std::vector<int>>& prerequisites)->bool
+			{ 
+				// 0. 生成邻接表：（注意prerequisites中的[a, b]视为边[b, a]）
+				std::vector<std::vector<int>> vvList;
+				int index = 0;
+				const int n = numCourses;
+				const int edgesCount = static_cast<int>(prerequisites.size());
+				vvList.resize(n);
+				for (int i = 0; i < edgesCount; ++i)
+				{
+					index = prerequisites[i][1];
+					vvList[index].push_back(prerequisites[i][0]);
+				}
+
+				// 1. 统计所有节点的入度
+				std::vector<int> relyCourse(n, 0);
+				for (int i = 0; i < edgesCount; ++i) 
+				{
+					index = prerequisites[i][0];
+					relyCourse[index]++;
+				}
+
+				// 2. 找到第一个入度为0的节点； 
+				std::list<int> base;				// 可以作为最基础课程的课程，视为一个单连通图的根节点；
+				for (int i = 0; i < n; ++i)
+					if (0 == relyCourse[i])
+						base.push_back(i);
+				if (base.empty())
+					return false;						// 所有节点入度都不为0，说明找不到可以作为最基础课程的课程；
+
+				// 3. 从第一个入度为0的节点开始，进行广度优先遍历（！！！注意图可能不是单连通的！！！）
+				std::queue<int> qt;
+				int startIdx = base.front();
+				base.pop_front();
+				qt.push(startIdx);
+				while (!qt.empty() || !base.empty())
+				{ 
+					if (qt.empty())
+					{
+						// w4. 若队列已空，则尝试压入其他联通区域的根节点； 
+						if (!base.empty())
+						{
+							startIdx = base.front();
+							base.pop_front();
+							qt.push(startIdx);
+						} 
+					}
+					else
+					{
+						// w1. 队首节点出队，作为当前节点；
+						index = qt.front();
+						qt.pop(); 
+
+						// w2. 对当前节点的操作——修改其他节点的入度：假设删除该节点，被入的节点入度-1；
+						for (const auto& toIdx : vvList[index])
+							relyCourse[toIdx]--;
+
+						// w3. 当前节点的未访问的1领域节点压入队列；
+						for (const auto& indexNbr : vvList[index])
+							if (0 == relyCourse[indexNbr])					// 只有入度减到0的课程才可以修；
+								qt.push(indexNbr);
+					} 
+				}
+
+				// 4. 队列清空之后，检查是否还有节点入度不为0：
+				int accum = std::accumulate(relyCourse.begin(), relyCourse.end(), 0);
+				return (0 == accum);			// 等于0表示此时所有节点入度都为0，原图中不存在环，可以完成所有课程的学习；
+			};
+
+		debugDisp("canFinish(3, { {1, 0}, {1, 2}, {0, 1} }) == ", canFinish(3, { {1, 0}, {1, 2}, {0, 1} }));
+		debugDisp("canFinish(2, { {1, 0}, {0, 1} }) == ", canFinish(2, { {1, 0}, {0, 1} }));
+		debugDisp("canFinish(5, { {1, 4} ,{2, 4}, {3, 1}, {3, 2} }) == ", canFinish(5, { {1, 4} ,{2, 4}, {3, 1}, {3, 2} }));
+		debugDisp("test5 finished.");
+	}
+
+
+	// practice——统计无向图中无法互相到达点对数
+	/*
+		给你一个整数 n ，表示一张 无向图 中有 n 个节点，编号为 0 到 n - 1 。
+		同时给你一个二维整数数组 edges ，其中 edges[i] = [ai, bi] 表示节点 ai 和 bi 之间有一条 无向 边。
+		请你返回 无法互相到达 的不同 点对数目 。
+
+
+		
+		示例 1： 
+			输入：n = 3, edges = [[0,1],[0,2],[1,2]]
+			输出：0
+			解释：所有点都能互相到达，意味着没有点对无法互相到达，所以我们返回 0 。
+		
+		示例 2： 
+			输入：n = 7, edges = [[0,2],[0,5],[2,4],[1,6],[5,4]]
+			输出：14
+			解释：总共有 14 个点对互相无法到达：
+			[[0,1],[0,3],[0,6],[1,2],[1,3],[1,4],[1,5],[2,3],[2,6],[3,4],[3,5],[3,6],[4,6],[5,6]]
+			所以我们返回 14 。
+
+		答案1——深度优先搜索：
+				连通分量还可以通过深度优先搜索来划分。
+				首先将输入edges构造成临接表graph
+				然后构造函数DFS，作用为遍历与它在同一个连通分量中并且还未访问过的点，并返回访问的点数。
+				遍历所有点，如果当前点还没有访问过，则说明遇到了一个新的连通分量，
+						通过DFS来计算当前连通分量的点数count，
+						这个连通分量中的所有点与这个连通分量中的所有点都无法相互到达，
+						因此这个连通分量中的点对答案的贡献是count * (n - count)。
+				每个点对会被计算两次，因此最后结果需要除以2。
+ 
+		   long long countPairs(int n, vector<vector<int>>& edges) 
+		   {
+					vector<vector<int>> graph(n);
+					for (const auto &edge : edges) 
+					{
+						graph[edge[0]].push_back(edge[1]);
+						graph[edge[1]].push_back(edge[0]);
+					}
+
+					vector<bool> visited(n, false);
+					function<int(int)> dfs = [&](int x) -> int {
+						visited[x] = true;
+						int count = 1;
+						for (auto y : graph[x]) {
+							if (!visited[y]) {
+								count += dfs(y);
+							}
+						}
+						return count;
+					};
+
+					long long res = 0;
+					for (int i = 0; i < n; i++) {
+						if (!visited[i]) {
+							long long count = dfs(i);
+							res += count * (n - count);
+						}
+					}
+					return res / 2;
+				}
+	 
+	*/
+	void test6() 
+	{
+
+	}
 }
