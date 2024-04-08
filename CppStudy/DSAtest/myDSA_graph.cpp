@@ -93,13 +93,13 @@ using namespace MY_DEBUG;
  
 
 namespace GRAPH
-{ 
+{
 	// build graph
-	void getCircleVers3D(std::vector<verF>& vers, const size_t versCount) 
+	void getCircleVers3D(std::vector<verF>& vers, const size_t versCount)
 	{
 		const float pi = 3.14159;
-		vers.clear(); 
-		vers.resize(versCount, verF{0, 0, 0});
+		vers.clear();
+		vers.resize(versCount, verF{ 0, 0, 0 });
 		for (size_t i = 1; i < versCount; ++i)
 		{
 			const float radius = ((i - 1) / 6 + 1) * 1.0;
@@ -110,12 +110,12 @@ namespace GRAPH
 	}
 
 
-	void test0() 
+	void test0()
 	{
 		using GraphEdge = SLlistNode<GraphNode<int>*>;		// 用存储顶点指针的链表节点来表示边；
 		const float pi = 3.14159;
 
-		Graph<int> g1({0, 1,2,3,4, 5});
+		Graph<int> g1({ 0, 1,2,3,4, 5 });
 		g1.addEdge(0, 1);
 		g1.addEdge(0, 2);
 		g1.addEdge(0, 3);
@@ -140,7 +140,7 @@ namespace GRAPH
 		getCircleVers3D(poses, g1.pnVec.size());
 
 		// 所有节点格式的边数据转换为edgeI格式： 
-		std::vector<edgeI> edges; 
+		std::vector<edgeI> edges;
 		for (const auto pn : g1.pnVec)					// 收集每个顶点发出的第一条边；
 		{
 			if (nullptr == pn->pFirstEdge)
@@ -161,7 +161,7 @@ namespace GRAPH
 	}
 
 
-	void test00() 
+	void test00()
 	{
 		triMeshD mesh;
 		readOBJ(mesh, "./myData/roundSurf.obj");
@@ -173,12 +173,12 @@ namespace GRAPH
 	}
 
 
-	// graph的各种遍历—— to be completed
-	void test1() 
+	// graph的各种遍历 
+	void test1()
 	{
 		// 生成深度优先遍历的路径，转换为边的形式打印出来：
 		triMeshD mesh;
-		std::vector<edgeI> path; 
+		std::vector<edgeI> path;
 
 		std::vector<verF> vers;
 		getCircleVers3D(vers, 8);
@@ -194,7 +194,7 @@ namespace GRAPH
 		g.addEdge(4, 5);
 		g.addEdge(0, 5);
 		g.addEdge(5, 6);
-		g.addEdge(6, 7); 
+		g.addEdge(6, 7);
 
 		const int versCount = static_cast<int>(g.pnVec.size());
 		int vaIdx = 0;
@@ -205,14 +205,14 @@ namespace GRAPH
 		std::unordered_map<GraphNode<verF>*, int> map;
 		for (int i = 0; i < versCount; ++i)
 			map.insert(std::make_pair(g.pnVec[i], i));
-		 
-		 
+
+
 
 		debugDisp("test1 finished.");
 	}
 
 
-	// GRAPH中的最短环
+	// GRAPH中的最短环——to be completed
 	/*
 		现有一个含 n 个顶点的 双向图，每个顶点按从 0 到 n - 1 标记。
 		图中的边由二维整数数组 edges 表示，其中 edges[i] = [ui, vi] 表示顶点 ui 和 vi 之间存在一条边。
@@ -223,7 +223,7 @@ namespace GRAPH
 		示例 1：
 				输入：n = 7, edges = [[0,1],[1,2],[2,0],[3,4],[4,5],[5,6],[6,3]]
 				输出：3
-				解释：长度最小的循环是：0 -> 1 -> 2 -> 0 
+				解释：长度最小的循环是：0 -> 1 -> 2 -> 0
 		示例 2：
 				输入：n = 4, edges = [[0,1],[0,2]]
 				输出：-1
@@ -231,9 +231,40 @@ namespace GRAPH
 
 		int findShortestCycle(int n, vector<vector<int>>& edges) {}
 	*/
-	void test2() 
+	void test2()
 	{
+		// 0. input data:
+		std::vector<std::vector<int>> edges{ {0, 1},{1, 2},{2, 0},{3, 4},{4, 5},{5, 6},{6, 3} };
 
+		// 1. 生成邻接表：
+		std::vector<std::vector<int>> vvList;
+		vvEdges2vvList(vvList, edges, false);
+
+		// 2. 基于DFS的方法搜索环（暂时不考虑多联通情形）
+		int index = 0;
+		const int n = vvList.size();				// 节点数量；
+		std::stack<int> st;
+		std::vector<bool> visited(n, false);
+		st.push(0);
+		while (!st.empty())
+		{
+			// w1
+			index = st.top();
+			st.pop();
+			if (visited[index])
+				continue;
+
+			// w2. 操作当前节点
+			visited[index] = true;
+
+
+			// w3. 当前节点1领域内节点入栈：
+			
+		}
+
+
+
+		debugDisp("test2 finished.");
 	}
 
 

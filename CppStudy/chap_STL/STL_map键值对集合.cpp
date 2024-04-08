@@ -134,6 +134,8 @@ void STL_map_module::test0(void)
 	//	4. find()——查找输入的键，返回对应的迭代器，如果没有找到则返回尾后迭代器；
 	debugDisp("\nfind()方法: ");
 	iter1 = mis.find(5);			
+	debugDisp("iter1->first == ", iter1->first);
+	debugDisp("iter1->second == ", iter1->second);
 	mis.erase(iter1);										// erase()方法输入迭代器删除元素
 	
 	for_each(mis.begin(), mis.end(), pp);

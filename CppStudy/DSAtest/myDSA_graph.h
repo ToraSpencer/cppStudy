@@ -214,6 +214,12 @@ using Graph3D = Graph<verF>;						// 三维点云构成的图
 			→ 上面的栈顶节点的一系列1领域节点被压入栈，栈顶节点出栈、被访问；
 			*	栈结构和递归紧密关联，深度优先搜索通常可以写为递归形式；
 			
+	每个节点应该有四种状态(
+			NOT FOUND, -1								未被发现，即未进入过收集容器（栈或队列）；				
+			FOUND		, 0									已被发现，即进入过收集容器（栈或队列）；		
+			SEARCHED	, 1									已完成对该节点关联信息的搜索，即不仅该节点已被发现，其关联的节点也都已经被发现；
+			VISITED		, 2									已完成对该节点的访问，即已使用func()函数子作用过该节点；一般先从收集容器中弹出该节点再访问；
+			);				
 */
 template <typename T, typename Func>
 void traverseGraph(Graph<T>& g, Func func, \
@@ -344,7 +350,7 @@ bool graph2Array(std::vector<TRIANGLE_MESH::triplet<TVO>>& vers, \
 }
 
 
-// 三维坐标顶点图写入到OBJ文件中——to be completed;
+// 三维坐标顶点图写入到OBJ文件中 
 template <typename T>
 bool objWriteGraph3D(const char* fileName, const Graph<TRIANGLE_MESH::triplet<T>>& g)
 {
@@ -358,33 +364,74 @@ bool objWriteGraph3D(const char* fileName, const Graph<TRIANGLE_MESH::triplet<T>
 }
 
 
-// Double表示的边数据转换为std::vector<int>表示的邻接表 
+// Double表示的边数据转换为std::vector<std::vector<int>>表示的邻接表 
 template <typename TI>
 bool edges2vvList(std::vector<std::vector<int>>& vvList,\
-	const std::vector<TRIANGLE_MESH::doublet<TI>>& edges) 
+	const std::vector<TRIANGLE_MESH::doublet<TI>>& edges, const bool isDigraph = true) 
 {
 	vvList.clear();
 	std::vector<TI> tmpVec;
 	int n = 0;
-	int index = 0;
+	int vaIdx = 0;
+	int vbIdx = 0;
 	tmpVec.reserve(2 * edges.size());
+
+	// 1. 确定节点数
 	for (const auto& e : edges)
 	{
 		tmpVec.push_back(e.x);
 		tmpVec.push_back(e.y);
 	}
-
-	n = static_cast<int>(std::max(tmpVec.begin(), tmpVec.end()));
+	n = static_cast<int>(*std::max_element(tmpVec.begin(), tmpVec.end())) + 1;
+	
+	// 2. 生成邻接表：
 	vvList.resize(n);
 	for (const auto& e : edges)
 	{
-		index = static_cast<int>(e.x);
-		vvList[index].push_back(static_cast<int>(e.y));
+		vaIdx = static_cast<int>(e.x);
+		vbIdx = static_cast<int>(e.y);
+		vvList[vaIdx].push_back(vbIdx);
+		if (!isDigraph)
+			vvList[vbIdx].push_back(vaIdx);
 	} 
  
 	return true;
 }
 
+
+// std::vector<std::vector<int>>表示的边数据转换为std::vector<std::vector<int>>表示的邻接表 
+template <typename TI>
+bool vvEdges2vvList(std::vector<std::vector<int>>& vvList, \
+	const std::vector<std::vector<TI>>& edges, const bool isDigraph = true)
+{
+	vvList.clear();
+	std::vector<TI> tmpVec;
+	int n = 0;
+	int vaIdx = 0;
+	int vbIdx = 0;
+	tmpVec.reserve(2 * edges.size());
+
+	// 1. 确定节点数
+	for (const auto& e : edges)
+	{
+		tmpVec.push_back(e[0]);
+		tmpVec.push_back(e[1]);
+	} 
+	n = static_cast<int>(*std::max_element(tmpVec.begin(), tmpVec.end())) + 1;
+	
+	// 2. 生成邻接表：
+	vvList.resize(n);
+	for (const auto& e : edges)
+	{
+		vaIdx = static_cast<int>(e[0]);
+		vbIdx = static_cast<int>(e[1]);
+		vvList[vaIdx].push_back(vbIdx);
+		if(!isDigraph)
+			vvList[vbIdx].push_back(vaIdx);
+	}
+	 
+	return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 测试函数：
 namespace GRAPH

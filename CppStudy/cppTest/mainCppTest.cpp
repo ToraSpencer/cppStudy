@@ -3029,6 +3029,25 @@ namespace TEST_STL
 
 			std::cout << "finished." << std::endl;
 		}
+
+
+		// std::max(), std::max_element()
+		void test11()
+		{
+			std::vector<int> vec1{ 1,2,3,4,5 };
+			std::vector<int> vec2{1,2,2,3,4,5,5,5};
+
+			// std::max() ——返回最大元素的constexpr引用；
+			auto ret0 = std::max(1, 2);									// 1. 输入两个元素
+			auto ret1 = std::max({ 1,2,3,4,5 });						// 2. 输入初始化列表；
+			auto ret2 = std::max({ 1,2,2,3,4,5,5,5 });
+
+			// std::max_element()——输入迭代器，返回迭代器确定的前闭后开区间内最大元素的constexpr迭代器
+			auto ret11 = std::max_element(vec1.begin(), vec1.end());
+			auto ret22 = std::max_element(vec2.begin(), vec2.end());
+ 
+			debugDisp("test11 finished.");
+		}
 	}
 	 
 
@@ -3402,9 +3421,9 @@ int main()
 {    
 	// TEST_BIT::test1();
 
-	// TEST_STL::STL_SET_MAP::test1();
+	TEST_STL::STL_ALGORITHM::test11();
 
-	TEST_UNKNOWN::POINTER::test1();
+	// TEST_UNKNOWN::POINTER::test1();
 
 
 	debugDisp("main() finished."); 

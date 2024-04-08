@@ -58,6 +58,7 @@ namespace MY_DEBUG
 using namespace MY_DEBUG;
 
 
+
 namespace TREE
 {
 	// 二叉树的最大深度：
@@ -104,13 +105,24 @@ namespace TREE
 		printBT(ptrRoot);
 		 
 		// 1. 各种遍历方法：
-		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::LevelOrder);  
+		debugDisp("递归遍历方法：层序、先序、中序、后序：");
+		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::LevelOrder, true);  
 		debugDisp("\n");
-		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PreOrder); 
+		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PreOrder, true);
 		debugDisp("\n");
-		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::InOrder); 
+		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::InOrder, true);
 		debugDisp("\n");
-		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PostOrder); 
+		traverseBT(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PostOrder, true);
+		debugDisp("\n");
+
+		debugDisp("非递归遍历方法：层序、先序、中序、后序：");
+		traverseBT_noRecur(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::LevelOrder, true);
+		debugDisp("\n");
+		traverseBT_noRecur(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PreOrder, true);
+		debugDisp("\n");
+		traverseBT_noRecur(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::InOrder, true);
+		debugDisp("\n");
+		traverseBT_noRecur(ptrRoot, dispTreeNode<int>, TRAVERSE_BT_TYPE::PostOrder, true);
 		debugDisp("\n");
 
 		// 2. 使用先序序列、中序序列来重建BT:

@@ -63,7 +63,7 @@ template <typename T>
 static auto dispTreeNode = [](const TreeNode<T>* ptrNode)
 {
 	if(nullptr == ptrNode)
-		std::cout << "placeholder, ";
+		std::cout << "*, ";
 	else
 		std::cout << ptrNode->val << ", ";
 };
@@ -82,38 +82,48 @@ enum class TRAVERSE_BT_TYPE
 };
 
 
-// 遍历BT
+// 遍历BT（to be optimized——当前DFS中不跳过空节点的方法貌似有误）
 template <typename T, typename Func>
 void traverseBT(TreeNode<T>* ptrNode, Func func, \
 	const TRAVERSE_BT_TYPE type = TRAVERSE_BT_TYPE::PreOrder, \
 	const bool skipNP = true)
 {
-	TreeNode<T>* ptrCurrentNode = nullptr;
+	TreeNode<T>* ptrCn = nullptr;
 	TreeNode<T>* pa = nullptr;
 	TreeNode<T>* pb = nullptr;
-	if (type == TRAVERSE_BT_TYPE::LevelOrder)		// 特殊情形——层序遍历，借助队列结构实现；
+	if (type == TRAVERSE_BT_TYPE::LevelOrder)		// 层序遍历（广度优先遍历），借助队列结构实现；
 	{
-		std::queue<TreeNode<T>*> queue;
+		std::queue<TreeNode<T>*> qt;
 		if (nullptr == ptrNode)
 		{
 			if (!skipNP)
 				func(ptrNode);
 			return;
 		}
-
-		queue.push(ptrNode);
-		while (!queue.empty())
+		qt.push(ptrNode);
+	
+		// BST的循环：
+		while (!qt.empty())
 		{
-			// 取节点→自己入队→ 孩子入队→出队→ 访问节点；
-			ptrCurrentNode = queue.front();
-			pa = ptrCurrentNode->left;
-			pb = ptrCurrentNode->right;
-			queue.pop();
-			func(ptrCurrentNode);
-			if (nullptr != pa)
-				queue.push(pa);
-			if (nullptr != pb)
-				queue.push(pb);
+			// w1. 取队首节点，对其进行搜索
+			ptrCn = qt.front();
+			if (nullptr == ptrCn)
+			{
+				if (!skipNP)
+					func(ptrCn);
+				qt.pop();
+				continue;
+			}
+			pa = ptrCn->left;
+			pb = ptrCn->right;
+
+			// w2. 队首节点出队、访问
+			qt.pop();
+			func(ptrCn);
+
+			// w3. 孩子入队
+			qt.push(pa); 
+			qt.push(pb);
 		}
 	}
 	else		 // 深度优先遍历——先、中、后序取决于是先访问节点（调用函数子func作用于节点）还是先执行递归（搜索节点）
@@ -165,6 +175,278 @@ void traverseBT(TreeNode<T>* ptrNode, Func func, \
 			break;
 		}
 	} 
+}
+
+
+// 遍历BT——非递归方法（to be optimized——当前DFS中不跳过空节点的方法貌似有误）
+template <typename T, typename Func>
+void traverseBT_noRecur(TreeNode<T>* ptrNode, Func func, \
+	const TRAVERSE_BT_TYPE type = TRAVERSE_BT_TYPE::PreOrder, \
+	const bool skipNP = true)
+{
+	// 
+	TreeNode<T>* ptrCn = nullptr;
+	TreeNode<T>* pa = nullptr;
+	TreeNode<T>* pb = nullptr;
+	if (nullptr == ptrNode)
+		return;
+
+	if (TRAVERSE_BT_TYPE::LevelOrder == type)		// 层序遍历（广度优先遍历），借助队列结构实现；
+	{
+		std::queue<TreeNode<T>*> qt;
+		if (nullptr == ptrNode)
+		{
+			if (!skipNP)
+				func(ptrNode);
+			return;
+		}
+		qt.push(ptrNode);
+
+		// BST的循环：
+		while (!qt.empty())
+		{
+			// w1. 取队首节点，对其进行搜索
+			ptrCn = qt.front();
+			if (nullptr == ptrCn)
+			{
+				if (!skipNP)
+					func(ptrCn);
+				qt.pop();
+				continue;
+			}
+			pa = ptrCn->left;
+			pb = ptrCn->right;
+
+			// w2. 队首节点出队、访问
+			qt.pop();
+			func(ptrCn);
+
+			// w3. 孩子入队
+			qt.push(pa);
+			qt.push(pb);
+		}
+	}
+	else				   // 借助栈stack实现的深度优先遍历
+	{
+		// 搜索压栈、弹栈访问操作——根据这两种操作的次序可以分为先序、中序、后序三种类型；
+		std::stack<TreeNode<T>*> st;
+		std::unordered_map<TreeNode<T>*, int> status;		// -1: 未发现,  0: 已发现,  1: 左搜索完成、右搜索未完成,  2: 左右搜索都完成, 3: 已访问;
+		st.push(ptrNode);
+		status.insert(std::make_pair(ptrNode, 0));				// 节点压栈时即标记为“已发现”状态
+
+		switch (type)
+		{
+			case TRAVERSE_BT_TYPE::PreOrder:
+			{
+				// DFS_PRO的循环：
+				while (!st.empty())
+				{
+					// w1. 取栈顶节点作为当前节点；
+					ptrCn = st.top();
+					auto iter = status.find(ptrCn);						// 当前节点在状态字典中对应的键值对；
+
+					// w2. 搜索当前节点——状态、左右孩子
+					if (nullptr != ptrCn)
+					{
+						if (iter == status.end())
+						{
+							auto ret = status.insert(std::make_pair(ptrCn, 0));
+							iter = ret.first;
+						}
+						else
+						{
+							if (3 == status[ptrCn])
+							{
+								st.pop();
+								continue;
+							}
+						}
+						pa = ptrCn->left;
+						pb = ptrCn->right;
+					}
+					 
+					// w3. 弹栈、访问
+					st.pop();
+					if (nullptr == ptrCn)
+					{
+						if (!skipNP)
+							func(ptrCn);
+						continue;
+					}
+					func(ptrCn);
+					status[ptrCn] = 3;
+
+					// w4. 右搜索、压入栈
+					st.push(pb);
+
+					// w5. 左搜索、压入栈；
+					st.push(pa);
+				}
+				break;
+			}
+			case TRAVERSE_BT_TYPE::InOrder:
+			{
+				// DFS_IO的循环：
+				while (!st.empty())
+				{
+					// w1. 取栈顶节点作为当前节点；
+					ptrCn = st.top();			
+
+					// w2. 搜索当前节点——状态、左右孩子
+					auto iter = status.find(ptrCn);						// 当前节点在状态字典中对应的键值对；
+					if (iter == status.end())
+					{
+						auto ret = status.insert(std::make_pair(ptrCn, 0));
+						iter = ret.first;
+					}
+					else
+					{
+						if (3 == status[ptrCn])
+						{
+							st.pop();
+							continue;
+						}
+					}
+					pa = ptrCn->left;
+					pb = ptrCn->right;
+
+					// w3. 左搜索、压栈的循环，搜索到底；
+					while (0 == iter->second)			// 若当前节点未完成左搜索
+					{
+						// ww1. 当前节点状态修改：
+						status[ptrCn] = 1;					// 左搜索已完成；
+
+						if (nullptr == pa) 
+							break; 
+						else
+						{
+							// w2. 左孩子入栈；
+							st.push(pa);
+
+							// w3. 当前节点更新
+							ptrCn = pa;
+							pa = ptrCn->left;
+							pb = ptrCn->right;
+
+							// w4. 查找当前节点对应的状态：
+							iter = status.find(ptrCn);
+							if (iter == status.end())
+							{
+								auto ret = status.insert(std::make_pair(ptrCn, 0));
+								iter = ret.first;
+							}
+						}
+					} 
+ 
+					// w4. 弹栈、访问
+					st.pop();
+					func(ptrCn);
+					status[ptrCn] = 3;
+
+					 // w5. 右搜索、压入栈 
+					if(nullptr != pb)
+						st.push(pb);					
+				}
+				break;
+			}
+			case TRAVERSE_BT_TYPE::PostOrder:
+			{				
+				// DFS_POO的循环；
+				while (!st.empty())
+				{
+					// w1. 取栈顶节点作为当前节点；
+					ptrCn = st.top();
+					auto iter = status.find(ptrCn);						// 当前节点在状态字典中对应的键值对；
+					if (iter == status.end())
+					{
+						auto ret = status.insert(std::make_pair(ptrCn, 0));
+						iter = ret.first;
+					}
+					else
+					{
+						if (3 == status[ptrCn])
+						{
+							st.pop();
+							continue;
+						}
+					}
+					pa = ptrCn->left;
+					pb = ptrCn->right;
+
+					// w2. 搜索、压栈的循环：
+					do
+					{
+						// wc3.1 左搜索到底
+						while (0 == iter->second)			// 若当前节点未完成左搜索
+						{
+							// ww1. 当前节点状态修改：
+							status[ptrCn] = 1;					// 左搜索已完成；
+
+							if (nullptr == pa)
+								break;
+							else
+							{
+								// w2. 左孩子入栈；
+								st.push(ptrCn->left);
+
+								// w3. 当前节点更新
+								ptrCn = pa;
+								pa = ptrCn->left;
+								pb = ptrCn->right;
+
+								// w4. 查找当前节点对应的状态：
+								iter = status.find(ptrCn);
+								if (iter == status.end())
+								{
+									auto ret = status.insert(std::make_pair(ptrCn, 0));
+									iter = ret.first;
+								}
+							}
+						}
+
+						// wc3.2 右搜索到底
+						while (1 == iter->second)
+						{
+							// w1. 当前节点状态修改：
+							status[ptrCn] = 2;					// 左搜索已完成；
+
+							if (nullptr == pb)
+								break;
+							else
+							{
+								// w2. 左孩子入栈；
+								st.push(ptrCn->right);
+
+								// w3. 当前节点更新
+								ptrCn = pb;
+								pa = ptrCn->left;
+								pb = ptrCn->right;
+
+								// w4. 查找当前节点对应的状态：
+								iter = status.find(ptrCn);
+								if (iter == status.end())
+								{
+									auto ret = status.insert(std::make_pair(ptrCn, 0));
+									iter = ret.first;
+								}
+							}
+						}
+					} while (iter->second < 2);
+
+					// w3. 访问——只有栈顶元素完成了左右搜索才可以出栈访问；
+					func(ptrCn);
+					status[ptrCn] = 3;
+					st.pop();
+				}
+
+				break;
+			}
+
+			default: 
+				break;
+		}
+
+	}
 }
 
 
@@ -290,18 +572,18 @@ bool serializeBT_levelOrder (std::vector<T>& vecOut, TreeNode<T>* ptrRoot)
 	queue.push(ptrRoot);
 	while (!queue.empty())
 	{
-		TreeNode<T>* ptrCurrentNode = queue.front();
+		TreeNode<T>* ptrCn = queue.front();
 		queue.pop(); 
-		if (nullptr == ptrCurrentNode)
+		if (nullptr == ptrCn)
 		{
 			valList.push_back(placeholder);
 			continue;
 		}
 		else
 		{
-			valList.push_back(ptrCurrentNode->val);
-			queue.push(ptrCurrentNode->left);
-			queue.push(ptrCurrentNode->right);
+			valList.push_back(ptrCn->val);
+			queue.push(ptrCn->left);
+			queue.push(ptrCn->right);
 		} 
 	}  
 
@@ -375,7 +657,7 @@ bool serializeBT_preOrder(std::vector<T>& vecOut, TreeNode<T>* ptrRoot)
 	const T placeholder = std::numeric_limits<T>::max();
 	const int maxDepth = ptrRoot->maxDepth();
 	const int maxSize = std::pow(2, maxDepth) - 1;					// 深度为maxDepth的满二叉树的节点数；
-	TreeNode<T>* ptrCurrentNode = nullptr;
+	TreeNode<T>* ptrCn = nullptr;
 	TreeNode<T>* pa = nullptr;
 	TreeNode<T>* pb = nullptr;
 	vecOut.reserve(maxSize); 

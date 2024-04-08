@@ -721,7 +721,7 @@ int main(int argc, char** argv)
 {
 	// RECURSION::test1(); 
 
-	GRAPH::test5();
+	TREE::test1();
 
 	// TEST_MY_IO::test0();
 
