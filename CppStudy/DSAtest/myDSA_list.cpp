@@ -120,7 +120,7 @@ namespace LIST
 
 
 	void test0()
-	{
+	{ 
 		using ListNode = SLlistNode<int>;
 		ListNode* pHead = make_list<int>({ 2, 3, -1, -23, -1, -7, 99, -1, 0 });
 		traverseList(pHead, [](ListNode* pn)
@@ -178,55 +178,53 @@ namespace LIST
 		输出：false
 		解释：链表中没有环。
 	*/
-
-	// 版本1——可查询环所在位置；
-	bool hasCycle(ListNode* head)
-	{
-		int pos = -1;					// 标识环的位置；
-		ListNode* pn = head;
-		int index = 1;
-		std::unordered_map<unsigned long, int> map;
-		std::pair<std::unordered_map<unsigned long, int>::iterator, bool> retIter;
-
-		if (nullptr == head)
-			return false;
-
-		map.insert(std::make_pair(reinterpret_cast<unsigned long>(head), 0));
-		while (nullptr != pn->next)
-		{
-			retIter = map.insert(std::make_pair(reinterpret_cast<unsigned long>(pn->next), index));
-			if (!retIter.second)
-			{
-				pos = std::distance(map.begin(), retIter.first);
-				// debugDisp("pos == ", pos);
-				return true;
-			}
-			index++;
-			pn = pn->next;
-		}
-
-		return false;
-	}
-
-
-	// 版本2——不可查询环所在位置；
-	bool hasCycle2(ListNode* head)
-	{
-		ListNode* pn = head;
-		std::unordered_set<ListNode*> seen;
-		while (pn != nullptr)
-		{
-			if (seen.count(pn))				// 查询当前节点是否在哈希表中已存在；
-				return true;
-			seen.insert(pn);
-			pn = pn->next;
-		}
-		return false;
-	}
-
-
 	void test1()
 	{
+		// 版本1——可查询环所在位置；
+		auto hasCycle = [](ListNode * head)->bool
+		{
+			int pos = -1;					// 标识环的位置；
+			ListNode* pn = head;
+			int index = 1;
+			std::unordered_map<unsigned long, int> map;
+			std::pair<std::unordered_map<unsigned long, int>::iterator, bool> retIter;
+
+			if (nullptr == head)
+				return false;
+
+			map.insert(std::make_pair(reinterpret_cast<unsigned long>(head), 0));
+			while (nullptr != pn->next)
+			{
+				retIter = map.insert(std::make_pair(reinterpret_cast<unsigned long>(pn->next), index));
+				if (!retIter.second)
+				{
+					pos = std::distance(map.begin(), retIter.first);
+					// debugDisp("pos == ", pos);
+					return true;
+				}
+				index++;
+				pn = pn->next;
+			}
+
+			return false;
+		};
+
+
+		// 版本2——不可查询环所在位置；
+		auto hasCycle2 = [](ListNode* head)->bool
+		{
+			ListNode* pn = head;
+			std::unordered_set<ListNode*> seen;
+			while (pn != nullptr)
+			{
+				if (seen.count(pn))				// 查询当前节点是否在哈希表中已存在；
+					return true;
+				seen.insert(pn);
+				pn = pn->next;
+			}
+			return false;
+		};
+
 		ListNode* head = make_list<int>({ 3, 2, 0, -4 });
 		ListNode* pn1 = head->next;
 		ListNode* pn2 = head->next->next->next;

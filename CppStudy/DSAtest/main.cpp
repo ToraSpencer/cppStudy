@@ -722,7 +722,9 @@ int main(int argc, char** argv)
 
 	// TEST_MY_IO::test0();
 
-	STACK::test2();
+	// STACK::test2();
+
+	LIST::test1();
 
 	debugDisp("main finished.");
 
