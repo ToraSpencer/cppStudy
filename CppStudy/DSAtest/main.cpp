@@ -709,22 +709,20 @@ namespace TEST_MY_IO
 
 		debugDisp("test0 finished.");
 	}
-
-
-
+	 
 }
 
-
-
+ 
 
 int main(int argc, char** argv)
 {
 	// RECURSION::test1(); 
 
-	TREE::test1();
+	// TREE::test1();
 
 	// TEST_MY_IO::test0();
 
+	STACK::test2();
 
 	debugDisp("main finished.");
 

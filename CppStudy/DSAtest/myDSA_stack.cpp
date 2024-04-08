@@ -178,9 +178,77 @@ namespace STACK
 			队列的声明如下，请实现它的两个函数appendTail和deleteHead，
 			分别完成在队列尾部插入结点和在队列头部删除结点的功能。
 	*/
+
+	template <typename T>
+	struct myQueue 
+	{
+		std::stack<T> s1;
+		std::stack<T> s2;
+		
+		myQueue() {}
+		
+		void clear() 
+		{
+			this->s1.clear();
+			this->s2.clear();
+		}
+
+		void toS1()
+		{
+			T tmp = 0;
+			while (!this->s2.empty())
+			{
+				tmp = this->s2.top();
+				this->s2.pop();
+				this->s1.push(tmp);
+			}
+		}
+
+		void toS2() 
+		{
+			T tmp = 0;
+			while (!this->s1.empty())
+			{
+				tmp = this->s1.top();
+				this->s1.pop();
+				this->s2.push(tmp);
+			}
+		}
+
+		bool appendTail(const T elem) 
+		{
+			toS1();
+			this->s1.push(elem);
+			return true;
+		}
+
+		T deleteHead() 
+		{
+			toS2();
+			T tmp = this->s2.top();
+			this->s2.pop();
+			return tmp;
+		} 
+	};
+
+
 	void test2()
 	{
+		myQueue<int> q;
+		q.appendTail(1);
+		q.appendTail(2);
+		q.appendTail(3);
+		q.appendTail(4);
+		debugDisp("q.deleteHead() == ", q.deleteHead());
+		q.appendTail(-5);
+		q.appendTail(-6);
+		debugDisp("q.deleteHead() == ", q.deleteHead());
+		debugDisp("q.deleteHead() == ", q.deleteHead());
+		debugDisp("q.deleteHead() == ", q.deleteHead());
+		debugDisp("q.deleteHead() == ", q.deleteHead());
+		debugDisp("q.deleteHead() == ", q.deleteHead());
 
+		debugDisp("test2 finished.");
 	}
 }
 
