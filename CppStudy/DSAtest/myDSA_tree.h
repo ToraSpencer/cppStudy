@@ -82,7 +82,7 @@ enum class TRAVERSE_BT_TYPE
 };
 
 
-// 遍历BT（to be optimized——当前DFS中不跳过空节点的方法貌似有误）
+// 递归函数——遍历BT（to be optimized——当前DFS中不跳过空节点的方法貌似有误）
 template <typename T, typename Func>
 void traverseBT(TreeNode<T>* ptrNode, Func func, \
 	const TRAVERSE_BT_TYPE type = TRAVERSE_BT_TYPE::PreOrder, \

@@ -56,6 +56,7 @@ namespace MY_DEBUG
 }
 using namespace MY_DEBUG;
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////// 暂时不知如何分类：
 namespace TEST_UNKNOWN
 {
@@ -326,7 +327,7 @@ namespace SORTING_SEARCHING
 ////////////////////////////////////////////////////////////////////////////////////////////// 递归
 namespace RECURSION
 {
-	// 尾递归求阶乘：
+	// 递归函数——尾递归求阶乘：
 	int factorial(const int num) 
 	{
 		int result = 0;
@@ -653,40 +654,7 @@ namespace TMP_QUEENS
 
 }
 
-
-
-
-namespace TMP_BST
-{
-	using namespace std;
-	using treeNode = TreeNode<int>; 
-
-# if 0
-	template<typename T>
-	BiTree<T>* insert_bst(T data, BiTree<T>*& bst)
-	{
-		if (!bst) 
-		{ 
-
-			bst = new BiTree<T>;
-			bst->data = data;
-			bst->right = bst->left = NULL;
-		}
-		else     //开始找要插入元素的位置
-		{
-			if (data < bst->data) //递归插入左子树
-				bst->left = insert_bst(data, bst->left);
-
-			if (data > bst->data)//递归插入右子树
-				bst->right = insert_bst(data, bst->right);
-		}
-
-		return bst;
-	} 
-#endif
-
-	void test0() {}
-}
+ 
 
  
 
