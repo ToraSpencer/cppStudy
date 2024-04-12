@@ -61,35 +61,32 @@ using namespace MY_DEBUG;
 
 namespace TREE
 {
-	// 二叉树的最大深度：
-	/*
-		给定一个二叉树 root ，返回其最大深度。
-			二叉树的最大深度：从根节点到最远叶子节点的最长路径上的节点数。
-	*/
+	// BT的最大深度：
 	void test0()
-	{
+	{ 
 		/*
-							   3
-							 /   \
-						   9      20
-								 /	   \
-							  15       7
-		*/
-		TreeNode<int>* ptrRoot = nullptr;
-		TreeNode<int> tn0, tn00, tn01, tn010, tn011;
-		tn0.val = 3;
-		tn00.val = 9;
-		tn01.val = 20;
-		tn010.val = 15;
-		tn011.val = 7;
-		tn0.left = &tn00;
-		tn0.right = &tn01;
-		tn01.left = &tn010;
-		tn01.right = &tn011;
-		ptrRoot = &tn0;
+			给定一个BT root ，返回其最大深度。
+					BT的最大深度：从根节点到最远叶子节点的最长路径上的节点数。
 
+			这里使用层序遍历的思路实现最大深度的计算：
+		*/
+		constexpr int placeholder = std::numeric_limits<int>::max();
+		TreeNode<int>* ptrRoot = nullptr;
+		TreeNode<int>* pn = nullptr;
+		ptrRoot = deserializeBT_levelOrder(std::vector<int>{5, 0, 8, -1, 3, 6, 9, placeholder, placeholder, 1, 4});
+		printBT(ptrRoot);
+
+		// 1. maxDepth()最大深度
 		debugDisp("ptrRoot->maxDepth() == ", ptrRoot->maxDepth());
 		debugDisp("ptrRoot->right->maxDepth() == ", ptrRoot->right->maxDepth());
+
+		// 2. 
+		debugDisp("isBST(ptrRoot) == ", isBST(ptrRoot));
+		pn = searchBST(ptrRoot, 4);
+		pn->right = new TreeNode<int>(99);
+		printBT(ptrRoot);
+		debugDisp("ptrRoot->maxDepth() == ", ptrRoot->maxDepth());
+		debugDisp("isBST(ptrRoot) == ", isBST(ptrRoot));
 
 		debugDisp("test0 finished.");
 	}
@@ -166,9 +163,9 @@ namespace TREE
 	}
 
 
-	// 翻转二叉树
+	// 翻转BT
 	/*
-	给你一棵二叉树的根节点 root ，翻转这棵二叉树，并返回其根节点。 
+	给你一棵BT的根节点 root ，翻转这棵BT，并返回其根节点。 
 
 	示例 1：
 		输入：root = [4,2,7,1,3,6,9]
@@ -263,7 +260,7 @@ namespace TREE
 
 	// BT的所有路径：
 	/*
-		给你一个二叉树的根节点 root ，按 任意顺序 ，返回所有从根节点到叶子节点的路径。 
+		给你一个BT的根节点 root ，按 任意顺序 ，返回所有从根节点到叶子节点的路径。 
 		 vector<string> binaryTreePaths(TreeNode* root) {}
 		输入：root = [1,2,3,null,5]
 		输出：["1->2->5","1->3"]
@@ -314,11 +311,13 @@ namespace TREE
 
 		// 2. 
 		ptrRoot1 = buildBST(8, std::vector<int>{3, 10, 2, 6, 14, 4, 7, 13});
-		ptrRoot2 = buildBST(8, std::vector<int>{4, 13, 7, 3, 2, 10, 6, 14});
+		ptrRoot2 = buildBST(8, std::vector<int>{5, 0, -1, 3, 6, 9, 1, 4});
 		printBT(ptrRoot1);
 		printBT(ptrRoot2);
 		debugDisp("isBST(ptrRoot1) == ", isBST(ptrRoot1));
 		debugDisp("isBST(ptrRoot2) == ", isBST(ptrRoot2));
+
+		// 3. 搜索BST
 		pn = searchBST(ptrRoot1, 7);
 		debugDisp("pn->val == ", pn->val);
 		pn = searchBST(ptrRoot1, 99);
@@ -353,7 +352,7 @@ namespace TREE
 
 	// JZOF18: 树的子结构
 	/*
-		输入两棵二叉树A和B，判断B是不是A的子结构。二叉树结点的定义如下：
+		输入两棵BTA和B，判断B是不是A的子结构。BT结点的定义如下：
 			struct BinaryTreeNode
 			{
 				int                    m_nValue;
@@ -384,7 +383,8 @@ namespace TREE
 		*/
 	}
 
-	// JZOF24: 二叉搜索树的后序遍历序列
+
+	// JZOF24: BST的后序遍历序列
 	/*
 		输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。
 		如果是则返回 true，否则返回 false。假设输入的数组的任意两个数字都互不相同。
@@ -443,7 +443,8 @@ namespace TREE
 		*/
 	}
 
-	// JZOF27: 二叉搜索树与双向链表
+
+	// JZOF27: BST与双向链表
 	/*
 		输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。
 		要求不能创建任何新的结点，只能调整树中结点指针的指向。
@@ -497,10 +498,10 @@ namespace TREE
 	}
 
 
-	// JZOF39: 题目二：判断平衡二叉树：
+	// JZOF39: 题目二：判断平衡BT 
 	/*
-		输入一棵二叉树的根结点，判断该树是不是平衡二叉树。
-		如果某二叉树中任意结点的左右子树的深度相差不超过1，那么它就是一棵平衡二叉树。
+		输入一棵BT的根结点，判断该树是不是平衡BT。
+		如果某BT中任意结点的左右子树的深度相差不超过1，那么它就是一棵平衡BT。
 			struct BinaryTreeNode
 			{
 				int                    m_nValue;

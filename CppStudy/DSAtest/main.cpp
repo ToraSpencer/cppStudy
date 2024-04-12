@@ -686,13 +686,13 @@ int main(int argc, char** argv)
 {
 	// RECURSION::test1(); 
 
-	// TREE::test1();
+	TREE::test0();
 
 	// TEST_MY_IO::test0();
 
 	// STACK::test2();
 
-	LIST::test1();
+	// LIST::test1();
 
 	debugDisp("main finished.");
 
