@@ -18,7 +18,23 @@
 
 #define DEFAULT_SIZE 1000					 
  
+// 目录
+/*
+	基本类型定义
+	表象变换
+	Traverse methods
+	Create methods
+	Read methods
+	Update methods
+	Delete methods
+	最小支撑树相关
+	最短路径相关
+*/
 
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// 基本类型定义
 
 // 枚举类——BT的遍历类型
 enum class TRAVERSE_GRAPH_TYPE
@@ -201,6 +217,172 @@ public:
 using Graph3D = Graph<verF>;						// 三维点云构成的图
 
 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// 表象变换
+template <typename TVO, typename TVI>
+bool triMesh2Graph(Graph<TRIANGLE_MESH::triplet<TVO>>& g, \
+	const TRIANGLE_MESH::triMesh<TVI, int>& mesh)
+{
+	using verO = TRIANGLE_MESH::triplet<TVO>;
+	const int versCount = mesh.vertices.size();
+	const int trisCount = mesh.triangles.size();
+	std::vector<verO> versTmp(versCount);
+	for (int i = 0; i < versCount; ++i)
+		versTmp[i] = mesh.vertices[i].cast<TVO>();
+
+	g = Graph<verO>{ versTmp };
+	for (const auto& t : mesh.triangles)
+	{
+		g.addEdge(t.x, t.y);
+		g.addEdge(t.y, t.z);
+		g.addEdge(t.z, t.x);
+	}
+
+	return true;
+}
+
+
+template <typename TVO, typename TVI>
+bool graph2Array(std::vector<TRIANGLE_MESH::triplet<TVO>>& vers, \
+	std::vector<edgeI>& edges, const Graph<TRIANGLE_MESH::triplet<TVI>>& g)
+{
+	using verO = TRIANGLE_MESH::triplet<TVO>;
+	using GraphEdge = SLlistNode<GraphNode<TRIANGLE_MESH::triplet<TVI>>*>;			// 用存储顶点指针的链表节点来表示边；
+	const int n = static_cast<int>(g.pnVec.size());
+	if (n <= 0)
+		return false;
+	vers.clear();
+	edges.clear();
+	vers.reserve(n);
+	edges.reserve(n * (n - 1));					// n个节点的有向图多有n*(n -1)条边；
+
+	// 1. 建立图节点-节点索引映射表：
+	std::unordered_map<GraphNode<TRIANGLE_MESH::triplet<TVI>>*, int> map;
+	for (int i = 0; i < g.pnVec.size(); ++i)
+		map.insert(std::make_pair(g.pnVec[i], i));
+
+	// 2. 生成数组表示的顶点、边数据：
+	for (const auto& pn : g.pnVec)
+	{
+		vers.push_back(pn->val.cast<TVO>());
+		if (nullptr == pn->pFirstEdge)
+			continue;
+		int vaIdx = map[pn];			// 当前顶点的索引；
+		traverseList(pn->pFirstEdge, [&map, &edges, vaIdx](GraphEdge* pe)
+			{
+				if (nullptr == pe)
+					return;
+				int vbIdx = map[pe->val];
+				edges.push_back(edgeI(vaIdx, vbIdx));
+			});
+	}
+	edges.shrink_to_fit();
+
+	return true;
+}
+
+
+// 三维坐标顶点图写入到OBJ文件中 
+template <typename T>
+bool objWriteGraph3D(const char* fileName, const Graph<TRIANGLE_MESH::triplet<T>>& g)
+{
+	std::vector<verF> vers;
+	std::vector<edgeI> edges;
+	if (!graph2Array(vers, edges, g))
+		return false;
+	writeOBJ(fileName, vers, edges);
+
+	return true;
+}
+
+
+// Double表示的边数据转换为std::vector<std::vector<int>>表示的邻接表 
+template <typename TI>
+bool edges2vvList(std::vector<std::vector<int>>& vvList, \
+	const std::vector<TRIANGLE_MESH::doublet<TI>>& edges, const bool isDigraph = true)
+{
+	vvList.clear();
+	std::vector<TI> tmpVec;
+	int n = 0;
+	int vaIdx = 0;
+	int vbIdx = 0;
+	tmpVec.reserve(2 * edges.size());
+
+	// 1. 确定节点数
+	for (const auto& e : edges)
+	{
+		tmpVec.push_back(e.x);
+		tmpVec.push_back(e.y);
+	}
+	n = static_cast<int>(*std::max_element(tmpVec.begin(), tmpVec.end())) + 1;
+
+	// 2. 生成邻接表：
+	vvList.resize(n);
+	for (const auto& e : edges)
+	{
+		vaIdx = static_cast<int>(e.x);
+		vbIdx = static_cast<int>(e.y);
+		vvList[vaIdx].push_back(vbIdx);
+		if (!isDigraph)
+			vvList[vbIdx].push_back(vaIdx);
+	}
+
+	return true;
+}
+
+
+// std::vector<std::vector<int>>表示的边数据转换为std::vector<std::vector<int>>表示的邻接表 
+template <typename TI>
+bool vvEdges2vvList(std::vector<std::vector<int>>& vvList, \
+	const std::vector<std::vector<TI>>& edges, const bool isDigraph = true)
+{
+	vvList.clear();
+	std::vector<TI> tmpVec;
+	int n = 0;
+	int vaIdx = 0;
+	int vbIdx = 0;
+	tmpVec.reserve(2 * edges.size());
+
+	// 1. 确定节点数
+	for (const auto& e : edges)
+	{
+		tmpVec.push_back(e[0]);
+		tmpVec.push_back(e[1]);
+	}
+	n = static_cast<int>(*std::max_element(tmpVec.begin(), tmpVec.end())) + 1;
+
+	// 2. 生成邻接表：
+	vvList.resize(n);
+	for (const auto& e : edges)
+	{
+		vaIdx = static_cast<int>(e[0]);
+		vbIdx = static_cast<int>(e[1]);
+		vvList[vaIdx].push_back(vbIdx);
+		if (!isDigraph)
+			vvList[vbIdx].push_back(vaIdx);
+	}
+
+	return true;
+}
+
+
+// 数组表示的三维点云图转换为Graph表示——to be completed;
+template <typename T>
+bool getGraph3D(Graph3D& g, const std::vector<TRIANGLE_MESH::triplet<T>>& poses, \
+	const std::vector<edgeI>& edges)
+{
+
+
+
+	return true;
+}
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// Traverse methods
+
 // 遍历（搜索）图(to be completed)
 /*
  	广度优先搜索BFS和队列queue紧密关联
@@ -262,176 +444,87 @@ void traverseGraph(Graph<T>& g, Func func, \
 }
 
 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// Create methods
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// Read methods
+
 // 控制台上打印图顶点的信息
 template <typename T>
 static auto dispGraphNode = [](const GraphNode<T>* ptrNode)
 {
-	if(nullptr == ptrNode)
+	if (nullptr == ptrNode)
 		std::cout << "placeholder, ";
 	else
 		std::cout << ptrNode->val << ", ";
 };
- 
-
-// 数组表示的三维点云图转换为Graph表示——to be completed;
-template <typename T>
-bool getGraph3D(Graph3D& g, const std::vector<TRIANGLE_MESH::triplet<T>>& poses, \
-	const std::vector<edgeI>& edges)
-{
 
 
 
-	return true;
-}
 
- 
-
-////////////////////////////////////////////////////////////////////////////////////////////// 表象变换：
-template <typename TVO, typename TVI>
-bool triMesh2Graph(Graph<TRIANGLE_MESH::triplet<TVO>>& g, \
-	const TRIANGLE_MESH::triMesh<TVI, int>& mesh) 
-{
-	using verO = TRIANGLE_MESH::triplet<TVO>;
-	const int versCount = mesh.vertices.size();
-	const int trisCount = mesh.triangles.size();
-	std::vector<verO> versTmp(versCount);
-	for (int i = 0; i < versCount; ++i)
-		versTmp[i] = mesh.vertices[i].cast<TVO>();
-
-	g = Graph<verO>{versTmp};
-	for (const auto& t : mesh.triangles)
-	{
-		g.addEdge(t.x, t.y);
-		g.addEdge(t.y, t.z);
-		g.addEdge(t.z, t.x);
-	}
-
-	return true;
-}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// Update methods
 
 
-template <typename TVO, typename TVI>
-bool graph2Array(std::vector<TRIANGLE_MESH::triplet<TVO>>& vers, \
-	std::vector<edgeI>& edges, const Graph<TRIANGLE_MESH::triplet<TVI>>& g) 
-{
-	using verO = TRIANGLE_MESH::triplet<TVO>;
-	using GraphEdge = SLlistNode<GraphNode<TRIANGLE_MESH::triplet<TVI>>*>;			// 用存储顶点指针的链表节点来表示边；
-	const int n = static_cast<int>(g.pnVec.size());
-	if (n <= 0)
-		return false;
-	vers.clear();
-	edges.clear();
-	vers.reserve(n);
-	edges.reserve(n * (n - 1));					// n个节点的有向图多有n*(n -1)条边；
 
-	// 1. 建立图节点-节点索引映射表：
-	std::unordered_map<GraphNode<TRIANGLE_MESH::triplet<TVI>>*, int> map;
-	for (int i = 0; i < g.pnVec.size(); ++i)
-		map.insert(std::make_pair(g.pnVec[i], i));
-
-	// 2. 生成数组表示的顶点、边数据：
-	for (const auto& pn : g.pnVec)
-	{
-		vers.push_back(pn->val.cast<TVO>());
-		if (nullptr == pn->pFirstEdge)
-			continue;
-		int vaIdx = map[pn];			// 当前顶点的索引；
-		traverseList(pn->pFirstEdge, [&map, &edges, vaIdx](GraphEdge* pe)
-			{
-				if (nullptr == pe)
-					return;
-				int vbIdx = map[pe->val];
-				edges.push_back(edgeI(vaIdx, vbIdx));
-			});
-	}
-	edges.shrink_to_fit();
-	 
-	return true;
-}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// Delete methods
 
 
-// 三维坐标顶点图写入到OBJ文件中 
-template <typename T>
-bool objWriteGraph3D(const char* fileName, const Graph<TRIANGLE_MESH::triplet<T>>& g)
-{
-	std::vector<verF> vers;
-	std::vector<edgeI> edges;
-	if (!graph2Array(vers, edges, g))
-		return false;
-	writeOBJ(fileName, vers, edges);
 
-	return true;
-}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// 最小支撑树相关
+/*
+	最小支撑树（Minimum Spanning Tree, MST）
+		Kruskal算法和Prim算法都是解决最小生成树问题的经典算法，但它们的实现方式和思想有所不同。
+		
+		Kruskal算法：
+			基于边的角度来构建最小生成树。
+			它先将所有边按照权重排序，然后依次考虑每条边，如果该边不会形成环路，就将其添加到最小生成树中。
+		
+		Prim算法：
+			基于节点的角度来构建最小生成树。
+			它从一个初始节点开始，逐步地向最小生成树中添加节点和边，每次选择与当前最小生成树相连的边中权重最小的那条边所连接的节点，直到所有节点都被包含在最小生成树中。
+		
+		数据结构：
+			Kruskal算法通常使用并查集（Union-Find）数据结构来判断两个节点是否在同一棵树中，以及是否会形成环路。
+			Prim算法通常使用优先队列（Priority Queue）来维护当前最小生成树和其余节点之间的边，以便快速找到权重最小的边。
+		
+		时间复杂度：
+			Kruskal算法的时间复杂度通常为O(ElogE)，其中E是边的数量。
+			Prim算法的时间复杂度通常为O(V^2) 或 O(ElogV)，其中V是节点的数量，E是边的数量。
+					在稀疏图（边的数量接近节点数量）中，Prim算法的效率更高；
+					而在稠密图（边的数量接近节点数量的平方）中，Kruskal算法的效率可能更高。
+		
+		总的来说，Kruskal算法和Prim算法都是有效的最小生成树算法，选择哪种算法取决于具体的应用场景、图的规模以及图的特点。
 
-
-// Double表示的边数据转换为std::vector<std::vector<int>>表示的邻接表 
-template <typename TI>
-bool edges2vvList(std::vector<std::vector<int>>& vvList,\
-	const std::vector<TRIANGLE_MESH::doublet<TI>>& edges, const bool isDigraph = true) 
-{
-	vvList.clear();
-	std::vector<TI> tmpVec;
-	int n = 0;
-	int vaIdx = 0;
-	int vbIdx = 0;
-	tmpVec.reserve(2 * edges.size());
-
-	// 1. 确定节点数
-	for (const auto& e : edges)
-	{
-		tmpVec.push_back(e.x);
-		tmpVec.push_back(e.y);
-	}
-	n = static_cast<int>(*std::max_element(tmpVec.begin(), tmpVec.end())) + 1;
-	
-	// 2. 生成邻接表：
-	vvList.resize(n);
-	for (const auto& e : edges)
-	{
-		vaIdx = static_cast<int>(e.x);
-		vbIdx = static_cast<int>(e.y);
-		vvList[vaIdx].push_back(vbIdx);
-		if (!isDigraph)
-			vvList[vbIdx].push_back(vaIdx);
-	} 
- 
-	return true;
-}
+*/
 
 
-// std::vector<std::vector<int>>表示的边数据转换为std::vector<std::vector<int>>表示的邻接表 
-template <typename TI>
-bool vvEdges2vvList(std::vector<std::vector<int>>& vvList, \
-	const std::vector<std::vector<TI>>& edges, const bool isDigraph = true)
-{
-	vvList.clear();
-	std::vector<TI> tmpVec;
-	int n = 0;
-	int vaIdx = 0;
-	int vbIdx = 0;
-	tmpVec.reserve(2 * edges.size());
 
-	// 1. 确定节点数
-	for (const auto& e : edges)
-	{
-		tmpVec.push_back(e[0]);
-		tmpVec.push_back(e[1]);
-	} 
-	n = static_cast<int>(*std::max_element(tmpVec.begin(), tmpVec.end())) + 1;
-	
-	// 2. 生成邻接表：
-	vvList.resize(n);
-	for (const auto& e : edges)
-	{
-		vaIdx = static_cast<int>(e[0]);
-		vbIdx = static_cast<int>(e[1]);
-		vvList[vaIdx].push_back(vbIdx);
-		if(!isDigraph)
-			vvList[vbIdx].push_back(vaIdx);
-	}
-	 
-	return true;
-}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// 最短路径相关
+/*
+	Dijkstra算法是一种用于在加权图中寻找从一个节点到另一个节点的最短路径的算法。
+			它由荷兰计算机科学家Edsger W. Dijkstra于1956年提出。
+
+			基本步骤：
+					1. 初始化：首先，将起始节点标记为距离为0，其他节点的距离标记为无穷大。
+								同时，设置一个集合用于存放已经找到最短路径的节点，初始为空。
+					2. 选择最短路径节点：从未标记的节点中选择一个距离最小的节点，并将其标记为已访问。
+					3. 更新距离：对于与已访问节点相邻的未访问节点，计算通过当前节点到达它们的距离。
+								如果通过当前节点到达它们的距离比它们原有的距离更短，就更新它们的距离。
+					4. 重复：重复步骤2和步骤3，直到所有节点都被标记为已访问，或者目标节点的距离已经确定。
+					5. 输出最短路径：通过记录每个节点的前驱节点，可以回溯构建出从起始节点到目标节点的最短路径。
+
+			Dijkstra算法适用于没有负权边的图。它保证了每个节点的距离标记在算法结束时都是最短路径的长度。
+					然而，如果图中存在负权边，Dijkstra算法可能会导致错误的结果，此时应该使用Bellman-Ford算法或其他更适合的算法。
+
+			总的来说，Dijkstra算法是一种非常常用且有效的最短路径算法，用于解决许多实际问题，比如网络路由、GPS导航等。
+
+*/
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 测试函数：
 namespace GRAPH

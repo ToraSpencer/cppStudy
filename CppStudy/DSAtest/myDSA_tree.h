@@ -16,8 +16,8 @@
 	基本类型定义
 	Create methods
 	Read methods
-	update methods
-	delete methods
+	Update methods
+	Delete methods
 	BST相关
 	平衡BT相关
 
