@@ -191,7 +191,6 @@ void STL_map_module::test2(void)
 	person p6 = { "laoli", false,  10, "famer" };
 	person p7 = { "xiaoming", false,  10, "famer" };
 
-
 	// 数据存入向量中
 	std::vector<person> vp;
 	vp.push_back(p1);
@@ -202,7 +201,6 @@ void STL_map_module::test2(void)
 	vp.push_back(p6);
 	vp.push_back(p7);
 
-
 	// 建立便于数据搜索的multimap:
 	std::multimap<std::string, int> m_name;			// 姓名搜索表，元素键是该人姓名，值是该人在vp向量中的下标。
 	std::multimap<int, int> m_age;					// 年龄搜索表
@@ -211,7 +209,6 @@ void STL_map_module::test2(void)
 		m_name.insert(std::make_pair(vp[i].name, i));
 		m_age.insert(std::make_pair(vp[i].age, i));
 	}
-
 
 	// 搜索并打印数据：
 	std::multimap<std::string, int>::iterator iter1;
