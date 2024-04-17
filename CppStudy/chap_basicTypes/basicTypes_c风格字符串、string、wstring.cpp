@@ -147,7 +147,7 @@ void basicTypes_strings_module::test1(void)
 
 	// 4. 迭代器接口：begin, cbegin(C++11), rbegin(C++11), crbegin(C++11)...
 	std::cout << "\t使用反向迭代器，反向打印字符串："<< std::endl;
-	for_each(str3.rbegin(), str3.rend(), disp<char>);
+	for_each(str3.rbegin(), str3.rend(), disp<char>());
 	std::cout << std::endl << std::endl;
 
 	// 5. 1 字符串转换为其他类型std::stoi(), std::stol(), std::stoll(), std::stof() ———— 字符串、宽字符串、C风格字符串转为数值(c++11)：
@@ -533,7 +533,7 @@ void basicTypes_strings_module::test7(void)
 
 	std::cout << "input str == " << str << std::endl;
 	std::cout << "extracted numbers : " << std::endl;
-	traverseSTL(numVec, disp<double>);
+	traverseSTL(numVec, disp<double>());
 
 	std::cout << "test 7 finished." << std::endl;
 }

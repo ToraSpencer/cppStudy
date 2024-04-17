@@ -143,13 +143,108 @@ void STL_map_module::test0(void)
 }
 
 
-// test1: multimap的基本使用方法、API
-void STL_map_module::test1(void)
+// test2: 默认/自定义比较器
+struct edgeComparator			// 严格弱序(strict weak ordering)比较器
+{
+public:
+	bool operator()(const std::pair<int, int>& edge1, const std::pair<int, int>& edge2) const
+	{
+		if (edge2.first < edge1.first)
+			return true;
+		else if (edge2.first > edge1.first)
+			return false;
+		else
+		{
+			if (edge2.second < edge1.second)
+				return true;
+			else
+				return false;
+		}
+	}
+};
+
+
+void STL_map_module::test1() 
+{
+	debugDisp("\n\n\n\n");
+	debugDisp("默认/自定义比较器：");
+
+	// 1. 默认比较器：
+	std::set<float> set1;
+	std::map<int, float> map1;
+	std::multimap<int, char> mmap1;
+	set1.insert(3);
+	set1.insert(2);
+	set1.insert(5);
+	set1.insert(99);
+	set1.insert(-1);								// std::set默认情形下按元素从小到大排列
+	map1.insert({ 3, -1.5 });
+	map1.insert({ 1, 3.5 });
+	map1.insert({ -1, 1.6 });
+	map1.insert({ 88, 9.1 });
+	map1.insert({ 6, -7.5 });				// std::map默认情形下按键从小到大排列； 
+	mmap1.insert({ 3, 'b' });
+	mmap1.insert({ 1, 'z' });
+	mmap1.insert({ -1, 'y' });
+	mmap1.insert({ 88, 'z' });
+	mmap1.insert({ 3, 'a' });
+	mmap1.insert({ 3, 'b' });				// std::multimap中默认情形下按键从小到大排列，同键的pair按照原始插入次序排列；
+
+	debugDisp("set1: ");
+	traverseSTL(set1, disp<int>());
+	debugDisp("map1: ");
+	traverseSTLmap(map1, dispPair<std::pair<int, float>>());
+	debugDisp("mmap1:");
+	traverseSTLmap(mmap1, dispPair<std::pair<int, char>>());
+
+	// 2. 创建非基本类型的set和map，需要传入自定义比较器对象
+	std::set<std::pair<int, int>, edgeComparator> edgeSet1;
+	auto retPair1 = edgeSet1.insert({ 1,  2 });
+	retPair1 = edgeSet1.insert({ 2, 3 });
+	retPair1 = edgeSet1.insert({ -1, 0 });
+	retPair1 = edgeSet1.insert({ -2, -1 });
+	retPair1 = edgeSet1.insert({ 1, 3 });
+	retPair1 = edgeSet1.insert({ 1, 2 });
+	debugDisp("edgeSet1: ");
+	traverseSTL(edgeSet1, dispPair<std::pair<int, int>>());
+
+	// 3. 作为比较器的lambda: 
+	auto edgeComLambda = [](const std::pair<int, int>& edge1, \
+		const std::pair<int, int>& edge2) ->bool
+	{
+		if (edge2.first < edge1.first)
+			return true;
+		else if (edge2.first > edge1.first)
+			return false;
+		else
+		{
+			if (edge2.second < edge1.second)
+				return true;
+			else
+				return false;
+		}
+	};
+	std::set<std::pair<int, int>, decltype(edgeComLambda)> edgeSet2;			// 模板参数是类型名；
+	auto retPair2 = edgeSet2.insert({ 1,  2 });
+	retPair2 = edgeSet2.insert({ 2, 3 });
+	retPair2 = edgeSet2.insert({ -1, 0 });
+	retPair2 = edgeSet2.insert({ -2, -1 });
+	retPair2 = edgeSet2.insert({ 1, 3 });
+	retPair2 = edgeSet2.insert({ 1, 2 });
+	debugDisp("edgeSet2: ");
+	traverseSTL(edgeSet2, dispPair<std::pair<int, int>>());
+
+	debugDisp("test1 finished.");
+}
+
+
+// test2: multimap的基本使用方法、API
+void STL_map_module::test2(void)
 {
 	// multimap中可以有键相同的元素，相同键的元素会相邻存储。
 	// multimap没有下标运算，其他api和std::map类似。
 	std::cout << "\n\n\n\n" << std::endl;
-	std::cout << "test1: multimap的基本使用方法、api" << std::endl;
+	std::cout << "multimap的基本使用方法、api" << std::endl;
 
 	std::multimap<std::string, int> mmss;
 	pairPrinter pp;
@@ -177,8 +272,8 @@ void STL_map_module::test1(void)
 }
 
 
-// test2: 应用场景——vector和multimap实现的便于搜索的有序个人信息表
-void STL_map_module::test2(void)
+// test3: 应用场景——vector和multimap实现的便于搜索的有序个人信息表
+void STL_map_module::test3(void)
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test2: std::map/multimap应用场景——便于搜索的有序个人信息表" << std::endl;
@@ -239,10 +334,6 @@ void STL_map_module::test2(void)
 
 
 }
-
-
-void STL_map_module::test3(void)
-{}
 
 
 void STL_map_module::test4(void)

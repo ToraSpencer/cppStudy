@@ -906,6 +906,28 @@ namespace TEST_UNKNOWN
 		}
 
 
+		// 计算二进制数中1的位数：Brian Kernighan's Algorithm； 时间复杂度O(log n)
+		void test2() 
+		{
+			auto count1Bits = [](const std::int64_t num)->int
+			{
+				int onesCount = 0;
+				std::int64_t num0 = num;
+				while (num0 > 0)
+				{
+					num0 = num0 & (num0 - 1);
+					onesCount++;
+				}
+				return onesCount;
+			};
+			 
+			debugDisp("count1Bits(0xC) == ", count1Bits(0xC));						// 1100B
+			debugDisp("count1Bits(0xF) == ", count1Bits(0xF));						// 1111B
+			debugDisp("count1Bits(0xAF) == ", count1Bits(0xAF));					// 10101111B
+
+			debugDisp("test2 finished.");
+		}
+
 	}
 
 	//  指针：
@@ -2468,76 +2490,6 @@ namespace TEST_STL
 		}
 
 
-		// set和map中的自定义比较器：
-		struct edgeComparator			// 严格弱序(strict weak ordering)比较器
-		{
-		public:
-			bool operator()(const std::pair<int, int>& edge1, const std::pair<int, int>& edge2) const
-			{
-				if (edge2.first < edge1.first)
-					return true;
-				else if (edge2.first > edge1.first)
-					return false;
-				else
-				{
-					if (edge2.second < edge1.second)
-						return true;
-					else
-						return false;
-				}
-			}
-		};
-
-
-		// 2. 自定义比较器
-		void test2()
-		{
-			// 创建非基本类型的set和map，需要传入自定义比较器;
-			std::set<std::pair<int, int>, edgeComparator> edgeSet1;
-
-			auto retPair1 = edgeSet1.insert({ 1,  2 });
-			retPair1 = edgeSet1.insert({ 2, 3 });
-			retPair1 = edgeSet1.insert({ -1, 0 });
-			retPair1 = edgeSet1.insert({ -2, -1 });
-			retPair1 = edgeSet1.insert({ 1, 3 });
-			retPair1 = edgeSet1.insert({ 1, 2 });
-			std::cout << "retPair1.second == " << retPair1.second << std::endl;
-			for (const auto& pair : edgeSet1)
-				std::cout << pair.first << ", " << pair.second << std::endl;
-			std::cout << std::endl;
-
-			// 作为比较器的lambda: 
-			auto edgeComLambda = [](const std::pair<int, int>& edge1, const std::pair<int, int>& edge2) ->bool
-			{
-				if (edge2.first < edge1.first)
-					return true;
-				else if (edge2.first > edge1.first)
-					return false;
-				else
-				{
-					if (edge2.second < edge1.second)
-						return true;
-					else
-						return false;
-				}
-			};
-			std::set<std::pair<int, int>, decltype(edgeComLambda)> edgeSet2;			// 模板参数是类型名；
-			auto retPair2 = edgeSet2.insert({ 1,  2 });
-			retPair2 = edgeSet2.insert({ 2, 3 });
-			retPair2 = edgeSet2.insert({ -1, 0 });
-			retPair2 = edgeSet2.insert({ -2, -1 });
-			retPair2 = edgeSet2.insert({ 1, 3 });
-			retPair2 = edgeSet2.insert({ 1, 2 });
-			std::cout << "retPair1.second == " << retPair2.second << std::endl;
-			for (const auto& pair : edgeSet2)
-				std::cout << pair.first << ", " << pair.second << std::endl;
-			std::cout << std::endl;
-
-
-			std::cout << "finished." << std::endl;
-		}
-
-
 		// 3. multiset , multimap
 		void test3()
 		{
@@ -3332,9 +3284,7 @@ namespace TEST_THIRD_LIBS
 		}
 
 	}
-
-
-
+	 
 }
 
 
@@ -3424,16 +3374,128 @@ namespace TEST_OOP
 	 
 }
 
- 
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////// 排列组合：
+namespace PERMUTATION_COMBINATION
+{
+	using namespace std;
+
+	// 求解组合——基于回溯法
+	void generateCombinations(std::vector<int>& combination, int n, int m, int index)
+	{
+		// 递归终止：
+		if (combination.size() == m) 
+		{
+			// 打印组合
+			for (int num : combination) 
+				std::cout << num << " ";
+			
+			std::cout << std::endl;
+			return;
+		}
+
+		// 递归递推：从当前索引开始，尝试添加数到组合中
+		for (int i = index; i < n; ++i) 
+		{
+			combination.push_back(i);
+			generateCombinations(combination, n, m, i + 1);		 // 递归调用
+			combination.pop_back();												// 回溯
+		}
+	}
+
+
+	void printAllCombinations(int n, int m) 
+	{
+		vector<int> combination;
+		generateCombinations(combination, n, m, 0);
+	}
+
+
+	// 求解组合——基于位操作 
+	void generateCombinations(int n, int m) 
+	{
+		/*
+			将一个组合表示为一个长度为n的二进制数，其中第i位为1表示选择了第i个数，为0表示未选择。
+					因此，可以通过枚举所有可能的长度为n的二进制数来生成组合。		
+		*/
+
+		// lambda——计算二进制数中1的位数：Brian Kernighan's Algorithm
+		auto count1Bits = [](const std::int64_t num)->int
+		{
+			int onesCount = 0;
+			std::int64_t num0 = num;
+			while (num0 > 0)
+			{
+				num0 = num0 & (num0 - 1);
+				onesCount++;
+			}
+			return onesCount;
+		};
+
+		// lambda——打印二进制数表示的组合
+		auto printCombination = [](int bitmask, int n)
+		{
+			std::vector<int> combination;
+			for (int i = 0; i < n; ++i)
+				if (bitmask & (1 << i))
+					combination.push_back(i);
+
+			// 打印组合
+			for (int num : combination)
+				std::cout << num << " ";
+
+			std::cout << std::endl;
+		};
+
+		std::int64_t N = std::int64_t{1} << n;							 // 1左移n位，补0；得到的十进制数位：std::pow(2, n)，即n个元素可以组成的所有组合的个数；
+		for (std::int64_t i = 0; i < N; ++i)				 // 穷举n个元素可组成的所有组合，1表示该位被选中，0表示未选中；
+		{
+			// 计算二进制数中1的个数，即组合中的元素个数
+			int count = count1Bits(i);
+			if (count == m) 
+				printCombination(i, n);			
+		}
+	}
+
+
+	// 穷举组合：
+	void test0()
+	{
+		/*
+			给定n个数: 0, 1, ... (n-1), 从中取m个数，给出所有可能的组合：
+		*/ 
+
+		int n = 6;
+		int m = 2;
+
+		// 1. 基于backtracking的方法
+		debugDisp("base on backtracking:");
+		cout << "All combinations of " << m << " numbers from 0 to " << n - 1 << " are: " << endl;
+		printAllCombinations(n, m);
+		debugDisp("\n");
+
+		// 2. 基于位操作的方法；
+		debugDisp("base on bit manipulation: ");
+		generateCombinations(n, m);
+
+		debugDisp("test0 finished.");
+	}
+
+}
+
+
 
 int main()
 {    
 	// TEST_BIT::test1();
 
-	TEST_STL::STL_SET_MAP::test1();
-
 	// TEST_UNKNOWN::POINTER::test1();
 
+	PERMUTATION_COMBINATION::test0();
+
+	// TEST_BIT::test2();
 
 	debugDisp("main() finished."); 
 

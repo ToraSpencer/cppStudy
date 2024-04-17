@@ -15,12 +15,29 @@ namespace MY_DEBUG
 {
 	static std::string g_debugPath = "E:/";
 
-	// lambda——打印std::cout支持的类型变量。
-	template <typename T>
-	static auto disp = [](const T& arg)
+	// 函数子——打印std::cout支持的类型变量。
+	template <typename	T>
+	class disp
 	{
-		std::cout << arg << ", ";
+	public:
+		void operator()(const T& arg)
+		{
+			std::cout << arg << ", ";
+		}
 	};
+
+
+	// 函数子——打印std::pair
+	template <typename pairType>
+	class dispPair
+	{
+	public:
+		void operator()(const pairType& p)
+		{
+			std::cout << "(" << p.first << ", " << p.second << "), ";
+		}
+	};
+
 
 	static void debugDisp()			// 递归终止
 	{						//		递归终止设为无参或者一个参数的情形都可以。
@@ -142,7 +159,7 @@ namespace ARRAY
 	void test0()
 	{
 		std::vector<int> retVec = twoSum(std::vector<int>{11, 2, 7, 15}, 9);
-		traverseSTL(retVec, disp<int>);
+		traverseSTL(retVec, disp<int>());
 
 		debugDisp("test0 finished.");
 	}
@@ -300,13 +317,13 @@ namespace SORTING_SEARCHING
 		std::vector<int> vec1{ 1, 2, 3, };
 		std::vector<int> vec2{ 2, 5, 6 }; 
 		mergeSequence(vec1, vec2); 
-		traverseSTL(vec1, disp<int>);
+		traverseSTL(vec1, disp<int>());
 		debugDisp("\n");
 
 		//
 		std::vector<int> numVec{54, 12, 45, -1, -99, 8, 9, 0, 12};
 		mergeSort(numVec.begin(), numVec.end());
-		traverseSTL(numVec, disp<int>);
+		traverseSTL(numVec, disp<int>());
 		 
 		debugDisp("test0() finished.");
 	}
@@ -475,6 +492,102 @@ namespace RECURSION
 
 
 
+////////////////////////////////////////////////////////////////////////////////////////////// 贪婪算法、动态规划
+namespace GREEDY_DYNAMIC
+{
+	// 背包问题：
+	void test0()
+	{
+		/*
+			背包问题：
+					要往背包中装入一些物品，每个物品有各自的价值和重量，背包能装的最大重量优先，求如何使得装入的物品价值总量最大。
+					01背包问题——若物品只能一整个放入，不能拆分，则是01背包问题；
+					完全背包问题——若物品可以被选择无限次，则是完全背包问题；
+
+			计算每个物品的性价比，从高到低排序，以此次序取物品；
+			间复杂度为O(nlogn)，空间复杂度为 O(1)；其中 n 为物品数量
+			贪心算法具有快速、简单的特点，但不保证得到最优解。
+
+		*/
+
+
+		// greedy algorithm:
+		auto knapsack_greedy = [](std::vector<int>& selectedIdxes, \
+			const std::vector<int>& itemWeights, const std::vector<int>& itemValues, \
+			const int capacity, const bool isKnapsack01 = true, const bool isKnapsackCom = false) ->int
+		{
+			int totalVal = 0;
+			const int itemsCount = static_cast<int>(itemWeights.size());
+			selectedIdxes.clear();
+
+			// (to be completed)暂时只考虑非完全01背包问题；
+			if (isKnapsack01 && !isKnapsackCom)
+			{
+				// 1. 计算所有物品的性价比：
+				std::map<double, int> ppRatio;			// key是性价比，value是物品索引；
+				for (int i = 0; i < itemsCount; ++i)
+				{
+					double pp = static_cast<double>(itemValues[i]) / static_cast<double>(itemWeights[i]);
+					ppRatio.insert({pp, i});
+				}				
+
+				// 2. 按性价比由高到低的次序放入物品：
+				int totalWeights = 0;
+				for (auto iter = ppRatio.rbegin(); iter != ppRatio.rend(); ++iter)
+				{
+					const int index = iter->second;
+					totalWeights += itemWeights[index];
+					if (totalWeights > capacity)
+						break;
+					totalVal += itemValues[index];
+					selectedIdxes.push_back(index);
+				}
+			}
+
+			return totalVal;
+		};
+
+		// dynamic programming: 
+		auto knapsack_dynamic = [](std::vector<int>& selectedIdxes, \
+			const std::vector<int>& itemWeights, const std::vector<int>& itemValues, \
+			const int capacity, const bool isKnapsack01 = true, const bool isKnapsackCom = false) ->int
+		{
+			int totalVal = 0;
+
+
+
+			return totalVal;
+		};
+
+		// 0.
+		const int capacity = 10;
+		std::vector<int> itemWeights{ 3, 2, 1, 5 };
+		std::vector<int> itemValues{ 200, 150, 80, 160 };
+
+		// 1. greedy:
+		std::vector<int> selectedIdxes;
+		debugDisp("knapsack_greedy: totalVal == ", knapsack_greedy(selectedIdxes, itemWeights, itemValues, capacity, true, false));
+		debugDisp("selectedIdxes: ");
+		traverseSTL(selectedIdxes, disp<int>());
+		debugDisp("\n");
+
+		// 2. dynamic:
+
+
+		debugDisp("test0 finished.");
+	}
+
+
+	// 排课问题：
+	void test1() 
+	{
+	}
+
+
+
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////// 回溯法
 namespace BACKTRACKING 
 {
@@ -552,7 +665,7 @@ namespace BACKTRACKING
 		CombinationSum(candidates, target, combination, results, 0); 
 		for (const auto& vec : results)
 		{
-			traverseSTL(vec, disp<int>);
+			traverseSTL(vec, disp<int>());
 			std::cout << std::endl;
 		}
 
@@ -694,7 +807,9 @@ int main(int argc, char** argv)
 
 	// LIST::test1();
 
-	GRAPH::test5();
+	// GRAPH::test5();
+
+	GREEDY_DYNAMIC::test0();
 
 	debugDisp("main finished.");
 

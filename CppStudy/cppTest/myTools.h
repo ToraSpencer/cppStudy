@@ -221,6 +221,15 @@ void traverseSTL(T& con, F f)
 }
 
 
+// 传入函数子或函数指针遍历std::map, std::unordered_map等
+template<typename mapType, typename F>
+void traverseSTLmap(mapType& m, F f)
+{
+	std::for_each(m.begin(), m.end(), f);
+	std::cout << std::endl;
+}
+
+
 // 反向遍历
 template<typename T, typename F>
 void revTraverseSTL(T& con, F f)
@@ -230,6 +239,7 @@ void revTraverseSTL(T& con, F f)
 }
 
 
+// 函数子——打印std::cout支持的类型变量。
 template <typename	T>
 class disp 
 {
@@ -237,6 +247,18 @@ public:
 	void operator()(const T& arg) 
 	{
 		std::cout << arg << ", ";
+	}
+};
+
+
+// 函数子——打印std::pair
+template <typename pairType>
+class dispPair
+{
+public:
+	void operator()(const pairType& p)
+	{
+		std::cout << "(" << p.first << ", " << p.second << "), ";
 	}
 };
 
