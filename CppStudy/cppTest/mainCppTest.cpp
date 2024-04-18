@@ -3401,7 +3401,10 @@ namespace PERMUTATION_COMBINATION
 		{
 			combination.push_back(i);
 			generateCombinations(combination, n, m, i + 1);		 // 递归调用
-			combination.pop_back();												// 回溯
+			combination.pop_back();									
+
+			//traverseSTL(combination, disp<int>());
+			//debugDisp("\n");
 		}
 	}
 
@@ -3476,9 +3479,9 @@ namespace PERMUTATION_COMBINATION
 		printAllCombinations(n, m);
 		debugDisp("\n");
 
-		// 2. 基于位操作的方法；
-		debugDisp("base on bit manipulation: ");
-		generateCombinations(n, m);
+		//// 2. 基于位操作的方法；
+		//debugDisp("base on bit manipulation: ");
+		//generateCombinations(n, m);
 
 		debugDisp("test0 finished.");
 	}
