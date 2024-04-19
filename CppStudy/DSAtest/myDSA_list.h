@@ -8,6 +8,21 @@
 #include <algorithm>
   
 
+// 目录
+/*
+	基本类型定义
+	表象变换
+	Traverse methods
+	Create methods
+	Read methods
+	Update methods
+	Delete methods 
+*/
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// 基本类型定义
+
 // SLlistNode类——单向链表节点类
 template <typename T>
 class SLlistNode
@@ -52,6 +67,77 @@ public:
 
 };
 
+
+// 函数子——打印节点内容：
+template <typename	T>
+class dispListNode
+{
+public:
+	void operator()(SLlistNode<T>* np)
+	{
+		std::cout << np->val << ", ";
+	}
+};
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// 表象变换：
+
+// 由std::vector<>生成链表
+template <typename T>
+SLlistNode<T>* make_list(const std::vector<T>& vec)
+{
+	if (vec.empty())
+		return nullptr;
+
+	SLlistNode<T>* pn0 = nullptr;
+	SLlistNode<T>* pHead = nullptr;
+	auto iter = vec.rbegin();
+	pHead = new SLlistNode<T>(*iter);
+	iter++;
+	for (; iter != vec.rend(); iter++)
+	{
+		pn0 = new SLlistNode<T>(*iter, pHead);
+		pHead = pn0;
+	}
+	return pHead;
+}
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// traverse methods
+
+// 输入函数子遍历链表；
+template<typename T, typename Func>
+void traverseList(SLlistNode<T>* ptrHead, Func fun)
+{
+	if (nullptr == ptrHead)
+		return;
+	SLlistNode<T>* pn = ptrHead;
+	while (nullptr != pn)
+	{
+		fun(pn);
+		pn = pn->next;
+	}
+}
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// Create methods
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// Read methods
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// Update methods
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// Delete methods
 
 // 删除以head为首节点的整条链表；
 template <typename T>
@@ -98,42 +184,10 @@ SLlistNode<T>* eraseNode(SLlistNode<T>* ptrHead, SLlistNode<T>* ptrNode)
 }
 
 
-// 由std::vector<>生成链表
-template <typename T>
-SLlistNode<T>* make_list(const std::vector<T>& vec)
-{
-	if (vec.empty())
-		return nullptr;
-
-	SLlistNode<T>* pn0 = nullptr;
-	SLlistNode<T>* pHead = nullptr;
-	auto iter = vec.rbegin();
-	pHead = new SLlistNode<T>(*iter);
-	iter++;
-	for (; iter != vec.rend(); iter++)
-	{
-		pn0 = new SLlistNode<T>(*iter, pHead);
-		pHead = pn0;
-	}
-	return pHead;
-}
 
 
-// 输入函数子遍历链表；
-template<typename T, typename Func>
-void traverseList(SLlistNode<T>* ptrHead, Func fun)
-{
-	if (nullptr == ptrHead)
-		return;
-	SLlistNode<T>* pn = ptrHead;
-	while (nullptr != pn)
-	{
-		fun(pn);
-		pn = pn->next;
-	}
-}
- 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////// 测试函数：
 namespace LIST
 {
 	void test0();

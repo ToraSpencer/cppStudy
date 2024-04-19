@@ -58,8 +58,7 @@ namespace MY_DEBUG
 	template<typename T, typename F>
 	void traverseSTL(T& con, F f)
 	{
-		std::for_each(con.begin(), con.end(), f);
-		std::cout << std::endl;
+		std::for_each(con.begin(), con.end(), f); 
 	}
 
 
@@ -67,11 +66,11 @@ namespace MY_DEBUG
 	template<typename T, typename F>
 	void revTraverseSTL(T& con, F f)
 	{
-		std::for_each(con.rbegin(), con.rend(), f);
-		std::cout << std::endl;
+		std::for_each(con.rbegin(), con.rend(), f); 
 	}
 }
 using namespace MY_DEBUG;
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 暂时不知如何分类：
@@ -174,6 +173,70 @@ namespace ARRAY
 	void test1()
 	{
 
+	}
+
+
+	// test2：基于数组的快速排序；
+	/*
+		基于分而治之（二分）的思想；
+		处理过程是自顶向下的——分割的时候就已经对数组操作了；
+		时间复杂度
+	*/
+
+	// 分割操作：将数组按照基准值pivot分成两段，前段都不大于pivot，后段都大于pivot; 返回和pivot相等的元素索引；
+	int partition(std::vector<int>& arr, int startIdx, int endIdx) 
+	{
+		int pivot = arr[endIdx];						// 选择最后一个元素作为基准值
+		int idx1 = startIdx;
+		int idx2 = startIdx;
+
+		// 双指针方法——遍历所有元素，将小于基准值的元素交换到前面；
+		while (idx2 < endIdx)
+		{
+			if (arr[idx2] < pivot)
+			{
+				std::swap(arr[idx1], arr[idx2]);				 
+				idx1++;
+			}
+			idx2++;
+		}
+		std::swap(arr[idx1], arr[endIdx]);		// 将选定的作为基准值的最后一个元素交换到idx1的位置；此时0~idx1的元素都不大于pivot;
+
+		return idx1;
+	}
+
+
+	// 递归函数：
+	void quickSortRec(std::vector<int>& arr, int startIdx, int endIdx)
+	{
+		// 1. 递归终止——当startIdx == endIdx时，数组中的这一段只有一个元素，什么也不做；
+
+		// 2. 递归递推——二分、递归调用：
+		if (startIdx < endIdx) 
+		{
+			int pivotIdx = partition(arr, startIdx, endIdx);
+
+			quickSortRec(arr, startIdx, pivotIdx - 1);
+			quickSortRec(arr, pivotIdx + 1, endIdx);
+		}
+	}
+
+	// 快速排序主函数
+	void quickSort(std::vector<int>& arr)
+	{
+		int n = arr.size();
+		quickSortRec(arr, 0, n - 1);
+	}
+
+
+	void test2() 
+	{
+		std::vector<int> arr = { -1, -23, -1, -7, 99, -1, 0}; 
+		quickSort(arr);
+
+		traverseSTL(arr, disp<int>{});
+		debugDisp("\n");
+		debugDisp("test2 finished.");
 	}
 }
 
@@ -492,9 +555,44 @@ namespace RECURSION
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////// 贪婪算法、动态规划
-namespace GREEDY_DYNAMIC
+////////////////////////////////////////////////////////////////////////////////////////////// 贪婪算法、动态规划、蛮力算法
+namespace GREEDY_DYNAMIC_BRUTAL
 {
+	// 递归函数：求解所有可能的组合（基于回溯法）；可用于蛮力算法
+	void generateCombinations(std::vector<std::vector<int>>& combs, \
+		std::list<int>& tmpList, const int n, const int m, const int num)
+	{
+		/*
+			void generateCombinations(
+					std::vector<std::vector<int>>& combs,				输出的向量，每个元素为一个组合向量；
+					std::list<int>& tmpList,										辅助容器变量；
+					const int n,															生成组合的元素为0, 1, 2, ...(n-1)一共n个整数；
+					const int m,															组合中的元素数
+					const int num														当前组合中尝试添加的元素
+					)
+
+		*/
+
+		// 递归终止：若当前的链表tmpList中已经添加的元素达到m个
+		if (tmpList.size() == m)
+		{
+			std::vector<int> tmpVec;
+			tmpVec.insert(tmpVec.end(), tmpList.begin(), tmpList.end());
+			combs.push_back(tmpVec);
+			return;
+		}
+
+		// 递归递推：从当前索引开始，尝试添加数到组合中
+		for (int i = num; i < n; ++i)
+		{
+			const int numNext = i + 1;
+			tmpList.push_back(i);
+			generateCombinations(combs, tmpList, n, m, numNext);
+			tmpList.pop_back();															// 回溯；					
+		}
+	}
+
+
 	// 背包问题：
 	void test0()
 	{
@@ -511,12 +609,13 @@ namespace GREEDY_DYNAMIC
 		*/
 
 
-		// greedy algorithm:
+		// greedy algorithm——一定是全局最优解；时间复杂度O(2^n)
 		auto knapsack_greedy = [](std::vector<int>& selectedIdxes, \
 			const std::vector<int>& itemWeights, const std::vector<int>& itemValues, \
-			const int capacity, const bool isKnapsack01 = true, const bool isKnapsackCom = false) ->int
+			const int capacity, const bool isKnapsack01 = true, const bool isKnapsackCom = false) ->std::pair<int, int>
 		{
 			int totalVal = 0;
+			int totalWeights = 0;
 			const int itemsCount = static_cast<int>(itemWeights.size());
 			selectedIdxes.clear();
 
@@ -532,58 +631,192 @@ namespace GREEDY_DYNAMIC
 				}				
 
 				// 2. 按性价比由高到低的次序放入物品：
-				int totalWeights = 0;
 				for (auto iter = ppRatio.rbegin(); iter != ppRatio.rend(); ++iter)
 				{
 					const int index = iter->second;
 					totalWeights += itemWeights[index];
 					if (totalWeights > capacity)
+					{
+						totalWeights -= itemWeights[index];
 						break;
+					}
 					totalVal += itemValues[index];
 					selectedIdxes.push_back(index);
 				}
 			}
 
-			return totalVal;
+			return { totalVal, totalWeights};
 		};
 
-		// dynamic programming: 
+		// dynamic programming:——时间复杂度和空间复杂度都为O(n*m)，m为背包容量；
 		auto knapsack_dynamic = [](std::vector<int>& selectedIdxes, \
 			const std::vector<int>& itemWeights, const std::vector<int>& itemValues, \
-			const int capacity, const bool isKnapsack01 = true, const bool isKnapsackCom = false) ->int
+			const int capacity, const bool isKnapsack01 = true, const bool isKnapsackCom = false)->std::pair<int, int>
 		{
 			int totalVal = 0;
+			int totalWeights = 0;
+			const int itemsCount = static_cast<int>(itemWeights.size());
+			std::vector<std::vector<int>> KDtable;							// 索引为[i][k]的元素表示背包容量为k时，尝试放入索引为0~i的物品所能得到的最大价值；
+			std::vector<std::vector<std::list<int>>> KDcombs;		// 存储KDtable每一个元素对应的物品索引组合；
+			selectedIdxes.clear();
+			KDtable.resize(itemsCount);
+			KDcombs.resize(itemsCount);
+			for (auto& vec : KDtable)
+				vec.resize(capacity + 1, 0);
+			for (auto& vec : KDcombs)
+				vec.resize(capacity + 1);
 
+			// (to be completed)暂时只考虑非完全01背包问题；
+			if (isKnapsack01 && !isKnapsackCom)
+			{
+				// 1. 生成KDtable第一行——尝试放入第一个物品
+				for (int k = 0; k <= capacity; ++k)
+				{
+					if (itemWeights[0] <= k)
+					{
+						KDtable[0][k] = itemValues[0];
+						KDcombs[0][k].push_back(0);
+					}
+				}
 
+				// 2. 填充KDtable其他行——先求解的是子问题，后面问题的解可以由之前得到的子问题的解组合而来；
+				for (int i = 1; i < itemsCount; i++)					// 各行为不同可选择的物品
+				{		
+					for (int k = 1; k <= capacity; k++)				// 各列为不同规格的背包；
+					{
+						// 尝试在背包容量为k时，放入索引为i的物品：
+						if (itemWeights[i] > k)
+						{
+							// a. 物品重量大于背包容量，最大价值和上方的值相同； 
+							KDtable[i][k] = KDtable[i - 1][k];				
+							KDcombs[i][k] = KDcombs[i - 1][k];
+						}
+						else 
+						{
+							// b. 物品可以装入背包，比较装入该物品和不装入该物品的最大价值，取较大值
+							int val1 = KDtable[i - 1][k];									// 候选者1：背包规格相同，可选物品除去当前物品以外情形下的解；
+							int val2 = KDtable[i - 1][k - itemWeights[i]] + itemValues[i];		// 候选者2：放入当前物品背包恰好放满的最优解； 	
+							if (val1 > val2)			// 当前最优解必然在两个候选者之间；
+							{
+								KDtable[i][k] = KDtable[i - 1][k];
+								KDcombs[i][k] = KDcombs[i - 1][k];
+							}
+							else
+							{
+								KDtable[i][k] = KDtable[i - 1][k - itemWeights[i]] + itemValues[i];
+								KDcombs[i][k] = KDcombs[i - 1][k - itemWeights[i]];
+								KDcombs[i][k].push_back(i);
+							}
+						}
+					}
+				}
+				totalVal = KDtable[itemsCount - 1][capacity];
+				selectedIdxes.insert(selectedIdxes.end(),\
+					KDcombs[itemsCount - 1][capacity].begin(), KDcombs[itemsCount - 1][capacity].end());
+				for (const auto& index : selectedIdxes)
+					totalWeights += itemWeights[index];
+			}
+			return { totalVal, totalWeights };
+		};
 
-			return totalVal;
+		// brutal:
+		auto knapsack_brutal = [](std::vector<int>& selectedIdxes, \
+			const std::vector<int>& itemWeights, const std::vector<int>& itemValues, \
+			const int capacity, const bool isKnapsack01 = true, const bool isKnapsackCom = false)->std::pair<int, int>
+		{
+			int totalVal = 0;
+			int totalWeights = 0;
+			int maxTotalVal = 0;
+			int totalWeightsRet = 0;
+			const int itemsCount = static_cast<int>(itemWeights.size());
+			selectedIdxes.clear();
+
+			// (to be completed)暂时只考虑非完全01背包问题；
+			if (isKnapsack01 && !isKnapsackCom)
+			{
+				for (int selectedCount = 1; selectedCount <= itemsCount; ++selectedCount) 
+				{
+					// if1. 获取当前取物品数selectedCount所对应的所有组合：
+					std::vector<std::vector<int>> combs;
+					std::list<int> tmpList;
+					generateCombinations(combs, tmpList, itemsCount, selectedCount, 0);
+
+					// if2. 遍历所有组合，求最大价值：
+					for (const auto& vec : combs)
+					{
+						// iff1. 求当前组合对应的总价值、总重量；
+						totalVal = 0;
+						totalWeights = 0;
+						traverseSTL(vec, [&totalVal, &totalWeights, &itemValues, &itemWeights](const int index) 
+							{
+								totalVal += itemValues[index];
+								totalWeights += itemWeights[index];
+							});
+
+						// iff2. 若总重量超标则跳过
+						if (totalWeights > capacity)		
+							continue;
+
+						// iff3. 更新总价值最大值及其对应组合；
+						if (totalVal > maxTotalVal)
+						{
+							maxTotalVal = totalVal;
+							totalWeightsRet = totalWeights;
+							selectedIdxes = vec;
+						}
+					}
+				}
+			}
+
+			return { maxTotalVal, totalWeightsRet };
 		};
 
 		// 0.
 		const int capacity = 10;
 		std::vector<int> itemWeights{ 3, 2, 1, 5 };
 		std::vector<int> itemValues{ 200, 150, 80, 160 };
+		std::pair<int, int> retPair;
 
 		// 1. greedy:
 		std::vector<int> selectedIdxes;
-		debugDisp("knapsack_greedy: totalVal == ", knapsack_greedy(selectedIdxes, itemWeights, itemValues, capacity, true, false));
+		retPair = knapsack_greedy(selectedIdxes, itemWeights, itemValues, capacity, true, false);
+		debugDisp("knapsack_greedy: totalVal == ", retPair.first, ", totalWeights == ", retPair.second);		
 		debugDisp("selectedIdxes: ");
 		traverseSTL(selectedIdxes, disp<int>());
 		debugDisp("\n");
 
 		// 2. dynamic:
+		selectedIdxes.clear();
+		retPair = knapsack_dynamic(selectedIdxes, itemWeights, itemValues, capacity, true, false);
+		debugDisp("knapsack_dynamic: totalVal == ", retPair.first, ", totalWeights == ", retPair.second);
+		debugDisp("selectedIdxes: ");
+		traverseSTL(selectedIdxes, disp<int>());
+		debugDisp("\n");
 
+
+		// 3. brutal:
+		selectedIdxes.clear();
+		retPair = knapsack_brutal(selectedIdxes, itemWeights, itemValues, capacity, true, false);
+		debugDisp("knapsack_brutal: totalVal == ", retPair.first, ", totalWeights == ", retPair.second);
+		debugDisp("selectedIdxes: ");
+		traverseSTL(selectedIdxes, disp<int>());
+		debugDisp("\n");
 
 		debugDisp("test0 finished.");
 	}
 
 
-	// 排课问题：
+	// 最长公共子串：
 	void test1() 
 	{
+		std::string str1 = "abdcbab";
+		std::string str2 = "bdcbabb";				// 最长公共子串是bdcbab
+
+
+
+		debugDisp("test1 finished.");
 	}
-
-
+	 
 
 }
 
@@ -799,17 +1032,18 @@ int main(int argc, char** argv)
 {
 	// RECURSION::test1(); 
 
-	// TREE::test0();
+	// TREE::test7();
 
 	// TEST_MY_IO::test0();
 
 	// STACK::test2();
 
-	// LIST::test1();
+	LIST::test0();
+	ARRAY::test2();
 
 	// GRAPH::test5();
 
-	GREEDY_DYNAMIC::test0();
+	// GREEDY_DYNAMIC_BRUTAL::test0();
 
 	debugDisp("main finished.");
 

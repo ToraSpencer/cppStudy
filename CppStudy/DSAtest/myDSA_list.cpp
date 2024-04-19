@@ -1,5 +1,7 @@
 #include "myDSA_list.h"
 
+#include <stack>
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
 namespace MY_DEBUG
@@ -54,7 +56,15 @@ namespace LIST
 	using ListNode = SLlistNode<int>;
 
 
-	// 基于链表的归并排序——目标时间复杂度O(nlogn)，常数空间复杂度
+	// test0: 基于链表的归并排序——目
+	/*
+		基于分而治之（二分）的思想；
+		处理过程是自底向上的——分割到不能再分割的时候才对基本段进行操作；
+		标时间复杂度O(nlogn)，常数空间复杂度
+	*/
+
+	
+	// 合并两条有序链表：
 	ListNode* merge(ListNode* head1, ListNode* head2)
 	{
 		ListNode* dummyHead = new ListNode(0);
@@ -84,70 +94,69 @@ namespace LIST
 	}
 
 
-	ListNode* sortList(ListNode* head, ListNode* tail)
+	// 递归函数——基于链表的归并排序
+	ListNode* sortList(ListNode* head, ListNode* tail = nullptr)
 	{
+		/*
+			对head, tail所确定的前闭后开的区间中的节点进行归并排序；
+			tail == nullptr时表示对head一整条链表进行归并排序；
+		
+		*/
+
+		// 1. 递归终止1：链表为空
 		if (head == nullptr)
 			return head;
 
+		// 2. 递归终止2：链表只有一个元素；
 		if (head->next == tail)
 		{
 			head->next = nullptr;
 			return head;
 		}
 
-		ListNode* slow = head;
-		ListNode* fast = head;
-		while (fast != tail)
-		{
-			slow = slow->next;
-			fast = fast->next;
-			if (fast != tail)
-				fast = fast->next;
+		// 3. 递归递推：
 
+		//		3.1 寻找中间节点：
+		ListNode* pn1 = head;
+		ListNode* pn2 = head;
+		while (pn2 != tail)
+		{
+			pn1 = pn1->next;
+			pn2 = pn2->next;
+			if (pn2 != tail)
+				pn2 = pn2->next;
 		}
-		ListNode* mid = slow;
+
+		//		3.2 分割成两条链表，分别递归调用自己：
+		ListNode* mid = pn1;
 		ListNode* list1 = sortList(head, mid);
 		ListNode* list2 = sortList(mid, tail);
+
+		//		3.3 合并两个有序链表：
 		ListNode* sorted = merge(list1, list2);
+
 		return sorted;
 	}
-
-
-	ListNode* sortList(ListNode* head)
-	{
-		return sortList(head, nullptr);
-	}
+	 
 
 
 	void test0()
 	{ 
-		using ListNode = SLlistNode<int>;
 		ListNode* pHead = make_list<int>({ 2, 3, -1, -23, -1, -7, 99, -1, 0 });
-		traverseList(pHead, [](ListNode* pn)
-			{
-				std::cout << pn->val << ", ";
-			});
+		traverseList(pHead, dispListNode<int>()); 
 		debugDisp("\n");
 
 		pHead = eraseNode(pHead, pHead->next);
-		traverseList(pHead, [](ListNode* pn)
-			{
-				std::cout << pn->val << ", ";
-			});
+		traverseList(pHead, dispListNode<int>());
 		debugDisp("\n");
 
 		pHead = eraseNode(pHead, pHead);
-		traverseList(pHead, [](ListNode* pn)
-			{
-				std::cout << pn->val << ", ";
-			});
+		traverseList(pHead, dispListNode<int>());
 		debugDisp("\n");
 
+		debugDisp("sortList: ");
 		pHead = sortList(pHead);
-		traverseList(pHead, [](ListNode* pn)
-			{
-				std::cout << pn->val << ", ";
-			});
+		traverseList(pHead, dispListNode<int>());
 		debugDisp("\n");
 
 		destroy(pHead);
@@ -180,10 +189,10 @@ namespace LIST
 	*/
 	void test1()
 	{
-		// 版本1——可查询环所在位置；
+		// lamda——版本1，可查询环所在位置；利用字典
 		auto hasCycle = [](ListNode * head)->bool
 		{
-			int pos = -1;					// 标识环的位置；
+			int pos = -1;								// 标识环的位置；
 			ListNode* pn = head;
 			int index = 1;
 			std::unordered_map<unsigned long, int> map;
@@ -199,7 +208,6 @@ namespace LIST
 				if (!retIter.second)
 				{
 					pos = std::distance(map.begin(), retIter.first);
-					// debugDisp("pos == ", pos);
 					return true;
 				}
 				index++;
@@ -210,7 +218,7 @@ namespace LIST
 		};
 
 
-		// 版本2——不可查询环所在位置；
+		// lamda——不可查询环所在位置；利用哈希表
 		auto hasCycle2 = [](ListNode* head)->bool
 		{
 			ListNode* pn = head;
@@ -231,7 +239,6 @@ namespace LIST
 		pn2->next = pn1;
 
 		debugDisp("ret1 == ", hasCycle(head));
-
 		debugDisp("ret2 == ", hasCycle2(head));
 
 
@@ -356,30 +363,80 @@ namespace LIST
 			};
 	*/
 	void test4()
-	{
-		/*
-		 ListNode＊ ReverseList（ListNode＊ pHead）
-		 {
-            ListNode＊ pReversedHead = NULL;
-            ListNode＊ pNode = pHead;
-            ListNode＊ pPrev = NULL;
-            while（pNode != NULL）
-            {
-                  ListNode＊ pNext = pNode->m_pNext;
-                  if（pNext == NULL）
-                          pReversedHead = pNode;
+	{  
+		// lambda1——利用栈结构
+		auto reverseList1 = [](ListNode* pHead)->ListNode*
+		{
+			//  假设没有环存在;
 
-                  pNode->m_pNext = pPrev;
+			// 1. 节点入栈：
+			std::stack<ListNode*> pnStack;
+			ListNode* pn = pHead;
+			while (pn != nullptr)
+			{
+				pnStack.push(pn);
+				pn = pn->next;
+			}
 
-                  pPrev = pNode;
-                  pNode = pNext;
-            }
+			// 2. 利用栈结构，反向改写每个节点中的指针，实现链表翻转；
+			ListNode* pHead2 = pnStack.top();
+			ListNode* pn2 = nullptr;			// 指向栈顶节点；
+			pn = pHead2;							// 指向当前最后一个节点；
+			pnStack.pop();
+			while (!pnStack.empty())
+			{
+				pn2 = pnStack.top();
+				pn->next = pn2;
+				pn = pn->next;
+				pnStack.pop();
+			}
+			pn->next = nullptr;
 
-            return pReversedHead;
-    } 
-		
-		*/
+			return pHead2;
+		};
 
+		// lambda2——不用任何其他结构：
+		auto reverseList2 = [](ListNode* pHead)->ListNode*
+		{
+			ListNode* pHead2 = nullptr;
+			ListNode* pn = pHead;
+			ListNode* pnPrev = nullptr;
+			ListNode* pnNext = nullptr;
+
+			// 记录、改写、前进的循环；
+			do
+			{ 
+				pnNext = pn->next;
+				pn->next = pnPrev;							// 翻转指针；
+				pnPrev = pn;
+				pn = pnNext;					
+			} while (pn->next != nullptr);
+
+			// 最后一次改写：
+			pn->next = pnPrev;
+
+			return pn;
+		};
+
+		// test:
+		ListNode* pHead = nullptr;
+		ListNode* pHead1 = nullptr;
+		ListNode* pHead2 = nullptr;
+
+		pHead = make_list(std::vector<int>{1, 2, 3, 4, 5, 6});
+		traverseList(pHead, dispListNode<int>());
+		debugDisp("\n");
+		pHead1 = reverseList1(pHead);
+		traverseList(pHead1, dispListNode<int>());
+		debugDisp("\n");
+
+		pHead = make_list(std::vector<int>{1, 2, 3, 4, 5, 6});
+		pHead2 = reverseList2(pHead);
+		traverseList(pHead2, dispListNode<int>());
+		debugDisp("\n");
+		destroy(pHead2);
+
+		debugDisp("test4 finished.");
 	}
 
 

@@ -1016,16 +1016,52 @@ template<typename T>
 bool makeBalanced(TreeNode<T>& ptrRoot)
 {
 	/*
-	方法一：贪心构造
-	思路
-		「平衡」要求它是一棵空树或它的左右两个子树的高度差的绝对值不超过 111，
-		这很容易让我们产生这样的想法——左右子树的大小越「平均」，这棵树会不会越平衡？
-		于是一种贪心策略的雏形就形成了：我们可以通过中序遍历将原来的二叉搜索树转化为一个有序序列，
-			然后对这个有序序列递归建树，对于区间 [L,R][L, R][L,R]：
+		方法一：贪心构造
+		思路
+			「平衡」要求它是一棵空树或它的左右两个子树的高度差的绝对值不超过 111，
+			这很容易让我们产生这样的想法——左右子树的大小越「平均」，这棵树会不会越平衡？
+			于是一种贪心策略的雏形就形成了：我们可以通过中序遍历将原来的二叉搜索树转化为一个有序序列，
+				然后对这个有序序列递归建树，对于区间 [L,R][L, R][L,R]：
 			 
-	
+		输入：root = [1,null,2,null,3,null,4,null,null]
+		输出：[2,1,3,null,null,null,4]
+		解释：这不是唯一的正确答案，[3,1,4,null,2,null,null] 也是一个可行的构造方案。
 	*/
 
+	/*
+	
+		public:
+			vector<int> inorderSeq;
+
+			void getInorder(TreeNode* o) {
+				if (o->left) {
+					getInorder(o->left);
+				}
+				inorderSeq.push_back(o->val);
+				if (o->right) {
+					getInorder(o->right);
+				}
+			}
+
+			TreeNode* build(int l, int r) {
+				int mid = (l + r) >> 1;
+				TreeNode* o = new TreeNode(inorderSeq[mid]);
+				if (l <= mid - 1) {
+					o->left = build(l, mid - 1);
+				}
+				if (mid + 1 <= r) {
+					o->right = build(mid + 1, r);
+				}
+				return o;
+			}
+
+			TreeNode* balanceBST(TreeNode* root) {
+				getInorder(root);
+				return build(0, inorderSeq.size() - 1);
+			}
+		}; 
+	
+	*/
 
 	return true;
 }

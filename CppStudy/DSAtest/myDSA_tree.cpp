@@ -332,10 +332,12 @@ namespace TREE
 	// 平衡BT
 	void test7() 
 	{
-		constexpr int placeholder = std::numeric_limits<int>::max();
+		constexpr int PH = std::numeric_limits<int>::max();
+
+		// 1. 判断BT是否是平衡的
 		TreeNode<int>* ptrRoot1 = deserializeBT_levelOrder(std::vector<int>{\
-			8, 3, 10, 2, 6, placeholder, 14, placeholder, placeholder, \
-			4, 7, 13, placeholder});
+			8, 3, 10, 2, 6, PH, 14, PH, PH, \
+			4, 7, 13, PH});
 		TreeNode<int>* ptrRoot2 = deserializeBT_levelOrder(std::vector<int>{\
 			1,2,3,4,5,6,7,8,9});
 		printBT(ptrRoot1);
@@ -343,9 +345,16 @@ namespace TREE
 
 		debugDisp("isBalanced(ptrRoot1) == ", isBalanced(ptrRoot1));
 		debugDisp("isBalanced(ptrRoot2) == ", isBalanced(ptrRoot2));
-
 		destroy(ptrRoot1);
 		destroy(ptrRoot2);
+
+		// 2. 将一个BST平衡化：
+		ptrRoot1 = deserializeBT_levelOrder(std::vector<int>{\
+		1, PH, 2, PH, 3, PH, 4, PH, PH }); 
+		printBT(ptrRoot1);
+		debugDisp("isBST(ptrRoot1) == ", isBST(ptrRoot1));
+
+
 		debugDisp("test7 finished.");
 	}
 

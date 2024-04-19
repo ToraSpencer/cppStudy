@@ -1,5 +1,6 @@
 ﻿#include "toolsHeader.h"
  
+#include <list>
 
 //  WINDOWS提供的时间相关的接口
 /*
@@ -3379,41 +3380,41 @@ namespace TEST_OOP
 
 ///////////////////////////////////////////////////////////////////////////////////////////// 排列组合：
 namespace PERMUTATION_COMBINATION
-{
-	using namespace std;
+{ 
 
-	// 求解组合——基于回溯法
-	void generateCombinations(std::vector<int>& combination, int n, int m, int index)
+	// 递归函数：求解组合（基于回溯法）
+	void generateCombinations(std::vector<std::vector<int>>& combs, \
+		std::list<int>& tmpList, const int n, const int m, const int num)
 	{
-		// 递归终止：
-		if (combination.size() == m) 
+		/*
+			void generateCombinations(
+					std::vector<std::vector<int>>& combs,				输出的向量，每个元素为一个组合向量；
+					std::list<int>& tmpList,										辅助容器变量；	
+					const int n,															生成组合的元素为0, 1, 2, ...(n-1)一共n个整数；	
+					const int m,															组合中的元素数
+					const int num														当前组合中尝试添加的元素
+					)
+		
+		*/
+
+		// 递归终止：若当前的链表tmpList中已经添加的元素达到m个
+		if (tmpList.size() == m) 
 		{
-			// 打印组合
-			for (int num : combination) 
-				std::cout << num << " ";
-			
-			std::cout << std::endl;
+			std::vector<int> tmpVec;
+			tmpVec.insert(tmpVec.end(), tmpList.begin(), tmpList.end());
+			combs.push_back(tmpVec);
 			return;
 		}
 
 		// 递归递推：从当前索引开始，尝试添加数到组合中
-		for (int i = index; i < n; ++i) 
+		for (int i = num; i < n; ++i) 
 		{
-			combination.push_back(i);
-			generateCombinations(combination, n, m, i + 1);		 // 递归调用
-			combination.pop_back();									
-
-			//traverseSTL(combination, disp<int>());
-			//debugDisp("\n");
+			const int numNext = i + 1;
+			tmpList.push_back(i);
+			generateCombinations(combs, tmpList, n, m, numNext);		  
+			tmpList.pop_back();															// 回溯；					
 		}
-	}
-
-
-	void printAllCombinations(int n, int m) 
-	{
-		vector<int> combination;
-		generateCombinations(combination, n, m, 0);
-	}
+	} 
 
 
 	// 求解组合——基于位操作 
@@ -3469,15 +3470,21 @@ namespace PERMUTATION_COMBINATION
 		/*
 			给定n个数: 0, 1, ... (n-1), 从中取m个数，给出所有可能的组合：
 		*/ 
-
 		int n = 6;
-		int m = 2;
+		int m = 3;
 
 		// 1. 基于backtracking的方法
+		std::vector<std::vector<int>> combs;
+		std::list<int> tmpList;
+		generateCombinations(combs, tmpList, n, m, 0);
+		
 		debugDisp("base on backtracking:");
-		cout << "All combinations of " << m << " numbers from 0 to " << n - 1 << " are: " << endl;
-		printAllCombinations(n, m);
+		traverseSTL(combs, [](const std::vector<int>& vec)
+			{
+				traverseSTL(vec, disp<int>());
+			});
 		debugDisp("\n");
+
 
 		//// 2. 基于位操作的方法；
 		//debugDisp("base on bit manipulation: ");
