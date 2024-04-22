@@ -17,7 +17,7 @@ namespace MY_DEBUG
 	static auto dispCorrected = [](const T& arg)
 	{
 		if(arg == std::numeric_limits<T>::max())			// 使用当前类型最大值来表示占位符；
-			std::cout << "placeholder, ";
+			std::cout << "PH, ";
 		else
 			std::cout << arg << ", ";
 	};
@@ -70,10 +70,10 @@ namespace TREE
 
 			这里使用层序遍历的思路实现最大深度的计算：
 		*/
-		constexpr int placeholder = std::numeric_limits<int>::max();
+		constexpr int PH = std::numeric_limits<int>::max();
 		TreeNode<int>* ptrRoot = nullptr;
 		TreeNode<int>* pn = nullptr;
-		ptrRoot = deserializeBT_levelOrder(std::vector<int>{5, 0, 8, -1, 3, 6, 9, placeholder, placeholder, 1, 4});
+		ptrRoot = deserializeBT_levelOrder(std::vector<int>{5, 0, 8, -1, 3, 6, 9, PH, PH, 1, 4});
 		printBT(ptrRoot);
 
 		// 1. maxDepth()最大深度
@@ -95,10 +95,10 @@ namespace TREE
 	// 各种遍历方法
 	void test1() 
 	{
-		constexpr int placeholder = std::numeric_limits<int>::max();
+		constexpr int PH = std::numeric_limits<int>::max();
 		TreeNode<int>* ptrRoot = deserializeBT_levelOrder(std::vector<int>{\
-			8, 3, 10, 2, 6, placeholder, 14, placeholder, placeholder, \
-			4, 7, 13, placeholder});
+			8, 3, 10, 2, 6, PH, 14, PH, PH, \
+			4, 7, 13, PH});
 		printBT(ptrRoot);
 		 
 		// 1. 各种遍历方法：
@@ -210,7 +210,7 @@ namespace TREE
 	void test4()
 	{
 		// 0. prepare data:
-		constexpr int placeholder = std::numeric_limits<int>::max();
+		constexpr int PH = std::numeric_limits<int>::max();
 		TreeNode<int>* ptrRoot = nullptr;
 		TreeNode<int> tn0, tn00, tn01, tn010, tn011, tn0101, tn0111;
 		{
@@ -250,7 +250,7 @@ namespace TREE
 		destroy(ptrRoot2);
 
 		// 3. 
-		TreeNode<int>* ptrRoot3 = deserializeBT_levelOrder(std::vector<int>{ 9, 2, 3, placeholder, placeholder, 4, 5});
+		TreeNode<int>* ptrRoot3 = deserializeBT_levelOrder(std::vector<int>{ 9, 2, 3, PH, PH, 4, 5});
 		printBT(ptrRoot3);
 		destroy(ptrRoot3);
 
@@ -268,11 +268,71 @@ namespace TREE
 		输入：root = [1]
 		输出：["1"]
 	
+		class Solution {
+			public:
+				void construct_paths(TreeNode* root, string path, vector<string>& paths) 
+				{
+					if (root != nullptr)
+					{
+						path += to_string(root->val);
+						if (root->left == nullptr && root->right == nullptr)
+						{  // 当前节点是叶子节点
+							paths.push_back(path);                              // 把路径加入到答案中
+						} else 
+						{
+							path += "->";  // 当前节点不是叶子节点，继续递归遍历
+							construct_paths(root->left, path, paths);
+							construct_paths(root->right, path, paths);
+						}
+					}
+				}
+
+				vector<string> binaryTreePaths(TreeNode* root) {
+					vector<string> paths;
+					construct_paths(root, "", paths);
+					return paths;
+				}
+			}; 
 	*/
+
+
+	void getAllPaths(std::vector<std::string>& paths, TreeNode<int>* pn, const char* recordStr = "")
+	{
+		// 规模缩减——当前BT的所有路径等于（根节点+左子树的所有路径）和（根节点+右子树的所有路径）
+		if (nullptr == pn)
+			return;
+
+		// 1. 已积累的路径末尾加入当前节点值
+		std::string currentPath{recordStr};
+		currentPath += std::to_string(pn->val);
+
+		// 2. 
+		if (nullptr == pn->left && nullptr == pn->right)
+			paths.push_back(currentPath);				// a. 递归终止——当前是叶子节点，当前路径累计完毕，压入paths中；
+		else
+		{
+			// b. 递归递推——
+			currentPath += "->";
+			getAllPaths(paths, pn->left, currentPath.c_str());
+			getAllPaths(paths, pn->right, currentPath.c_str());
+		}
+	}
+
+
 	void test5() 
 	{
+		constexpr int PH = std::numeric_limits<int>::max();
+		TreeNode<int>* pRoot = deserializeBT_levelOrder(std::vector<int>{\
+			8, 3, 10, 2, 6, PH, 14, PH, PH, 4, 7, 13, PH});
+		printBT(pRoot);
 
+		std::vector<std::string> paths;
+		getAllPaths(paths, pRoot);
+		
+		for(const auto& str: paths)
+			debugDisp(str);
 
+		debugDisp("test5 finished.");
 	}
 
 
@@ -292,11 +352,11 @@ namespace TREE
 	void test6() 
 	{
 		// 0. 使用层序序列化的方式构建一个BST:
-		constexpr int placeholder = std::numeric_limits<int>::max();
+		constexpr int PH = std::numeric_limits<int>::max();
 		TreeNode<int>* pn = nullptr;
 		TreeNode<int>* ptrRoot1 = deserializeBT_levelOrder(std::vector<int>{\
-			8, 3, 10, 2, 6, placeholder, 14, placeholder, placeholder, \
-			4, 7, 13, placeholder});
+			8, 3, 10, 2, 6, PH, 14, PH, PH, \
+			4, 7, 13, PH});
 		TreeNode<int>* ptrRoot2 = deserializeBT_levelOrder(std::vector<int>{1, 2, 3, 4, 5, 6, 7});
 		printBT(ptrRoot1);
 		printBT(ptrRoot2);

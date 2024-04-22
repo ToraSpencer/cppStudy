@@ -49,6 +49,7 @@ public:
 	// 返回以当前节点为根节点的BT的最大深度；
 	int maxDepth()
 	{
+		// BST作用于BT对象，逐层扫描，数出一共有多少层；
 		int depth = 0;
 		std::queue<TreeNode<T>*> que;			// 使用队列，应用BST的思路：
 		que.push(this);

@@ -1032,14 +1032,14 @@ int main(int argc, char** argv)
 {
 	// RECURSION::test1(); 
 
-	// TREE::test7();
+	TREE::test5();
 
 	// TEST_MY_IO::test0();
 
 	// STACK::test2();
 
-	LIST::test0();
-	ARRAY::test2();
+	//LIST::test0();
+	//ARRAY::test2();
 
 	// GRAPH::test5();
 
