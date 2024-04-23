@@ -49,12 +49,12 @@
 
 
 		内存对齐的概念
-			处理器存取内存的时候有内存存取粒度这样一个概念，即大部分处理器会以4byte, 8byte等单位来存取内存。
-			假设内存存取粒度是4byte，则取32位的int变量的时候，处理器只能从地址为4的倍数的内存读取数据。
-			可以使用预编译指令#pragma pack(n)来指定对齐系数n，即表示内存存取粒度为nbyte
-			结构体中的内存对齐
-			基于以上原则，一个结构体实例所占的存储空间不是所有成员的大小加和，其中可能存在一些空洞。
-			这些空洞使用指针查看貌似是随机值？日后可以多做了解。
+				处理器存取内存的时候有内存存取粒度这样一个概念，即大部分处理器会以4byte, 8byte等单位来存取内存。
+				假设内存存取粒度是4byte，则取32位的int变量的时候，处理器只能从地址为4的倍数的内存读取数据。
+				可以使用预编译指令#pragma pack(n)来指定对齐系数n，即表示内存存取粒度为nbyte
+				结构体中的内存对齐
+				基于以上原则，一个结构体实例所占的存储空间不是所有成员的大小加和，其中可能存在一些空洞。
+				这些空洞使用指针查看貌似是随机值？日后可以多做了解。
 
 
 		注意动态数组——堆上创建的数组和普通数组的区别
@@ -76,21 +76,7 @@ void*  malloc(std::size_t size);				// <cstdlib>
 
 */
 
- 
-
-virtualModule* syntax_memory_management_module::getInstance()		// 线程不安全的单例模式
-{
-	if (nullptr != p_moduleIns)
-	{
-		delete p_moduleIns;
-	}
-	p_moduleIns = new syntax_memory_management_module;
-	return p_moduleIns;
-}
-
-
-
-namespace TEST_STRUCT 
+namespace TEST_STRUCT
 {
 	struct stru
 	{
@@ -104,8 +90,17 @@ namespace TEST_STRUCT
 }
 
 
+virtualModule* syntax_memory_management_module::getInstance()		// 线程不安全的单例模式
+{
+	if (nullptr != p_moduleIns)
+	{
+		delete p_moduleIns;
+	}
+	p_moduleIns = new syntax_memory_management_module;
+	return p_moduleIns;
+}
 
-
+  
 // test0: C++中的内存分区
 void syntax_memory_management_module::test0(void)
 {
@@ -113,7 +108,7 @@ void syntax_memory_management_module::test0(void)
 	std::cout << "test0：C++中的内存分区" << std::endl;
 
 	int i1;											// 栈区
-	char str1[] = "abc";				// 栈区
+	char str1[] = "abc";					// 栈区
 	char* pc;										// 栈区
 	char str2[] = "123";				// "123"是字符串字面量，在文字常量区；str2在栈区
 	const char* str3 = "123";				// str3是指向字符串字面量"123"的指针。
@@ -208,29 +203,32 @@ void syntax_memory_management_module::test2(void)
 
 
 // test3: 结构体中的内存对齐
+
+
+
 void syntax_memory_management_module::test3(void)
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << " test3: 结构体中的内存对齐" << std::endl;
 
-	TEST_STRUCT::stru s1 = { 1,2,3,4,5,6 };
-	unsigned char* pc = NULL;
+	TEST_STRUCT::stru s1 = { 1,2,3,4,5,6 };				// 自定义结构体，每个元素都属于不同的整型类；
+	unsigned char* pc = nullptr;
 	pc = reinterpret_cast<unsigned char*>(&s1);
 
 	// s1的内存应该是这样的：
 	/*
-	char a; short b; int c; long d; char e; long long f;
+		char a; short b; int c; long d; char e; long long f;
 
-	axbbcccc
-	dddddddd
-	exxxxxxx
-	ffffffff
-	所以一共占32字节，结构体实例内部的数据分布可以使用一个unsigned char*指针来查看验证。
+		axbbcccc
+		dddddddd
+		exxxxxxx
+		ffffffff
+		所以一共占32字节，结构体实例内部的数据分布可以使用一个unsigned char*指针来查看验证。
 	*/
 
 
-	std::cout << "sizeof(s1) == " << sizeof(s1) << std::endl;
-	std::cout << "结构体实例s1内部数据分布：" << std::endl;
+	debugDisp("sizeof(s1) == ", sizeof(s1));
+	debugDisp("结构体实例s1内部数据分布："); 
 	for (int i = 1; i <= 32; i++)
 	{
 		printf("%d. 0x%x\n", i, *pc);
@@ -240,10 +238,12 @@ void syntax_memory_management_module::test3(void)
 			break;
 		}
 	}
+
+
+	debugDisp("test3 finished.");
 }
 
-
-
+ 
 
 void syntax_memory_management_module::test4(void)
 {

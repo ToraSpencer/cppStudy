@@ -389,16 +389,76 @@ namespace TREE
 	}
 
 
-	// 平衡BT
+	// BST的应用：
+	void test66() 
+	{
+		TreeNode<int>* ptrRoot1 = nullptr;
+		TreeNode<int>* ptrRoot2 = nullptr;
+		TreeNode<int>* ptrRoot3 = nullptr;
+		TreeNode<int>* ptrRoot4 = nullptr;
+
+		TreeNode<int>* pn = nullptr;
+
+		// 1. BST比一般的BT搜索元素速度更快，本质上是二分查找
+		ptrRoot1 = buildBST(8, std::vector<int>{3, 10, 2, 6, 14, 4, 7, 13}); 
+		ptrRoot2 = buildBST(8, std::vector<int>{5, 0, -1, 3, 6, 9, 1, 4});
+		printBT(ptrRoot1); 
+		debugDisp("isBST(ptrRoot1) == ", isBST(ptrRoot1));  
+
+		pn = searchBST(ptrRoot1, 14);
+		if (nullptr != pn)
+			debugDisp("pn->val == ", pn->val); 
+		pn = searchBST(ptrRoot1, 15);
+		if (nullptr != pn)
+			debugDisp("pn->val == ", pn->val);
+
+		// 2. 集合操作：
+
+
+		debugDisp("test66 finished.");
+	}
+
+
+	// 平衡BST
+	 
+	TreeNode<int>* build(int l, int r, const std::vector<int>& inorderSeq)
+	{
+		int midIdx = (l + r)/2;
+		TreeNode<int>* pn = new TreeNode<int>(inorderSeq[midIdx]);
+		if (l <= midIdx - 1)
+			pn->left = build(l, midIdx - 1, inorderSeq);
+		if (midIdx + 1 <= r)
+			pn->right = build(midIdx + 1, r, inorderSeq);
+
+		return pn;
+	}
+
+	TreeNode<int>* balanceBST(TreeNode<int>* root)
+	{
+		std::vector<int> inorderSeq;
+		inorderSeq.clear(); 
+		traverseBT(root, [&](TreeNode<int>* pn) 
+			{
+				inorderSeq.push_back(pn->val);
+			}, TRAVERSE_BT_TYPE::InOrder, true);
+
+		return build(0, inorderSeq.size() - 1, inorderSeq);
+	}
+
+
 	void test7() 
 	{
 		constexpr int PH = std::numeric_limits<int>::max();
+		TreeNode<int>* ptrRoot1 = nullptr; 
+		TreeNode<int>* ptrRoot2 = nullptr;
+		TreeNode<int>* ptrRoot3 = nullptr;
+		TreeNode<int>* ptrRoot4 = nullptr;
 
 		// 1. 判断BT是否是平衡的
-		TreeNode<int>* ptrRoot1 = deserializeBT_levelOrder(std::vector<int>{\
+		ptrRoot1 = deserializeBT_levelOrder(std::vector<int>{\
 			8, 3, 10, 2, 6, PH, 14, PH, PH, \
 			4, 7, 13, PH});
-		TreeNode<int>* ptrRoot2 = deserializeBT_levelOrder(std::vector<int>{\
+		ptrRoot2 = deserializeBT_levelOrder(std::vector<int>{\
 			1,2,3,4,5,6,7,8,9});
 		printBT(ptrRoot1);
 		printBT(ptrRoot2);
@@ -411,9 +471,15 @@ namespace TREE
 		// 2. 将一个BST平衡化：
 		ptrRoot1 = deserializeBT_levelOrder(std::vector<int>{\
 		1, PH, 2, PH, 3, PH, 4, PH, PH }); 
-		printBT(ptrRoot1);
+		ptrRoot2 = buildBST(1, std::vector<int>{2, 3, 4, 5,6,7,8,9,10,11,12});
+		printBT(ptrRoot1); 
 		debugDisp("isBST(ptrRoot1) == ", isBST(ptrRoot1));
+		debugDisp("isBST(ptrRoot2) == ", isBST(ptrRoot2));
 
+		ptrRoot3 = balanceBST(ptrRoot1);
+		ptrRoot4 = balanceBST(ptrRoot2);
+		printBT(ptrRoot3);
+		printBT(ptrRoot4); 
 
 		debugDisp("test7 finished.");
 	}

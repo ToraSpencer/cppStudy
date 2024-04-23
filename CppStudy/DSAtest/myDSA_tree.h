@@ -824,6 +824,18 @@ TreeNode<T>* deserializeBT_preOrder(const std::vector<T>& vecVal)
 }
 
 
+template <typename T>
+int countNodes(TreeNode<T>* ptrRoot)
+{
+	int count = 0;
+	traverseBT(ptrRoot, [&count](TreeNode<T>* pn) 
+		{
+			count++;
+		}, TRAVERSE_BT_TYPE::PreOrder, true);
+	return count;
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////  Update methods
 
@@ -889,7 +901,7 @@ template<typename T>
 bool isBST(TreeNode<T>* ptrRoot)
 {
 	/*
-		BT的充要条件：其中序遍历生成的序列是单调递增的；
+		BST的充要条件：其中序遍历生成的序列是单调递增的；
 	*/
 
 	std::vector<T> valVec;
@@ -947,7 +959,7 @@ TreeNode<T>* insert_BST(TreeNode<T>*& pn, const T data)
 }
 
 
-// 生成一个BST对象（to be optimized, 当前生成的是平衡度极差的BST）
+// 生成一个BST对象，根节点值为headVal，生成的BST可能非常不平衡；
 template <typename T>
 TreeNode<T>* buildBST(const T headVal, const std::vector<T>& valVec)
 {
@@ -962,6 +974,8 @@ TreeNode<T>* buildBST(const T headVal, const std::vector<T>& valVec)
 template <typename T>
 TreeNode<T>* searchBST(TreeNode<T>* ptrRoot, const T data) 
 { 	
+	// 本质上是二分查找，时间复杂度为O(logn)；BST本身就将元素按大小不断分成两组，只要递归深入下去就自然地实现了二分查找；
+
 	// 递归终止1：	
 	if (nullptr == ptrRoot)
 		return nullptr;
@@ -1014,7 +1028,17 @@ bool isBalanced(TreeNode<T>* ptrRoot)
 
 // 将BST变平衡（to be completed）
 template<typename T>
-bool makeBalanced(TreeNode<T>& ptrRoot)
+TreeNode<T>* makeBalanced(TreeNode<T>* ptrRoot, const std::vector<T>& inOrderVec)
+{
+	// 
+
+
+
+}
+
+
+template<typename T>
+TreeNode<T>* makeBalanced(TreeNode<T>* ptrRoot)
 {
 	/*
 		方法一：贪心构造
@@ -1028,41 +1052,8 @@ bool makeBalanced(TreeNode<T>& ptrRoot)
 		输出：[2,1,3,null,null,null,4]
 		解释：这不是唯一的正确答案，[3,1,4,null,2,null,null] 也是一个可行的构造方案。
 	*/
+	 
 
-	/*
-	
-		public:
-			vector<int> inorderSeq;
-
-			void getInorder(TreeNode* o) {
-				if (o->left) {
-					getInorder(o->left);
-				}
-				inorderSeq.push_back(o->val);
-				if (o->right) {
-					getInorder(o->right);
-				}
-			}
-
-			TreeNode* build(int l, int r) {
-				int mid = (l + r) >> 1;
-				TreeNode* o = new TreeNode(inorderSeq[mid]);
-				if (l <= mid - 1) {
-					o->left = build(l, mid - 1);
-				}
-				if (mid + 1 <= r) {
-					o->right = build(mid + 1, r);
-				}
-				return o;
-			}
-
-			TreeNode* balanceBST(TreeNode* root) {
-				getInorder(root);
-				return build(0, inorderSeq.size() - 1);
-			}
-		}; 
-	
-	*/
 
 	return true;
 }
@@ -1117,6 +1108,7 @@ namespace TREE
 	void test4();
 	void test5();
 	void test6();
+	void test66();
 	void test7();
 	void test8();
 	void test9();
