@@ -60,7 +60,7 @@ public:
 }; 
 
 
-// Graph类——基于邻接表有向图类
+// Graph类——基于邻接表的图类（可以是有向图也可以是无向图）
 template<typename T>
 struct Graph 
 {
@@ -69,25 +69,28 @@ struct Graph
 public:
 	int nodeNum, nodeMaxNum, edgeNum;				// 节点数目、允许的顶点最大数目和边数
 	std::vector<GraphNode<T>*> pnVec;					// 节点指针数组；
+	bool isDigraph;														// 是否是有向图，默认情形下是；
 
 public:
 
 // constructor and destructor
-	Graph() :nodeNum(0), nodeMaxNum(DEFAULT_SIZE), edgeNum(0) {}
-	Graph(const std::initializer_list<T>& ilist) 
+	Graph(const bool isDigraph = true) :nodeNum(0), nodeMaxNum(DEFAULT_SIZE), edgeNum(0), isDigraph(isDigraph) {}
+	Graph(const std::initializer_list<T>& ilist, const bool isDigraph = true)
 	{
 		this->nodeNum = ilist.size();
 		this->nodeMaxNum = DEFAULT_SIZE;
 		this->edgeNum = 0;
+		this->isDigraph = isDigraph;
 		this->pnVec.reserve(ilist.size());
 		for (const auto& elem : ilist)
 			pnVec.push_back(new GraphNode<T>(elem)); 
 	}
-	Graph(const std::vector<T>& vec)			
+	Graph(const std::vector<T>& vec, const bool isDigraph = true)
 	{
 		this->nodeNum = vec.size();
 		this->nodeMaxNum = DEFAULT_SIZE;
 		this->edgeNum = 0;
+		this->isDigraph = isDigraph;
 		this->pnVec.reserve(vec.size());
 		for (const auto& elem : vec)
 			pnVec.push_back(new GraphNode<T>(elem));
@@ -137,7 +140,7 @@ public:
 
 // create methods:
 
-	// 插入一条有向边：
+	// 插入一条有向边
 	GraphEdge* addEdge(const int vaIdx, const int vbIdx) 
 	{
 		// 0. 错误检查
@@ -150,6 +153,7 @@ public:
 		GraphNode<T>* pb = this->pnVec[vbIdx];
 		GraphEdge* pe1 = nullptr;
 		GraphEdge* pe2 = nullptr; 
+		GraphEdge* peRet = nullptr;
 
 		if (nullptr == pa->pFirstEdge)
 		{
@@ -176,9 +180,14 @@ public:
 			pe2->next = new GraphEdge(pb);					// 此时pe2指向边链表最后一个节点；	
 			this->edgeNum++;
 			return pe2->next;
-		}		 
+		}		 		 
 	}
 
+	// 插入一条无向边（to be completed）
+	GraphEdge* addUndiEdge(const int vaIdx, const int vbIdx)
+	{
+		return nullptr
+	}
 
 // operator override:
 	const Graph& operator=(const Graph& g)
@@ -220,6 +229,8 @@ using Graph3D = Graph<verF>;						// 三维点云构成的图
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////// 表象变换
+
+// 三角网格 → 图（to be completed）
 template <typename TVO, typename TVI>
 bool triMesh2Graph(Graph<TRIANGLE_MESH::triplet<TVO>>& g, \
 	const TRIANGLE_MESH::triMesh<TVI, int>& mesh)
@@ -477,6 +488,7 @@ static auto dispGraphNode = [](const GraphNode<T>* ptrNode)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////// 最小支撑树相关
 /*
 	最小支撑树（Minimum Spanning Tree, MST）
+		通常只限于无向图；有向图的生成最小支撑树会很复杂；
 		Kruskal算法和Prim算法都是解决最小生成树问题的经典算法，但它们的实现方式和思想有所不同。
 		
 		Kruskal算法：
