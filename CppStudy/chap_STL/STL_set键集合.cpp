@@ -83,10 +83,8 @@ using namespace std;
 
 virtualModule* STL_set_module::getInstance()		// 线程不安全的单例模式
 {
-	if (nullptr != p_moduleIns)
-	{
-		delete p_moduleIns;
-	}
+	if (nullptr != p_moduleIns) 
+		delete p_moduleIns; 
 	p_moduleIns = new STL_set_module;
 	return p_moduleIns;
 }
@@ -99,8 +97,7 @@ void STL_set_module::test0(void)
 	cout << "\n\n\n\n" << endl;
 	cout << "test0: set的基本使用方法、API" << endl;
 
-	// 基本类型的set:
-	// 		插入到set中的基本类型元素会默认从小到大排序，插入到合适的位置。
+	// 基本类型的set——插入到set中的基本类型元素会默认从小到大排序，插入到合适的位置。
 	set<int> seti1;									// 构造方法1
 	set<int>::iterator iter_i;
 	baseTypePrinter btp;
@@ -206,7 +203,6 @@ namespace COMPARER1
 	};
 
 }
-
 
 void STL_set_module::test2(void) 
 {

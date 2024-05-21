@@ -143,7 +143,7 @@ void STL_map_module::test0(void)
 }
 
 
-// test2: 默认/自定义比较器
+// test1: 默认/自定义比较器
 struct edgeComparator			// 严格弱序(strict weak ordering)比较器
 {
 public:
@@ -162,7 +162,6 @@ public:
 		}
 	}
 };
-
 
 void STL_map_module::test1() 
 {

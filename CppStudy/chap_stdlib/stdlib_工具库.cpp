@@ -40,10 +40,8 @@
 
 virtualModule* stdlib_tools_module::getInstance()		// 线程不安全的单例模式
 {
-	if (nullptr != p_moduleIns)
-	{
-		delete p_moduleIns;
-	}
+	if (nullptr != p_moduleIns) 
+		delete p_moduleIns; 
 	p_moduleIns = new stdlib_tools_module;
 	return p_moduleIns;
 }

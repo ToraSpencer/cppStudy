@@ -186,7 +186,7 @@ public:
 	// 插入一条无向边（to be completed）
 	GraphEdge* addUndiEdge(const int vaIdx, const int vbIdx)
 	{
-		return nullptr
+		return nullptr;
 	}
 
 // operator override:

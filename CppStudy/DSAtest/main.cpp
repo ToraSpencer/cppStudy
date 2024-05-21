@@ -608,8 +608,7 @@ namespace GREEDY_DYNAMIC_BRUTAL
 
 		*/
 
-
-		// greedy algorithm——一定是全局最优解；时间复杂度O(2^n)
+		// greedy algorithm
 		auto knapsack_greedy = [](std::vector<int>& selectedIdxes, \
 			const std::vector<int>& itemWeights, const std::vector<int>& itemValues, \
 			const int capacity, const bool isKnapsack01 = true, const bool isKnapsackCom = false) ->std::pair<int, int>
@@ -719,7 +718,8 @@ namespace GREEDY_DYNAMIC_BRUTAL
 			return { totalVal, totalWeights };
 		};
 
-		// brutal:
+
+		// brutal——遍历了整个解空间，一定是全局最优解；时间复杂度O(2^n)
 		auto knapsack_brutal = [](std::vector<int>& selectedIdxes, \
 			const std::vector<int>& itemWeights, const std::vector<int>& itemValues, \
 			const int capacity, const bool isKnapsack01 = true, const bool isKnapsackCom = false)->std::pair<int, int>
@@ -792,7 +792,6 @@ namespace GREEDY_DYNAMIC_BRUTAL
 		debugDisp("selectedIdxes: ");
 		traverseSTL(selectedIdxes, disp<int>());
 		debugDisp("\n");
-
 
 		// 3. brutal:
 		selectedIdxes.clear();
@@ -1032,7 +1031,7 @@ int main(int argc, char** argv)
 {
 	// RECURSION::test1(); 
 
-	TREE::test7();
+	// TREE::test7();
 
 	// TEST_MY_IO::test0();
 
@@ -1043,7 +1042,7 @@ int main(int argc, char** argv)
 
 	// GRAPH::test5();
 
-	// GREEDY_DYNAMIC_BRUTAL::test0();
+	GREEDY_DYNAMIC_BRUTAL::test0();
 
 	debugDisp("main finished.");
 
