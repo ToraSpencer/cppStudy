@@ -204,6 +204,7 @@ namespace COMPARER1
 
 }
 
+
 void STL_set_module::test2(void) 
 {
 	using namespace COMPARER1;

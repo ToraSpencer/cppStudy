@@ -3,7 +3,8 @@
 #define EPS 1e-10					//定义非常小的一个量EPSilon，当浮点数不大于这个值时，视为0
 #define PI 3.14159
 
-//***************类方法实现
+
+
 AdjListGraphArc::AdjListGraphArc()
 {
 	this->adjVex = -1;
@@ -82,72 +83,8 @@ void DSA_graph_module::test1(void)
  
 }
 
-
-// 测试工作项目中的网格结构，及其与自定义graph类的转换：
-void DSA_graph_module::test2(void) 
-{
-	VSMesh mesh;
-	mesh.LoadFromFile("../材料/tooth.obj");
-
-	std::cout << "顶点数：" << mesh.vVertice.size();
-	std::cout << "三角片数：" << mesh.vSurface.size();
-
-	// 将VSMesh对象转换为邻接表表示的无权有向图：
-	
-
-	//		拷贝顶点数据：
-	AdjListDirGraph<VFVECTOR3> meshGraph(&mesh.vVertice[0], mesh.vVertice.size(), mesh.vVertice.size() + 1);
-
-	//		插入边数据——遍历每一个三角片，插入其三条有向边
-	for (const auto& tri: mesh.vSurface) 
-	{
-		meshGraph.InsertArc(tri.x, tri.y);
-		meshGraph.InsertArc(tri.y, tri.z);
-		meshGraph.InsertArc(tri.z, tri.x);
-	}
-
-
-	// 将图表示为VSMesh对象：
-	VSMesh mesh2;
-
-	//		拷贝顶点数据：
-	unsigned versCount = meshGraph.GetVexNum();
-	mesh2.vVertice.resize(versCount);
-	for (unsigned i = 0; i< versCount; i++) 
-	{
-		meshGraph.GetElem(i, mesh2.vVertice[i]);
-	}
-
-	//	   生成三角片数据：
-	AdjListGraphVex<VFVECTOR3>* pVer = nullptr;
-	for (unsigned i = 0; i< versCount; ++i) 
-	{
-		pVer = &meshGraph.vexTable[i];					// 指向第i个图节点
-		AdjListGraphArc* pArc = pVer->firstArc;
-
-		while (pArc != nullptr)			// 遍历索引为i的顶点的所有邻边；
-		{
-			unsigned index2 = pArc->adjVex;		
-			if (index2)
-			{
-				continue;				// 要求三角片中第一个顶点索引最小；
-			}
-			AdjListGraphArc* pArc2 = meshGraph.vexTable[index2].firstArc;
-		
-			while (pArc2 != nullptr)		// 遍历三角片第二个顶点（可能成为）的所有邻边；
-			{
-				if (pArc2->adjVex) 
-				{
-
-				}
-				pArc2 = pArc2->nextArc;
-			}
-
-			pArc = pArc->nextArc;
-		}
-
-	}
-}
+ 
+void DSA_graph_module::test2(void) {}
 
 
 void DSA_graph_module::test3(void) {}
