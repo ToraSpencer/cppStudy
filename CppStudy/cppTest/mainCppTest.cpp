@@ -1,6 +1,8 @@
 ﻿#include "toolsHeader.h"
  
 #include <list>
+#include <type_traits>
+
 
 //  WINDOWS提供的时间相关的接口
 /*
@@ -370,6 +372,7 @@ using namespace MY_WIN_API;
 
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////// 暂时不知如何分类：
 namespace TEST_UNKNOWN
 {
@@ -448,6 +451,7 @@ namespace TEST_UNKNOWN
 			组合：整体和部分有相同的生命周期，整体消亡则部分也不存在；如人体-人体的各种器官；
 			聚合：整体和部分可以有不同的生命周期，整体消亡部分也可以独立存在，如羊群-个体的羊
 		*/
+
 
 #if 0 
 
@@ -1700,6 +1704,108 @@ namespace TEST_UNKNOWN
 using namespace TEST_UNKNOWN;
 
 
+////////////////////////////////////////////////////////////////////////////////////////////// C++标准库
+namespace TEST_STD 
+{
+	// 文件IO:
+	void test0() 
+	{
+		std::ifstream filein;  		 
+		// filein.open("C:/myData/testDataHDY/su27.OSGB", std::ios::in | std::ios::binary);
+		filein.open("C:/myData/cube_simple_3_6_4.osgb", std::ios::in | std::ios::binary);
+		if (!filein.is_open()) 
+		{
+			debugDisp("error!!! 输出文件打开失败。");
+			return;
+		}
+
+		// 1. 度量文件流长度：
+		unsigned fileLen = 0;
+		std::ios::pos_type posHead = filein.tellg();			// tellg()方法——返回当前文件指针位置；当前指向头部； 
+		filein.seekg(0, std::ios::end);									// 文件指针指向末尾；
+		fileLen = static_cast<unsigned>(filein.tellg());
+		filein.seekg(posHead);
+		debugDisp("fileLen == ", fileLen);
+
+		// 2. 拷贝文件流，转换为字符串：
+		std::string str;
+		str.resize(fileLen);
+		filein.read(&str[0], fileLen); 
+
+		// 3. 尝试在文件流字符串中搜索需要的字段名：
+		std::ios::pos_type pos = 0;
+		std::string strSearch, strExamp;
+		unsigned geodeCount = 0;
+		unsigned geometryCount = 0;
+		strExamp = "Geode \n { \n Geometry";
+		{
+			strSearch = "Geometry";
+			pos = 0;
+			while (1)
+			{
+				pos = str.find(strSearch, pos);
+				if (std::string::npos == pos)
+					break;
+				pos += strSearch.size();
+				geometryCount++;
+			}
+			debugDisp("geometryCount == ", geometryCount);
+		}
+		{
+			strSearch = "Geode";
+			pos = 0;
+			while (1)
+			{
+				pos = str.find(strSearch, pos);
+				if (std::string::npos == pos)
+					break;
+				//std::string tmpStr = str.substr(static_cast<int>(pos) - 3, 6 + strSearch.size());
+				//debugDisp("tmpStr == ", tmpStr);
+				pos += strSearch.size();
+				geodeCount++;
+			}
+			debugDisp("geodeCount == ", geodeCount);
+		}
+
+
+		// Vec3Array字段之后是顶点坐标/顶点法向数据；？？？如何知道到底是顶点坐标还是顶点法向？？？
+		{
+			strSearch = "Vec3Array";
+			pos = 0;
+			while (1)
+			{
+				pos = str.find(strSearch, pos);
+				if (std::string::npos == pos)
+					break;
+				std::string tmpStr = str.substr(static_cast<int>(pos) - 3, 16 + strSearch.size());
+				debugDisp("tmpStr == ", tmpStr);
+				pos += strSearch.size(); 
+			} 
+		}
+
+		// DrawElementsUShort——索引数据，包括三角片列表、三角片条带等
+		{
+			// 一个三角片条带对应一个DrawElementsUShort；一个三角片列表对应一个DrawElementsUShort，不管里面有多少三角片；
+			strSearch = "DrawElementsUShort";
+			pos = 0;
+			while (1)
+			{
+				pos = str.find(strSearch, pos);
+				if (std::string::npos == pos)
+					break;
+				std::string tmpStr = str.substr(static_cast<int>(pos) - 3, 16 + strSearch.size());
+				debugDisp("tmpStr == ", tmpStr);
+				pos += strSearch.size();
+			}
+		}
+		 
+		 
+		 
+		debugDisp("test0 finished.");
+	}
+};
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////// C++新特性：
 namespace TEST_NEW_FEATURES
 {
@@ -1945,6 +2051,33 @@ namespace TEST_NEW_FEATURES
 ////////////////////////////////////////////////////////////////////////////////////////////// STL
 namespace TEST_STL 
 {
+	namespace STL_STRING
+	{
+		// std::string的find(), find_xxx()方法；
+		void test0() 
+		{
+			std::string str1 = "asdfajiuiuwww.github.comasdfuoiup";
+			std::string tarStr = "df";
+			std::string::size_type posStart = 0;
+			std::string::size_type posRet = 0;
+			debugDisp("tarStr == ", tarStr);
+
+			while (std::string::npos != posRet)
+			{
+				posRet = str1.find(tarStr.c_str(), posStart);										// 第二个参数是搜索开始的位置。
+				if(std::string::npos != posRet)
+				{
+					char* strRest = &str1[posRet];
+					posStart = posRet + tarStr.size();
+					debugDisp("strRest == ", strRest);
+				}
+			}
+			debugDisp("test0 finished.");
+		}
+
+	}
+
+
 	// C++线程支持库，并发编程相关的WINDOWS API
 	namespace STD_THREAD
 	{
@@ -2407,7 +2540,6 @@ namespace TEST_STL
 			debugDisp("finished.");
 		}
 	}
-
 
 
 	namespace STL_LIST
@@ -3260,6 +3392,7 @@ namespace TEST_TEMPLATE
 ///////////////////////////////////////////////////////////////////////////////////////////// 第三方库
 namespace TEST_THIRD_LIBS 
 {
+#ifdef  USE_BOOST
 	namespace MY_BOOST
 	{
 		// 使用boost::tie()来解包：
@@ -3286,7 +3419,7 @@ namespace TEST_THIRD_LIBS
 		}
 
 	}
-	 
+#endif
 }
 
 
@@ -3495,16 +3628,179 @@ namespace PERMUTATION_COMBINATION
 }
 
 
+namespace TEST_TYPE_TRAITS
+{
+	template<typename T>
+	void foo(const T& data)
+	{
+		auto typeName = typeid(data).name();
+		const std::type_info& typeInfo = typeid(data);
+
+		if (std::is_same<T, int>::value)
+			debugDisp("输入数据为int类型");
+		else if (std::is_same<T, float>::value)
+			debugDisp("输入数据为int类型");
+		else if (std::is_same<T, double>::value)
+			debugDisp("输入数据为int类型");
+		else
+			debugDisp("输入数据为其他类型；");
+	}
+
+
+	template <typename T>
+	void goo(const std::vector<T>& vec) 
+	{
+		if (std::is_same<T, int>::value)
+			debugDisp("输入数据为int类型");
+		else if (std::is_same<T, float>::value)
+			debugDisp("输入数据为int类型");
+		else if (std::is_same<T, double>::value)
+			debugDisp("输入数据为int类型");
+		else
+			debugDisp("输入数据为其他类型；");
+	}
+
+
+	void test0() 
+	{
+		int num1 = 1;
+		float num2 = 1.2;
+		double num3 = 11.2;
+		std::vector<int> vec1;
+		std::vector<float> vec2;
+		std::vector<double> vec3;
+		//foo(num1);
+		//foo(num2);
+		//foo(num3);
+
+		goo(vec1);
+		goo(vec2);
+		goo(vec3);
+
+		debugDisp("test0 finished.");
+	}
+
+
+	union NumType
+	{
+		int i;
+		float f; 
+	};
+	
+	// 
+	void test1() 
+	{
+		NumType num;
+		bool isInt = true;
+
+	}
+}
+
+
+namespace TEST_OOP
+{
+	class elementParser
+	{
+	public:
+		elementParser() {}
+		void setPointer(const char* str) {}
+		void parse(char& output) {}
+		void parse(unsigned short& output) {}
+		void parse(unsigned& output) {}
+		void parse(int& output) {}
+		void parse(float& output) {}
+		~elementParser() {}
+	};
+
+	class charParser : public elementParser
+	{
+	public:
+		const char* ptrParse;
+		charParser(const char* str) : ptrParse(str) {}
+		void setPointer(const char* str) 
+		{
+			this->ptrParse = str;
+		}
+		void parse(char& output)
+		{
+			output = *this->ptrParse;
+			this->ptrParse++;
+		}
+		void parse(unsigned short& output)
+		{
+			output = *this->ptrParse;
+			this->ptrParse++;
+		}
+		void parse(unsigned output)
+		{
+			output = static_cast<unsigned>(*this->ptrParse);
+			this->ptrParse++;
+		}
+	};
+
+	class uShortParser : public elementParser
+	{
+	public:
+		const unsigned short* ptrParse;
+		uShortParser(const char* str) : ptrParse(reinterpret_cast<const unsigned short*>(str)) {}
+		void setPointer(const char* str) 
+		{
+			this->ptrParse = reinterpret_cast<const unsigned short*>(str);
+		}
+		void parse(unsigned short& output)
+		{
+			output = *this->ptrParse;
+			this->ptrParse++;
+		}
+		void parse(unsigned output)
+		{
+			output = static_cast<unsigned>(*this->ptrParse);
+			this->ptrParse++;
+		}
+	};
+
+
+	void test0() 
+	{
+		elementParser* parser1 = nullptr;
+		elementParser* parser2 = nullptr;
+
+		std::string str = "123asdf8989zxcv";
+		parser1 = new charParser(&str[0]);
+		parser2 = new uShortParser(&str[0]);
+
+		charParser* cParser1 = parser1;
+
+		char ch = 0;
+		unsigned short num = 0;
+
+		parser1->parse(ch);
+		debugDisp("ch == ", ch);
+		parser2->parse(ch);
+		debugDisp("ch == ", ch);
+
+		parser1->setPointer(&str[0]);
+		parser2->setPointer(&str[0]);
+		parser1->parse(num);
+		debugDisp("num == ", num);
+		parser2->parse(num);
+		debugDisp("num == ", num);
+
+		debugDisp("test0 finished.");
+	}
+
+}
+
 
 int main()
 {    
-	// TEST_BIT::test1();
+	// TEST_STL::STL_STRING::test0();
 
-	// TEST_UNKNOWN::POINTER::test1();
+	// TEST_STD::test0();
 
-	PERMUTATION_COMBINATION::test0();
+	// TEST_TYPE_TRAITS::test0();
 
-	// TEST_BIT::test2();
+	TEST_OOP::test0();
 
 	debugDisp("main() finished."); 
 

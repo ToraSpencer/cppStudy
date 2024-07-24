@@ -1035,14 +1035,14 @@ int main(int argc, char** argv)
 
 	// TEST_MY_IO::test0();
 
-	// STACK::test2();
+	STACK::test0();
 
 	//LIST::test0();
 	//ARRAY::test2();
 
 	// GRAPH::test5();
 
-	GREEDY_DYNAMIC_BRUTAL::test0();
+	// GREEDY_DYNAMIC_BRUTAL::test0();
 
 	debugDisp("main finished.");
 

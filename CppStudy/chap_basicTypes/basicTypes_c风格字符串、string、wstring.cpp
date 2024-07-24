@@ -66,8 +66,6 @@ void basicTypes_strings_module::test0(void)
 	std::string str1 = "this is a C++ std::string object";		// 使用字符串字面量初始化std::string对象——C++中的字符串
 	std::string str2 = Cstr2;														// 使用C风格的字符串给C++的字符串对象初始化。
 
-
-
 	// C风格字符串、std::string对象都可以使用字符串字面量初始化，都可以使用std::cout打印
 	std::cout << "\t C风格、C++的字符串都可以使用字符串字面量初始化，都可以使用std::cout打印。" << std::endl;
 	std::cout << "\tCstr1 == " << Cstr1 << std::endl;
@@ -103,7 +101,7 @@ void basicTypes_strings_module::test0(void)
 }
 
 
-// test1: 字符串常用的API
+// test1: std::string常用的API
 void basicTypes_strings_module::test1(void)
 {
 	std::cout << "\n\n\n\n" << std::endl;
@@ -114,26 +112,26 @@ void basicTypes_strings_module::test1(void)
 	std::string str3("hello world");		// 字符串字面量构造的std::string
 
 	// 1. 访问单个元素的接口：operator[], at(), front(), back()
-	std::cout << "\t访问单个元素的接口：operator[], at(), front(), back():" << std::endl;
-	std::cout << "\tstr2[2] == " << str2[2] << std::endl;
+	std::cout << "\t 访问单个元素的接口：operator[], at(), front(), back():" << std::endl;
+	std::cout << "\t str2[2] == " << str2[2] << std::endl;
 	try{ }
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << '\n';
 	}
-	std::cout << "\tstr3.front() == "<< str3.front() << std::endl;
-	std::cout << "\tstr3.back() == "<< str3.back() << std::endl;
+	std::cout << "\t str3.front() == "<< str3.front() << std::endl;
+	std::cout << "\t str3.back() == "<< str3.back() << std::endl;
 	std::cout << std::endl << std::endl;
 
 
 	// 2. 操作多个元素的接口：insert, replace, substr, append
-	str1 = str2.substr(2,4);		// 参数为起止字符的索引，是闭区间。
+	str1 = str2.substr(2,4);				// 参数为起止字符的索引，是闭区间。
 	str2.replace(3, 2, "bcbcbc");
-	str3.insert(6, "new ");			// 在第6个字符后面插入，“第六”是指从“第一“开始数
-	std::cout << "\t操作多个元素的接口：insert, replace, sub_str, append, clear" << std::endl;
-	std::cout << "\tstr1 == "<< str1 << std::endl;
-	std::cout << "\tstr2 == "<< str2 << std::endl;
-	std::cout << "\tstr3 == "<< str3 << std::endl;
+	str3.insert(6, "new ");				// 在第6个字符后面插入，“第六”是指从“第一“开始数
+	std::cout << "\t 操作多个元素的接口：insert, replace, sub_str, append, clear" << std::endl;
+	std::cout << "\t str1 == "<< str1 << std::endl;
+	std::cout << "\t str2 == "<< str2 << std::endl;
+	std::cout << "\t str3 == "<< str3 << std::endl;
 	str1.clear();
 	std::cout << "str1.clear(); str1 == " << str1 << std::endl;
 	std::cout << std::endl << std::endl;
@@ -141,12 +139,12 @@ void basicTypes_strings_module::test1(void)
 	// 3. std::string对象之间的操作：operator+=
 	str1 += str2;
 	str1 += str3;
-	std::cout << "\tstring对象之间的操作：operator+=" << std::endl;
-	std::cout << "\tstr1 == " << str1 << std::endl;
+	std::cout << "\t string对象之间的操作：operator+=" << std::endl;
+	std::cout << "\t str1 == " << str1 << std::endl;
 	std::cout << std::endl << std::endl;
 
 	// 4. 迭代器接口：begin, cbegin(C++11), rbegin(C++11), crbegin(C++11)...
-	std::cout << "\t使用反向迭代器，反向打印字符串："<< std::endl;
+	std::cout << "\t 使用反向迭代器，反向打印字符串："<< std::endl;
 	for_each(str3.rbegin(), str3.rend(), disp<char>());
 	std::cout << std::endl << std::endl;
 
@@ -195,14 +193,14 @@ void basicTypes_strings_module::test1(void)
 	str2 = "9999";
 	str1.erase(3, 4);
 	str1.insert(3, str2);
-	std::cout << "str1 == " << str1 << std::endl;	// asd9999l12345
+	std::cout << "str1 == " << str1 << std::endl;		// asd9999l12345
 
 	// find_first_of()——查找子串：
 	unsigned index = str1.find_first_of("123");
 	str2 = str1.substr(0, index);
 	str3 = str1.substr(index, str1.size() - index);
-	std::cout << "str2 == " << str2 << std::endl;	// asd9999l
-	std::cout << "str3 == " << str3 << std::endl;	// 12345
+	std::cout << "str2 == " << str2 << std::endl;		// asd9999l
+	std::cout << "str3 == " << str3 << std::endl;		// 12345
 }
 
 

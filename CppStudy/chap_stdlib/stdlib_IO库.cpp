@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>				// 字符串流头文件
+
 //#include <syncstream>				// C++20起
 #include <iomanip>
 #include <streambuf>
@@ -227,14 +228,13 @@ void stdlib_io_module::test0(void)
 	std::cout << std::resetiosflags(std::ios_base::left) << std::setw(20) << d3 << std::endl;			// 设置一次后一直有效，需要手动撤销
 	std::cout << "正数前加正号——std::ios_base::showpos" << std::endl;
 	std::cout << std::setiosflags(std::ios_base::showpos) << 1234 << std::endl;
-	std::cout << resetiosflags(std::ios_base::showpos);							// 手动撤销格式
+	std::cout << std::resetiosflags(std::ios_base::showpos);							// 手动撤销格式
 	std::cout << std::endl << std::endl;
-
 
 	// setprecision()————设置浮点数精度：
 	std::cout << "setprecision()————设置浮点数精度：" << std::endl;
 	std::cout << std::setprecision(1) << d2 << std::endl;					// 此时setprecision()设置的是有效数字位数；位数不够用时默认使用科学计数法std::ios_base::scientific
-	std::cout << setiosflags(std::ios_base::fixed) << std::setprecision(1) << d2 << std::endl;
+	std::cout << std::setiosflags(std::ios_base::fixed) << std::setprecision(1) << d2 << std::endl;
 																					// 指定定点标记输出std::ios_base::fixed输出时，setprecision设置的是小数点后保留位数。
 	std::cout << std::endl << std::endl;
 
@@ -261,6 +261,7 @@ void stdlib_io_module::test0(void)
 }
 
 
+
 // test1：文件流类——ifstream, ofstream
 namespace TEST_FILESTREAM 
 {
@@ -272,12 +273,15 @@ namespace TEST_FILESTREAM
 
 void stdlib_io_module::test1(void)
 {
-	// 创建输入、输出文件流对象。程序对文件的读是输入，写是输出
-	//		输入输出、流入流出都是以程序的视角来看的，如程序向标准输出对象写入用std::cout <<..，文件流数据写入程序中的变量用file>>arg
-	//		符合编程规范的写法是只写相对路径，不写绝对路径。
-	//		std::ios_base::binary 指定打开模式为二进制，不指定的话默认为文本模式
-	//		std::ios_base::out——输出模式，没有文件则创建文件，有文件则清空文件数据。
-	//		std::ios_base::app——追加模式，即append，写时不清空原有数据，从末尾开始写。
+	// 输入、输出文件流对象。 
+	/*
+			输入输出、流入流出都是以程序的视角来看的，
+					如程序向标准输出对象写入用std::cout <<..，文件流数据写入程序中的变量用file>>arg
+			符合编程规范的写法是只写相对路径，不写绝对路径。
+			std::ios_base::binary 指定打开模式为二进制，不指定的话默认为文本模式
+			std::ios_base::out——输出模式，没有文件则创建文件，有文件则清空文件数据。
+			std::ios_base::app——追加模式，即append，写时不清空原有数据，从末尾开始写。
+	*/
 	using namespace TEST_FILESTREAM;
 
 	std::ofstream writeFile1("test1.xxx");
@@ -292,14 +296,13 @@ void stdlib_io_module::test1(void)
 	float fnum1 = 2019.4;
 	char str2[512];
 
-	std::cout << "\n\n\n\n" << std::endl;
-	std::cout << "test1: 使用ifstream, ofstream读写文件	" << std::endl;
+	debugDisp("\n\n\n\n"); 
+	debugDisp("test1: 使用ifstream, ofstream读写文件	");
 
 	// 1. fstream重载了!运算符，返回一个bool，用来判断文件句柄是否打开成功：
 	std::fstream testFile("E:/一个不存在的文件.aaa", std::ios_base::in);
-	if (!testFile) 
-		std::cout << "文件句柄testFile打开失败。" << std::endl;
-
+	if (!testFile)
+		debugDisp("文件句柄testFile打开失败。");
 
 	// 2. 写二进制文件
 
@@ -320,12 +323,10 @@ void stdlib_io_module::test1(void)
 	*/
 	myDate dt = {2020, 3, 15};
 	writeFile2.write(reinterpret_cast<char*>(&dt), sizeof(dt));
-	writeFile2.close();
+	writeFile2.close(); 
 
-
-	// 3. 写文本文件
-	writeTextFile<< str1<<inum1<<fnum1;
-	
+	// 3. 写文本文件——直接使用流输入运算符operator<<
+	writeTextFile<< str1<<inum1<<fnum1; 
 
 	// 4. 读文件：
 
@@ -353,7 +354,11 @@ void stdlib_io_module::test1(void)
 	readFile2.read(reinterpret_cast<char*>(&dt_input), sizeof(dt_input));
 	std::cout << "日期是"<< dt_input.year << "-" << dt_input.month << "-"<< dt_input.day << std::endl;
 	readFile2.close();
+
+
+	debugDisp("test1() finished.");
 }	
+
 
 
 // test2: 使用cin对象来接收输入：

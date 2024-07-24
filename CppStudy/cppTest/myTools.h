@@ -45,8 +45,15 @@
 
 #include <cassert>			// 断言
 
+
+// #define USE_BOOST
+
 // boost
+#ifdef  USE_BOOST
 #include <boost/tuple/tuple.hpp>
+#endif  
+
+
 
 
 // 内存和CPU监视接口需要的一些头文件；

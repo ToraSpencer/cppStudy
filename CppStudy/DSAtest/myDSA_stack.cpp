@@ -112,6 +112,7 @@ namespace STACK
 		debugDisp("checkValidParentheses(\"\") == ", checkValidParentheses(""));
 		debugDisp("checkValidParentheses(\"()[] {}\") == ", checkValidParentheses("()[]{}"));
 		debugDisp("checkValidParentheses(\"()[}\") == ", checkValidParentheses("()[}"));
+		debugDisp("checkValidParentheses(\"((({{[{}]}})))\") == ", checkValidParentheses("((({{[{}]}})))"));
 
 		debugDisp("test0() finished.");
 	}
