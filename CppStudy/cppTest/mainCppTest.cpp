@@ -3703,12 +3703,12 @@ namespace TEST_OOP
 	{
 	public:
 		elementParser() {}
-		void setPointer(const char* str) {}
-		void parse(char& output) {}
-		void parse(unsigned short& output) {}
-		void parse(unsigned& output) {}
-		void parse(int& output) {}
-		void parse(float& output) {}
+		virtual void setPointer(const char* str) {}
+		virtual void parse(char& output) {}
+		virtual void parse(unsigned short& output) {}
+		virtual void parse(unsigned& output) {}
+		virtual void parse(int& output) {}
+		virtual void parse(float& output) {}
 		~elementParser() {}
 	};
 
@@ -3717,21 +3717,21 @@ namespace TEST_OOP
 	public:
 		const char* ptrParse;
 		charParser(const char* str) : ptrParse(str) {}
-		void setPointer(const char* str) 
+		virtual void setPointer(const char* str)
 		{
 			this->ptrParse = str;
 		}
-		void parse(char& output)
+		virtual void parse(char& output)
 		{
 			output = *this->ptrParse;
 			this->ptrParse++;
 		}
-		void parse(unsigned short& output)
+		virtual void parse(unsigned short& output)
 		{
 			output = *this->ptrParse;
 			this->ptrParse++;
 		}
-		void parse(unsigned output)
+		virtual void parse(unsigned output)
 		{
 			output = static_cast<unsigned>(*this->ptrParse);
 			this->ptrParse++;
@@ -3743,16 +3743,16 @@ namespace TEST_OOP
 	public:
 		const unsigned short* ptrParse;
 		uShortParser(const char* str) : ptrParse(reinterpret_cast<const unsigned short*>(str)) {}
-		void setPointer(const char* str) 
+		virtual void setPointer(const char* str)
 		{
 			this->ptrParse = reinterpret_cast<const unsigned short*>(str);
 		}
-		void parse(unsigned short& output)
+		virtual void parse(unsigned short& output)
 		{
 			output = *this->ptrParse;
 			this->ptrParse++;
 		}
-		void parse(unsigned output)
+		virtual void parse(unsigned output)
 		{
 			output = static_cast<unsigned>(*this->ptrParse);
 			this->ptrParse++;
@@ -3768,8 +3768,7 @@ namespace TEST_OOP
 		std::string str = "123asdf8989zxcv";
 		parser1 = new charParser(&str[0]);
 		parser2 = new uShortParser(&str[0]);
-
-		charParser* cParser1 = parser1;
+		 
 
 		char ch = 0;
 		unsigned short num = 0;
