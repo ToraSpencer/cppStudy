@@ -1031,11 +1031,11 @@ int main(int argc, char** argv)
 {
 	// RECURSION::test1(); 
 
-	// TREE::test7();
+	TREE::test13();
 
 	// TEST_MY_IO::test0();
 
-	STACK::test0();
+	// STACK::test0();
 
 	//LIST::test0();
 	//ARRAY::test2();

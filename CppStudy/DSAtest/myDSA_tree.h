@@ -217,8 +217,7 @@ TreeNode<T>* buildBT(const std::vector<T>& vecPRO, const std::vector<T>& vecIO)
 	return ptrRoot;
 }
 
-
-
+ 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////  Read methods
 
@@ -317,6 +316,10 @@ void printBT(TreeNode<T>* ptrNode)
 	// 释放内存
 	delete[] arr;
 }
+
+
+// 控制台上打印节点元素为字符串的BT
+void printStrBT(TreeNode<std::string>* ptrNode);
 
 
 // 递归函数——遍历BT（to be optimized——当前DFS中不跳过空节点的方法貌似有误）

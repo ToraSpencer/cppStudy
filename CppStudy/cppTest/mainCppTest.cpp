@@ -1733,7 +1733,6 @@ namespace TEST_STD
 		filein.seekg(posHead);
 		debugDisp("fileLen == ", fileLen);
 
-
 		// 2. 拷贝文件流，转换为字符串：
 		std::string str;
 		str.resize(fileLen);
@@ -1779,11 +1778,40 @@ namespace TEST_STD
 	}
 	 
 
+	// 流pos对象和指针的关系：
 	void test1() 
-	{
+	{ 
+		auto pos2posNum = [](const std::ios::pos_type& pos)->unsigned long long
+			{
+				return static_cast<unsigned long long>(pos);
+			};
 
+		std::ifstream filein;
+		filein.open("C:/myData/cube_simple_3_6_4.osgb", std::ios::in | std::ios::binary);
+		if (!filein.is_open())
+		{
+			debugDisp("error!!! 输出文件打开失败。");
+			return;
+		}
 
+		// 1. 度量文件流长度：
+		unsigned fileLen = 0;
+		std::ios::pos_type  posHead, posTail;
+		posHead = filein.tellg();									// tellg()方法——返回当前文件指针位置；当前指向头部； 
+		filein.seekg(0, std::ios::end);								// 文件指针指向末尾；
+		posTail = filein.tellg();
+		fileLen = static_cast<unsigned>(filein.tellg());
+		filein.seekg(posHead);
+		debugDisp("fileLen == ", fileLen);
+		debugDisp("posHeadNum == ", pos2posNum(posHead));
+		debugDisp("posTailNum == ", pos2posNum(posTail)); 
 
+		// 2. 拷贝文件流，转换为字符串：
+		std::string str;
+		str.resize(fileLen);
+		filein.read(&str[0], fileLen);
+
+		debugDisp("test1() finished.");
 	}
 };
 
@@ -3967,7 +3995,7 @@ int main()
 {    
 	// TEST_STL::STL_STRING::test0();
 
-	TEST_STD::test0(); 
+	TEST_STD::test1(); 
 
 	// TEST_OOP::test2();
 
