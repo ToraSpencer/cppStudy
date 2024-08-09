@@ -3638,6 +3638,7 @@ namespace PERMUTATION_COMBINATION
 }
 
 
+// 类型信息
 namespace TEST_TYPE_TRAITS
 {
 	template<typename T>
@@ -3709,12 +3710,23 @@ namespace TEST_TYPE_TRAITS
 	template <typename T>
 	const char* hoo(const T& elem)
 	{
-		return typeid(T).name();
+		// typeid()——返回
+		const std::type_info& typeInfo = typeid(T);
+		const char* typeName = typeid(T).name();
+
+		// std::type_info支持operator==
+		if (typeInfo == typeid(int))
+			debugDisp("this is a int.");
+
+		debugDisp("pause");
+		return typeName;
 	}
 
 	template <typename TypeOut, typename TypeIn>
 	bool ioo(TypeOut& out, const TypeIn& elem)
 	{
+
+
 		out = static_cast<TypeOut>(elem);
 		return true;
 	}
@@ -3722,7 +3734,8 @@ namespace TEST_TYPE_TRAITS
 	// type mapping:
 	void test2() 
 	{
-		debugDisp(hoo(3));
+		int num = 3;
+		debugDisp(hoo(num));
 		debugDisp(hoo("asdf"));
 
 		int numI = 5;
@@ -3995,11 +4008,11 @@ int main()
 {    
 	// TEST_STL::STL_STRING::test0();
 
-	TEST_STD::test1(); 
+	// TEST_STD::test1(); 
 
 	// TEST_OOP::test2();
 
-	// TEST_TYPE_TRAITS::test2();
+	TEST_TYPE_TRAITS::test2();
 
 
 	debugDisp("main() finished."); 
