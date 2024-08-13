@@ -57,6 +57,7 @@ namespace MY_DEBUG
 }
 using namespace MY_DEBUG;
  
+
 #if 1
 void strBT2Array(TreeNode<std::string>* ptrNode, std::string* arrayHead, int i, int k, \
 	const std::pair<int, int>& size = std::make_pair(0, 0))

@@ -12,7 +12,42 @@
 			Sleep()
 
 */
+
+
+class Base 
+{
+public:
+	int numInt = 0;
+
+public:
+	Base() {}
+	Base(const int n0) : numInt(n0) {}
+	
+	virtual void foo() 
+	{
+		std::cout << "foo base" << std::endl;
+	}
+};
  
+
+class Derived : public Base 
+{
+public:
+	float numFloat = 0;
+
+public:
+	Derived() {}
+	Derived(const int n0, const float f0) : Base(n0) , numFloat(f0) {}
+	virtual void foo() 
+	{
+		std::cout << "foo derived" << std::endl;
+	}
+
+	void goo() 
+	{
+		std::cout << this->numInt << ", " << this->numFloat << std::endl;
+	}
+};
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
@@ -453,188 +488,6 @@ namespace TEST_UNKNOWN
 		*/
 
 
-#if 0 
-
-		//			组合模式实例——公司组织架构管理系统：
-		class orgComponent			// 组织类；
-		{
-		public:
-			orgComponent() = default;
-
-			orgComponent(const char* str) : name(std::string(str))
-			{}
-
-			std::string getName() const
-			{
-				return this->name;
-			}
-
-			virtual	void add(const orgComponent& org);
-
-			virtual orgComponent* getChild(const char* orgName);
-
-			virtual unsigned getStuffCount();
-
-		private:
-			std::string name;
-		};
-
-
-		class orgComposite : orgComponent		// 组合类；
-		{
-		public:
-			orgComposite(const char* str) :name(std::string(str))
-			{}
-
-			virtual void add(const  orgComponent& org)
-			{
-				this->orgs.push_back(org);
-			}
-
-			virtual orgComponent* getChild(const char* orgName)
-			{
-				orgComponent* orgPtr = nullptr;
-				for (auto& elem : this->orgs)
-				{
-					orgPtr = elem.getChild(orgName);
-					if (nullptr != orgPtr)
-						return orgPtr;
-				}
-				return nullptr;
-			}
-
-			virtual unsigned getStuffCount()
-			{
-				unsigned count = 0;
-				for (auto& elem : orgs)						// 递归累加职工人数；
-					count += elem.getStuffCount();
-
-				return count;
-			}
-
-		private:
-			std::list<orgComponent> orgs;
-			std::string name;
-		};
-
-
-		// 具体的组织部门，相当于叶子节点。
-		class ITCenter : orgComponent
-		{
-		public:
-			ITCenter(const char* str) : name(std::string(str)) {}
-
-			virtual unsigned getStuffCount()
-			{
-				return stuffCount;
-			}
-
-			virtual void add(const orgComponent& org)
-			{
-				std::cout << "已经是最基础部门，无法增加下属部门。" << std::endl;
-			}
-
-			virtual orgComponent* getChild(const char* str)
-			{
-				if (0 == strcmp(this->name.c_str(), str))
-					return this;
-				else
-					return nullptr;
-			}
-
-			void setStuffCount(const unsigned num)
-			{
-				this->stuffCount = num;
-			}
-
-		private:
-			unsigned stuffCount = 0;
-		};
-
-
-		class algorithmCenter : orgComponent
-		{
-		public:
-			algorithmCenter(const char* str) : name(str) {}
-
-			virtual unsigned getStuffCount()
-			{
-				return stuffCount;
-			}
-
-			virtual void add(const orgComponent& org)
-			{
-				std::cout << "已经是最基础部门，无法增加下属部门。" << std::endl;
-			}
-
-			virtual orgComponent* getChild(const char* str)
-			{
-				if (0 == strcmp(this->name.c_str(), str))
-					return this;
-				else
-					return nullptr;
-			}
-
-			void setStuffCount(const unsigned num)
-			{
-				this->stuffCount = num;
-			}
-
-		private:
-			unsigned stuffCount = 0;
-		};
-
-		// 用户使用的管理系统类；
-		class clientSystem
-		{
-		public:
-			static clientSystem& getInstance()
-			{
-				static clientSystem sys;
-				return sys;
-			}
-
-		private:
-			orgComposite head("AAA Corporation");
-
-			clientSystem()
-			{
-				constructSystem();
-			}
-
-			clientSystem(clientSystem&) = delete;
-			~clientSystem() = default;
-
-			void constructSystem()
-			{
-				orgComposite branch1("AAA SH branch office");
-				orgComposite depTec1("main Technology department");
-				orgComposite depTec2("SH Technology department");
-
-				ITCenter ITCenter_SH("SH IT center");
-				ITCenter_SH.setStuffCount(20);
-
-				ITCenter ITCenter_main("main IT center");
-				ITCenter_main.setStuffCount(99);
-
-				algorithmCenter algCenter_main("main algorithm center");
-				algCenter_main.setStuffCount(200);
-
-				depTec2.add(ITCenter_SH);
-				branch1.add(depTec2);
-
-				depTec1.add(algCenter_main);
-				depTec1.add(ITCenter_main);
-				this->head.add(depTec1);
-				this->head.add(branch1);
-			}
-
-			void listCorpInfo()
-			{
-				std::cout << "whole stuff count == " << this->head.getStuffCount() << std::endl;
-			}
-		};
-#endif
 	}
 
 
@@ -935,21 +788,21 @@ namespace TEST_UNKNOWN
 
 	}
 
-	//  指针：
+
+	//  指针和智能指针
 	namespace POINTER
 	{
 		// 智能指针
-	/*
-		make_shared()
+		/*
+			make_shared()
 
-		shared_ptr的常用接口
-			use_count()
-			unique()
-			reset()
+			shared_ptr的常用接口
+				use_count()
+				unique()
+				reset()
 
-		unique_ptr的常用接口
-
-	*/
+			unique_ptr的常用接口
+		*/
 
 		void test0()
 		{
@@ -1052,6 +905,46 @@ namespace TEST_UNKNOWN
 			traverseSTL(numVec, disp<int>()); 
 
 			debugDisp("test1 finished.");
+		}
+
+
+		// 指针和智能指针的类型转换：
+		void test2() 
+		{
+			Base b{12};
+			Derived d{13, 0.5};
+
+			// 1. 
+			Base* pb1 = &b;
+			Base* pb2 = &d;
+			Derived* pd1 = nullptr;
+			Derived* pd2 = nullptr;
+			pb1->foo();
+			pb2->foo();			
+			// pd1 = dynamic_cast<Derived*>(pb1);			// 编译不报错，但是因为并没有指向派生类对象，所以向下造型失败，返回空指针；
+			pd2 = dynamic_cast<Derived*>(pb2);				// 向下造型成功；
+
+			// pd1->goo();
+			pd2->goo();
+
+			// 2. 智能指针的类型转换：
+			std::shared_ptr<Base> sb1 = std::make_shared<Base>(b);				// 只能传入对象构造，不能传入指针；
+			std::shared_ptr<Base> sb2 = std::make_shared<Base>(d);
+			std::shared_ptr<Derived> sd1 = nullptr;
+			std::shared_ptr<Derived> sd2 = nullptr;
+			//sd1 = std::make_shared<Derived>(b);							// 没有指向派生类对象，无法向下造型，编译会报错；
+			sd2 = std::make_shared<Derived>(d);
+			 
+			//		2.1 
+			sb2.reset();
+			sb2 = std::dynamic_pointer_cast<Base>(sd2);								
+			sd1 = std::dynamic_pointer_cast<Derived>(sb1);			// 编译不报错，但是因为并没有指向派生类对象，所以向下造型失败，返回空指针；
+			sd2 = std::dynamic_pointer_cast<Derived>(sb2);			// 向下造型成功；
+
+			//		2.2. 可以使用std::reinterpret_pointer_cast<>()来强行向下造型；
+			std::shared_ptr<Derived> sd11 = std::reinterpret_pointer_cast<Derived>(sb1);			// 强行向下造型补上的成员变量貌似是随机值；
+
+			debugDisp("test2() finished.");
 		}
 	}
 
@@ -4012,8 +3905,9 @@ int main()
 
 	// TEST_OOP::test2();
 
-	TEST_TYPE_TRAITS::test2();
+	// TEST_TYPE_TRAITS::test2();
 
+	TEST_UNKNOWN::POINTER::test2();
 
 	debugDisp("main() finished."); 
 
