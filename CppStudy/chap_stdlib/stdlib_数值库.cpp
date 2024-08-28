@@ -176,7 +176,22 @@ void stdlib_numerical_module::test4(void)
 }
 
 
-void stdlib_numerical_module::test5(void) {}
+// test5: C++中生成整数序列
+void stdlib_numerical_module::test5(void)
+{
+	std::cout << "\n\n\n\n" << std::endl;
+	debugDisp("test5: C++中生成整数序列"); 
+	 
+	// std::iota生成间隔为1的等差数列：
+	std::vector<int> numVec1;
+	numVec1.resize(10);
+	std::iota(numVec1.begin(), numVec1.end(), 9);
+	debugDisp("numVec1 == ");
+	traverseSTL(numVec1, disp<int>());
+	 
+
+	debugDisp("test5() finished.");
+}
 
 
 void stdlib_numerical_module::test6(void) {}

@@ -159,9 +159,8 @@ void basicTypes_pointers_module::test1(void)
 
 	float f1 = 1.10;
 
-	// 1. constructor
-	std::shared_ptr<float> pf1;								// 默认构造函数，构造一个空的shared_ptr指针 
-	// std::shared_ptr<float> pf2(&f1);					//  智能指针不能指向栈对象，否则析构的时候会抛出异常；
+	// 1. constructor——！！！智能指针不能指向栈对象，否则析构的时候（如reset()时或进程结束的时候等）会抛出异常；
+	std::shared_ptr<float> pf1;									// 默认构造函数，构造一个空的shared_ptr指针  
 	std::shared_ptr<float> pf3(new float(1.11));		// 传递普通指针构造，配合关键字new
 
 	// 2. make_shared<T>()————创建一个shared_ptr指针
@@ -197,14 +196,17 @@ void basicTypes_pointers_module::test1(void)
 	debugDisp("\t", "pi2.use_count() == ", pi2.use_count());
 	debugDisp("\t", "pi3.use_count() == ", pi3.use_count());
 
+	// 4. get()方法——智能指针返回其封装的指针
+
+	// 5. 
+
 	debugDisp("test1() finished.");
 }
 
 
 // test2: 自定义类型使用智能指针shared_ptr, unique_ptr
 void basicTypes_pointers_module::test2(void)
-{
-
+{ 
 	// 智能指针默认使用delete来释放对象内存。自定义类型的，需要有删除器才可以使用delete
 
 }
@@ -217,11 +219,11 @@ void basicTypes_pointers_module::test3(void)
 	std::cout << "test3：空指针" << std::endl;
 
 	// 使用空指针来访问不存在的内存空间，会引发空指针异常，从而程序崩溃
-	int *pi1 = NULL;
-	int *pi2 = NULL;
+	int *pi1 = nullptr;
+	int *pi2 = nullptr;
 
 	// 可以使用p==NULL表达式返回的bool值来判断是否是空指针
-	if (pi1 == NULL && pi1 == NULL && pi2 == NULL && pi2 == NULL) 
+	if (pi1 == NULL && pi1 == nullptr && pi2 == NULL && pi2 == nullptr)
 		debugDisp("pi1和pi2都是空指针。写成NULL或nullptr都可以。"); 
 
 	std::cout << "(int)(pi1 == NULL) == " << (int)(pi1 == NULL) << std::endl;

@@ -154,7 +154,7 @@ namespace MY_DEBUG
 	};
 
 
-	// 传入函数子或函数指针遍历stl容器
+	// 传入函数子或函数指针遍历stl容器——函数子格式为void func(elemType& e)
 	template<typename T, typename F>
 	void traverseSTL(T& con, F f)
 	{

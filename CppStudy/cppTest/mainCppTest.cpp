@@ -840,7 +840,7 @@ namespace TEST_UNKNOWN
 			// delete tempPtr;
 
 
-			// 可以直接用if和!来判断只能指针是否为空；
+			// 可以直接用if和!来判断智能指针是否为空；
 			if (pi1)
 				std::cout << "pi1不为空" << std::endl;
 			else
@@ -851,13 +851,7 @@ namespace TEST_UNKNOWN
 			else
 				std::cout << "pi2不为空" << std::endl;
 
-
-
-			// 智能指针接管传统指针，不要用智能指针指向栈对象，虽然指向的时候不报错，但是reset()的时候会产生异常。
-			float* opf1 = new float(3.1415);
-			std::shared_ptr<float> pf1(opf1);
-
-
+			 
 			// unique_ptr
 
 					// allocator<T>类模板
@@ -1978,6 +1972,34 @@ namespace TEST_STL
 			debugDisp("test0 finished.");
 		}
 
+		// std::string
+		void test1() 
+		{
+			std::string str1(10, '\0');
+			std::string str2(10, '\0');
+			str1[0] = 'a';
+			str1[1] = 'b';
+			str2[0] = '1';
+			str2[1] = '2';
+			str2[2] = '3';
+			debugDisp("str1.size() == ", str1.size());						// 10
+			debugDisp("str1.length() == ", str1.length());				// 10
+
+			// 使用std::cout打印std::string时会跳过'\0'，不会截断；打印C风格字符串时碰到'\0'会停止；
+			std::string tmpStr1 = str1 + str2;
+			debugDisp("tmpStr1 == ", tmpStr1, ", tmpStr1.length() == ", tmpStr1.length()); 
+			debugDisp("tmpStr1.c_str() == ", tmpStr1.c_str());
+
+			// 去除std::string中的'\0'
+			const char* tmpCstr1 = tmpStr1.c_str();
+			std::string tmpStr2;
+			tmpStr2 += str1.c_str();
+			tmpStr2 += str2.c_str();
+			debugDisp("strlen(tmpCstr1) == ", strlen(tmpCstr1));
+			debugDisp("tmpStr2 == ", tmpStr2, ", tmpStr2.length() == ", tmpStr2.length());
+
+			debugDisp("test1() finished.");
+		}
 	}
 
 
@@ -3899,7 +3921,7 @@ namespace TEST_OOP
 
 int main()
 {    
-	// TEST_STL::STL_STRING::test0();
+	TEST_STL::STL_STRING::test1();
 
 	// TEST_STD::test1(); 
 
@@ -3907,7 +3929,7 @@ int main()
 
 	// TEST_TYPE_TRAITS::test2();
 
-	TEST_UNKNOWN::POINTER::test2();
+	// TEST_UNKNOWN::POINTER::test2();
 
 	debugDisp("main() finished."); 
 

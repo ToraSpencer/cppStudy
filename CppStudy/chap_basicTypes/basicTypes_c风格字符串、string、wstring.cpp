@@ -125,7 +125,7 @@ void basicTypes_strings_module::test1(void)
 
 
 	// 2. 操作多个元素的接口：insert, replace, substr, append
-	str1 = str2.substr(2,4);				// 参数为起止字符的索引，是闭区间。
+	str1 = str2.substr(2,4);				
 	str2.replace(3, 2, "bcbcbc");
 	str3.insert(6, "new ");				// 在第6个字符后面插入，“第六”是指从“第一“开始数
 	std::cout << "\t 操作多个元素的接口：insert, replace, sub_str, append, clear" << std::endl;
@@ -505,6 +505,7 @@ void basicTypes_strings_module::test7(void)
 	std::string tmpStr;
 
 	// 1. 提取字符串中所有纯数值子串：
+	debugDisp("纯数值子串：");
 	for (const auto& ch: str) 
 	{
 		if (ch >= '0' && ch <= '9' || ch == '.')
@@ -514,6 +515,7 @@ void basicTypes_strings_module::test7(void)
 			if (tmpStr.size() > 0)
 			{
 				numStrs.push_back(tmpStr);
+				debugDisp("\t", tmpStr);
 				tmpStr.clear();
 			}
 		}
@@ -524,13 +526,13 @@ void basicTypes_strings_module::test7(void)
 	numVec.reserve(numStrs.size());
 	for (const auto& str : numStrs)
 	{
-		//	double	stod(const std::string& str, std::size_t* pos = nullptr);
+		//	stod(const std::string& str, std::size_t* pos = nullptr)——返回double
 		double num = std::stod(str);
 		numVec.push_back(num);
 	}
 
-	std::cout << "input str == " << str << std::endl;
-	std::cout << "extracted numbers : " << std::endl;
+	debugDisp("input str == ", str); 
+	debugDisp("extracted numbers : ");
 	traverseSTL(numVec, disp<double>());
 
 	std::cout << "test 7 finished." << std::endl;
