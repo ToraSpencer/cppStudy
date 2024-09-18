@@ -50,6 +50,7 @@ public:
 };
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
 namespace MY_DEBUG
 {
@@ -406,6 +407,65 @@ namespace MY_WIN_API
 using namespace MY_WIN_API;
 
 
+namespace TEST_WIN_API
+{
+
+	// 使用WINDOWS API调用.exe可执行程序:
+	void test0() 
+	{ 
+		const WCHAR* exePath = \
+			L"C:\\software_develop\\OpenSceneGraph-3.6.4-VS2022\\bin\\osgconv.exe";		 // 要调用的 .exe 文件的完整路径
+		const wchar_t* arg0 = exePath;
+		const wchar_t* arg1 = L"C:\\myData\\tree1.osgb";
+		const wchar_t* arg2 = L"C:\\myData\\output\\tree1.obj"; 
+		std::wstring commandLine;				// 命令行界面输入的参数；
+		commandLine.resize(1024); 
+		swprintf(&commandLine[0], 1024, L"%s %s %s", arg0, arg1, arg2);
+
+		// 1. 创建进程信息结构体
+		STARTUPINFO si;
+		PROCESS_INFORMATION pi;
+
+		// 2. 初始化STARTUPINFO
+		ZeroMemory(&si, sizeof(si));
+		si.cb = sizeof(si);
+
+		// 3. 初始化PROCESS_INFORMATION
+		ZeroMemory(&pi, sizeof(pi));
+
+		// 4. 调用可执行程序
+		if (CreateProcess(
+			exePath,          // 可执行程序的路径
+			&commandLine[0],             // 命令行参数
+			NULL,             // 进程句柄不继承
+			NULL,             // 线程句柄不继承
+			FALSE,            // 不继承句柄
+			0,						// 创建标志
+			NULL,				// 使用父进程的环境
+			NULL,				// 使用父进程的当前目录
+			&si,					// 启动信息
+			&pi))				// 进程信息
+		{
+			// i1. 成功启动进程
+			std::cout << "程序已启动。" << std::endl;
+
+			// i2. 等待进程结束
+			WaitForSingleObject(pi.hProcess, INFINITE);
+
+			// i3. 关闭进程和线程的句柄
+			CloseHandle(pi.hProcess);
+			CloseHandle(pi.hThread);
+		}
+		else
+		{
+			// 如果创建进程失败，输出错误信息
+			std::cout << "无法启动程序。错误代码: " << GetLastError() << std::endl;
+		}
+
+
+		debugDisp("test0() finished.");
+	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 暂时不知如何分类：
@@ -1609,6 +1669,7 @@ namespace TEST_STD
 			debugDisp("error!!! 输出文件打开失败。");
 			return;
 		}
+		 
 
 		// 1. 度量文件流长度：
 		unsigned fileLen = 0;
@@ -1701,6 +1762,7 @@ namespace TEST_STD
 		debugDisp("test1() finished.");
 	}
 };
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// C++新特性：
@@ -3351,8 +3413,7 @@ namespace TEST_THIRD_LIBS
 
 ///////////////////////////////////////////////////////////////////////////////////////////// 面向对象
 namespace TEST_OOP 
-{
-
+{ 
 	class String
 	{
 	private:
@@ -3437,8 +3498,7 @@ namespace TEST_OOP
 
 ///////////////////////////////////////////////////////////////////////////////////////////// 排列组合：
 namespace PERMUTATION_COMBINATION
-{ 
-
+{  
 	// 递归函数：求解组合（基于回溯法）
 	void generateCombinations(std::vector<std::vector<int>>& combs, \
 		std::list<int>& tmpList, const int n, const int m, const int num)
@@ -3919,9 +3979,12 @@ namespace TEST_OOP
 }
 
 
+
 int main()
 {    
-	TEST_STL::STL_STRING::test1();
+	// TEST_STL::STL_STRING::test1();
+
+	TEST_WIN_API::test0();
 
 	// TEST_STD::test1(); 
 
