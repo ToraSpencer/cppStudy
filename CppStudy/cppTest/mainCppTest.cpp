@@ -3782,8 +3782,7 @@ namespace TEST_OOP
 			return reinterpret_cast<void*>(this->data);
 		}
 	};
-
-
+	 
 
 	class charParser : public baseParser
 	{
@@ -3976,6 +3975,12 @@ namespace TEST_OOP
 
 		debugDisp("test2 finished.");
 	}
+
+
+	void test3() 
+	{
+
+	}
 }
 
 
@@ -3984,11 +3989,11 @@ int main()
 {    
 	// TEST_STL::STL_STRING::test1();
 
-	TEST_WIN_API::test0();
+	// TEST_WIN_API::test0();
 
 	// TEST_STD::test1(); 
 
-	// TEST_OOP::test2();
+	TEST_OOP::test3();
 
 	// TEST_TYPE_TRAITS::test2();
 
