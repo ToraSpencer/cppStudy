@@ -601,8 +601,8 @@ namespace TEST_UNKNOWN
 			std::cout << "wstr1.size() == " << wstr1.size() << std::endl;
 		}
 
-		// 字符串匹配：
-		void test3()
+		// std::string中的字符串匹配接口
+		void test2()
 		{
 			// 1. std::string, std::wstring的find()方法——寻找字符串中匹配的字符或子串；
 			std::string str1 = "asdfajiuiuwww.github.comasdfuoiup";
@@ -619,6 +619,178 @@ namespace TEST_UNKNOWN
 			str12.insert(str12.end(), str1.begin(), str1.begin() + num);
 			std::cout << "str1匹配子串开始之后的内容为：" << str11 << std::endl;
 			std::cout << "str12 == " << str12 << std::endl;
+		}
+
+
+		// 手写KMP字符串匹配：  
+
+		void kmpSearch(std::vector<int>& result, const std::string& strTest, const std::string& pattern)
+		{
+			// lambda——构建Next数组
+			auto buildNext = [](const std::string& pattern)->std::vector<int>
+				{
+					int m = pattern.length();
+					std::vector<int> next(m, 0);		// 初始化Next数组，长度为模式串的长度
+					int index = 0;							 // index指向最长前缀的末尾字符
+
+					for (int i = 1; i < m; ++i)
+					{
+						while (index > 0 && pattern[i] != pattern[index])
+							index = next[index - 1];				  // 不匹配时，index退回到Next[index-1]
+						if (pattern[i] == pattern[index])
+							index++;
+						next[i] = index;						// 记录Next[i]的值
+					} 
+					return next;
+				};
+			
+			result.clear();
+
+			std::vector<int> next = buildNext(pattern);		// 获取模式串的Next数组 
+			int index = 0;														// index指向模式串 
+
+			for (int i = 0; i < strTest.length(); ++i)
+			{
+				const char& ch = strTest[i];
+
+				while (index > 0 && ch != pattern[index])
+					index = next[index - 1];				// 不匹配时，index退回到Next[index-1]
+
+				if (ch == pattern[index])
+					index++;
+
+				if (index == pattern.length())
+				{
+					result.push_back(i - index + 1);  // 记录匹配的位置
+					index = next[index - 1];  // 继续搜索下一个匹配
+				}
+			}
+		}
+		 
+		void test3() 
+		{
+			std::string strTest = "ABC ABCDAB ABCDABCDABDE";
+			// std::string pattern = "ABCDABD";
+			std::string pattern = "BCD";
+
+			// 使用KMP算法查找模式串在主串中的位置
+			std::vector<int> positions;
+			kmpSearch(positions, strTest, pattern);
+
+			// 输出结果
+			std::cout << "Pattern found at positions: ";
+			for (int pos : positions) 
+				std::cout << pos << " ";			
+			std::cout << std::endl;
+			
+			debugDisp("test3() finished.");
+		} 
+
+
+		// 输入流中的KMP字符串匹配：
+		void kmpSearchInStream(std::vector<long long>& posNums, std::istream& is, const std::string& pattern)
+		{
+			// lambda——构建Next数组
+			auto buildNext = [](const std::string& pattern)->std::vector<int>
+				{
+					int m = pattern.length();
+					std::vector<int> next(m, 0);		// 初始化Next数组，长度为模式串的长度
+					int index = 0;							 // index指向最长前缀的末尾字符
+
+					for (int i = 1; i < m; ++i)
+					{
+						while (index > 0 && pattern[i] != pattern[index])
+							index = next[index - 1];				  // 不匹配时，index退回到Next[index-1]
+						if (pattern[i] == pattern[index])
+							index++;
+						next[i] = index;						// 记录Next[i]的值
+					}
+					return next;
+				};
+
+			// 1. 构建Next数组：
+			posNums.clear();
+			std::vector<int> next = buildNext(pattern);		// 获取模式串的Next数组 
+
+			// 2. 逐个读输入流中的字符，进行字符串匹配：
+			int index = 0;														// index指向模式串 
+			long long pnCurr = 0;
+			char chRead = 0; 
+			while (is.read(&chRead, 1))
+			{
+				while (index > 0 && chRead != pattern[index])
+					index = next[index - 1];				// 不匹配时，index退回到Next[index-1]
+
+				if (chRead == pattern[index])
+					index++;
+
+				if (index == pattern.length())
+				{
+					posNums.push_back(pnCurr - static_cast<long long>(index) + 1);  // 记录匹配的位置
+					index = next[index - 1];		// 继续搜索下一个匹配
+				}
+
+				pnCurr++;
+			} 
+
+			// 3. 清除输入流的EOF标记，流指针指向开头：
+			is.clear();
+			is.seekg(0);
+		}
+		
+
+		void test4()
+		{
+			// 
+			auto stream2str = [](std::string& str, std::istream& is)
+				{
+					str.clear();
+					std::list<char> tmpList;
+
+					//
+					char chRead = 0;
+					is.clear();
+					is.seekg(0);
+					while (is.read(&chRead, 1))
+						tmpList.push_back(chRead);
+					str.insert(str.end(), tmpList.begin(), tmpList.end());
+
+					// 
+					is.clear();
+					is.seekg(0);
+				};
+
+			std::string pattern = "DrawArrays";
+			std::ifstream fileIn("C:\\myData\\basicData\\DrawArrays_TRIANGLE_FAN.osgb", std::ios::binary);
+			if (!fileIn.is_open())
+				return;
+
+			std::istream& is = dynamic_cast<std::istream&>(fileIn);
+			std::vector<long long> posNums;
+			kmpSearchInStream(posNums, is, pattern);
+
+			// for debug:
+			std::string strStream;
+			stream2str(strStream, is);
+
+			// 输出结果
+			std::cout << "Pattern found at positions: ";
+			for (const auto& pn: posNums)
+				std::cout << pn << " ";
+			std::cout << std::endl;
+
+			// 输出结果
+			std::string line;
+			line.resize(512);
+			for (const auto& pn: posNums) 
+			{
+				is.seekg(pn);  
+				is.getline(&line[0], 512);
+				debugDisp(line);
+			}
+			 
+
+			debugDisp("test4() finished.");
 		}
 	}
 
@@ -1486,8 +1658,8 @@ namespace TEST_UNKNOWN
 	}
 
 
-	// 文件读写
-	namespace FILEIO
+	// 标准输出输出流类，文件IO
+	namespace TEST_IO
 	{
 		typedef	struct TDline
 		{
@@ -1643,6 +1815,88 @@ namespace TEST_UNKNOWN
 				std::cout << strRead << std::endl;
 
 			std::cout << "finished." << std::endl;
+		}
+
+
+		// std::istream和std::ostream的成员数据及方法：
+		void test3() 
+		{
+			std::ifstream fileIn("C:/myData/tooth.osg");
+			if (!fileIn.is_open())
+			{
+				debugDisp("file open error!!!");
+				return;
+			} 
+
+			std::istream& is = dynamic_cast<std::istream&>(fileIn);
+
+			// read()方法
+			std::string strRead;
+			strRead.resize(10);
+			is.read(&strRead[0], 10 * sizeof(char));
+			debugDisp("read()方法：");
+			debugDisp("strRead == ", strRead);
+			debugDisp("\n");
+
+			// tellg()方法
+			std::streampos pos;					// std::streampos和std::ios::pose_type类型是等价的；
+			long long posNum = 0;				
+			debugDisp("tellg()方法：");
+			for (int i = 0; i < 3; ++i)
+			{
+				pos = is.tellg();
+				posNum = pos;					// pos对象内部使用64位int对象来记录流指针所在的位置；可以直接用operator=得到；
+				debugDisp("posNum == ", posNum);
+				is.read(&strRead[0], 10 * sizeof(char));
+				debugDisp("strRead == ", strRead);
+			} 
+			debugDisp("\n");
+
+			// seekg()方法——调整流指针位置，可以输入std::streampos对象，也可以输入整型数；
+			long long posNum1 = 5;
+			std::streampos pos1{ posNum1 };
+			debugDisp("seekg()方法：");
+			is.seekg(pos1);
+			pos = is.tellg();
+			posNum = pos; 
+			debugDisp("posNum == ", posNum);
+			is.read(&strRead[0], 10 * sizeof(char));
+			debugDisp("strRead == ", strRead);
+			is.seekg(0);
+			pos = is.tellg();
+			posNum = pos;
+			debugDisp("posNum == ", posNum);
+			is.read(&strRead[0], 10 * sizeof(char));
+			debugDisp("strRead == ", strRead); 
+
+			// 文件流的eofbit（文件结束标志位）
+			bool blEOF = is.eof();			// 文件流到达文件末尾时，文件流的eofbit（文件结束标志位）会被设置；可以使用 eof() 方法来检测文件是否到达末尾；
+			debugDisp("blEOF == ", blEOF);
+			strRead.resize(1024);
+			while (is.getline(&strRead[0], 1024))		// 读到文件末尾； 
+				continue; 
+			blEOF = is.eof();
+			debugDisp("blEOF == ", blEOF);
+			pos = is.tellg();
+			posNum = pos;
+			debugDisp("posNum == ", posNum);
+			debugDisp("(-1 == pos) == ", -1 == pos);
+
+			// 流读完以后，想要再用seekg调整流指针，则必须要先清除eofbit
+			is.seekg(5);					// 这里没有清除eofbit，seekg()无效；
+			pos = is.tellg();
+			posNum = pos; 
+			debugDisp("posNum == ", posNum);		
+
+			//		clear()方法清除eofbit;
+			is.clear();					
+			is.seekg(5);
+			pos = is.tellg();
+			posNum = pos;
+			debugDisp("posNum == ", posNum);
+
+
+			debugDisp("test3() finished.");
 		}
 	}
 
@@ -3725,279 +3979,335 @@ namespace TEST_TYPE_TRAITS
 
 namespace TEST_OOP
 {
-
-	class baseParser
+	// 多态
+	namespace POLYMORPHISM
 	{
-	protected:
-		char data[8];
-		const char* ptrParse;
-
-	public:
-		baseParser() : ptrParse(nullptr) 
+		class baseParser
 		{
-			std::memset(data, 0, 8);
+		protected:
+			char data[8];
+			const char* ptrParse;
+
+		public:
+			baseParser() : ptrParse(nullptr)
+			{
+				std::memset(data, 0, 8);
+			};
+			baseParser(const char* str) : ptrParse(str)
+			{
+				std::memset(data, 0, 8);
+			};
+
+			virtual void setPointer(const char* str) { this->ptrParse = str; }
+			virtual bool parse(char& output) { return false; }
+			virtual bool parse(unsigned short& output) { return false; }
+			virtual bool parse(unsigned& output) { return false; }
+			virtual bool parse(int& output) { return false; }
+			virtual bool parse(int64_t& output) { return false; }
+			virtual bool parse(float& output) { return false; }
+			virtual bool parse(double& output) { return false; }
+			virtual void* parse() { return nullptr; };
+			~baseParser() {}
 		};
-		baseParser(const char* str) : ptrParse(str) 
+
+
+		template <typename T>
+		class dataParser : public baseParser
 		{
-			std::memset(data, 0, 8);
+		public:
+			dataParser() :baseParser() {}
+			dataParser(const char* str) : baseParser(str) {}
+
+			virtual bool parse(T& output)
+			{
+				if (nullptr == this->ptrParse)
+					return false;
+				output = *(reinterpret_cast<const T*>(this->ptrParse));
+				this->ptrParse += sizeof(T);
+				return true;
+			}
+
+			virtual void* parse()
+			{
+				if (nullptr == this->ptrParse)
+					return nullptr;
+				T output = *(reinterpret_cast<const T*>(this->ptrParse));
+				std::memcpy(this->data, &output, sizeof(T));
+				this->ptrParse += sizeof(T);
+
+				return reinterpret_cast<void*>(this->data);
+			}
 		};
 
-		virtual void setPointer(const char* str) { this->ptrParse = str; }
-		virtual bool parse(char& output) { return false; }
-		virtual bool parse(unsigned short& output) { return false; }
-		virtual bool parse(unsigned& output) { return false; }
-		virtual bool parse(int& output) { return false; }
-		virtual bool parse(int64_t& output) { return false; }
-		virtual bool parse(float& output) { return false; }
-		virtual bool parse(double& output) { return false; }
-		virtual void* parse() { return nullptr; };
-		~baseParser() {}
-	};
 
-
-	template <typename T>
-	class dataParser : public baseParser
-	{ 
-	public:
-		dataParser() :baseParser() {}
-		dataParser(const char* str) : baseParser(str) {}
-
-		virtual bool parse(T& output)
+		class charParser : public baseParser
 		{
-			if (nullptr == this->ptrParse)
-				return false;
-			output = *(reinterpret_cast<const T*>(this->ptrParse)); 
-			this->ptrParse += sizeof(T);
-			return true;
+		public:
+			charParser() :baseParser() {}
+			charParser(const char* str) :baseParser(str) {}
+			virtual bool parse(char& output)
+			{
+				if (nullptr == this->ptrParse)
+					return false;
+				output = *this->ptrParse;
+				this->ptrParse++;
+				return true;
+			}
+		};
+
+
+		class uShortParser : public baseParser
+		{
+		public:
+			uShortParser() :baseParser() {}
+			uShortParser(const char* str) : baseParser(str) {}
+			virtual bool parse(unsigned short& output)
+			{
+				if (nullptr == this->ptrParse)
+					return false;
+				output = *(reinterpret_cast<const unsigned short*>(this->ptrParse));
+				this->ptrParse += sizeof(unsigned short);
+				return true;
+			}
+		};
+
+
+		void test0()
+		{
+			std::string str;
+			baseParser* parser1 = nullptr;
+			baseParser* parser2 = nullptr;
+			char ch = 0;
+			unsigned short num = 0;
+			bool retFlag = true;
+			parser1 = new charParser();
+			parser2 = new uShortParser();
+
+			// 字符串序列
+			str = "123asdf8989zxcv";
+			{
+				parser1->setPointer(&str[0]);
+				parser2->setPointer(&str[0]);
+				retFlag = parser1->parse(ch);
+				debugDisp("retFlag == ", retFlag);
+				if (retFlag)
+					debugDisp("ch == ", ch);
+
+				retFlag = parser2->parse(ch);
+				debugDisp("retFlag == ", retFlag);
+				if (retFlag)
+					debugDisp("ch == ", ch);
+
+				parser1->setPointer(&str[0]);
+				parser2->setPointer(&str[0]);
+				retFlag = parser1->parse(num);
+				debugDisp("retFlag == ", retFlag);
+				if (retFlag)
+					debugDisp("num == ", num);
+				retFlag = parser2->parse(num);
+				debugDisp("retFlag == ", retFlag);
+				if (retFlag)
+					debugDisp("num == ", num);
+			}
+			debugDisp("\n\n");
+
+			// ushort序列：
+			std::vector<unsigned short> vec{ 99, 98, 1, 2, 3 };
+			str.resize(sizeof(unsigned short) * vec.size());
+			std::memcpy(&str[0], &vec[0], str.size());
+			{
+				parser1->setPointer(&str[0]);
+				parser2->setPointer(&str[0]);
+				retFlag = parser1->parse(ch);
+				debugDisp("retFlag == ", retFlag);
+				if (retFlag)
+					debugDisp("ch == ", ch);
+
+				retFlag = parser2->parse(ch);
+				debugDisp("retFlag == ", retFlag);
+				if (retFlag)
+					debugDisp("ch == ", ch);
+
+				parser1->setPointer(&str[0]);
+				parser2->setPointer(&str[0]);
+				retFlag = parser1->parse(num);
+				debugDisp("retFlag == ", retFlag);
+				if (retFlag)
+					debugDisp("num == ", num);
+				retFlag = parser2->parse(num);
+				debugDisp("retFlag == ", retFlag);
+				if (retFlag)
+					debugDisp("num == ", num);
+			}
+
+			debugDisp("test0 finished.");
 		}
-		 
-		virtual void* parse() 
+
+
+		void test1()
 		{
-			if (nullptr == this->ptrParse)
-				return nullptr;
-			T output = *(reinterpret_cast<const T*>(this->ptrParse));
-			std::memcpy(this->data, &output, sizeof(T));
-			this->ptrParse += sizeof(T);
+			std::string str;
+			baseParser* parser1 = nullptr;
+			baseParser* parser2 = nullptr;
+			baseParser* parser3 = nullptr;
+			char ch = 0;
+			unsigned short num = 0;
+			int numInt = 0;
+			bool retFlag = true;
+
+			// ushort序列：
+			std::vector<unsigned short> vec{ 99, 98, 1, 2, 3, 10 };
+			str.resize(sizeof(unsigned short) * vec.size());
+			std::memcpy(&str[0], &vec[0], str.size());
+
+			// 
+			parser1 = new dataParser<char>();
+			parser2 = new uShortParser();
+			parser3 = new dataParser<unsigned short>();
+			parser1->setPointer(&str[0]);
+			parser2->setPointer(&str[0]);
+			parser3->setPointer(&str[0]);
+
+			// 解析：
+			const unsigned stringLen = str.size();
+			for (unsigned i = 0; i < stringLen; ++i)
+			{
+				parser1->parse(ch);
+				std::cout << ch << ", ";
+			}
+			debugDisp("\n");
+
+			for (unsigned i = 0; i < stringLen / sizeof(unsigned short); ++i)
+			{
+				parser2->parse(num);
+				std::cout << num << ", ";
+			}
+			debugDisp("\n");
+
+			auto elem = vec[0];
+			elem = 0;
+			for (unsigned i = 0; i < stringLen / sizeof(decltype(vec[0])); ++i)
+			{
+				parser3->parse(elem);
+				std::cout << elem << ", ";
+			}
+			debugDisp("\n");
+
+			debugDisp("test1 finished.");
+		}
+
+
+		void test2()
+		{
+			std::string str;
+			baseParser* parser1 = nullptr;
+			baseParser* parser2 = nullptr;
+			baseParser* parser3 = nullptr;
+			char ch = 0;
+			unsigned short num = 0;
+			int numInt = 0;
+			bool retFlag = true;
+
+			// ushort序列：
+			std::vector<unsigned short> vec{ 99, 98, 1, 2, 3, 10 };
+			str.resize(sizeof(unsigned short) * vec.size());
+			std::memcpy(&str[0], &vec[0], str.size());
+
+			// 
+			parser1 = new dataParser<char>();
+			parser2 = new dataParser<unsigned short>();
+			parser3 = new dataParser<unsigned>();
+			parser1->setPointer(&str[0]);
+			parser2->setPointer(&str[0]);
+			parser3->setPointer(&str[0]);
+
+			// 解析：
+			const unsigned stringLen = str.size();
+			ch = *(reinterpret_cast<char*>(parser1->parse()));
+			debugDisp("ch == ", ch);
+			num = *(reinterpret_cast<unsigned short*>(parser2->parse()));
+			debugDisp("num == ", num);
+
+
+			debugDisp("test2 finished.");
+		}
+
+	}
+
+	// 析沟
+	namespace DECONSTRUCTOR 
+	{
+		class Base 
+		{
+		public:
+			int objID = 0;
+			std::vector<int> elems;
+
+		public:		
+			Base() 
+			{
+				debugDisp("A Base object is instantiated.");
+			}
 			
-			return reinterpret_cast<void*>(this->data);
-		}
-	};
-	 
+			virtual ~Base() 
+			{
+				elems.clear();
+				debugDisp("A Base object is deleted.");
+			}
+		};
 
-	class charParser : public baseParser
-	{
-	public:   
-		charParser() :baseParser() {}
-		charParser(const char* str) :baseParser(str) {}
-		virtual bool parse(char& output)
+		class Derived :public Base
 		{
-			if (nullptr == this->ptrParse)
-				return false;
-			output = *this->ptrParse;
-			this->ptrParse++;
-			return true;
+		public: 
+			std::vector<float> elems1;
+
+		public:
+			Derived() :Base() 
+			{
+				debugDisp("A Derived object is instantiated.");
+			}
+
+			virtual ~Derived()
+			{
+				this->elems1.clear();
+				debugDisp("A Derived object is deleted.");
+			}
+		};
+
+		void test0() 
+		{
+			Base* ptrBase1 = new Base;
+			delete ptrBase1; 
+			debugDisp("\n");
+
+			// delte派生类对象指针，会自顶向下调用析构函数
+			Derived* ptrDer1 = new Derived;
+			delete ptrDer1;
+			debugDisp("\n");
+
+			// 有继承关系的类系列中，析构函数应该一律设定为虚函数，这样即使一个派生类对象使用基类指针来管理，delete的时候也会自顶向下调用析构函数；
+			Derived* ptrDer2 = new Derived;
+			Base* pb = dynamic_cast<Base*>(ptrDer2);
+			delete pb;			// 若析构函数不是virtual的，则这里只会调用Base类的析构函数；
+
+			debugDisp("\ntest0() finished.");
 		} 
-	};
-
-
-	class uShortParser : public baseParser
-	{
-	public:
-		uShortParser() :baseParser() {}
-		uShortParser(const char* str) : baseParser(str) {}
-		virtual bool parse(unsigned short& output)
-		{
-			if (nullptr == this->ptrParse)
-				return false;
-			output = *(reinterpret_cast<const unsigned short*>(this->ptrParse));
-			this->ptrParse += sizeof(unsigned short);
-			return true;
-		}
-	};
-
+	}
 	 
-	void test0() 
-	{
-		std::string str;
-		baseParser* parser1 = nullptr;
-		baseParser* parser2 = nullptr;
-		char ch = 0;
-		unsigned short num = 0;
-		bool retFlag = true;
-		parser1 = new charParser();
-		parser2 = new uShortParser();
-
-		// 字符串序列
-		str = "123asdf8989zxcv";
-		{
-			parser1->setPointer(&str[0]);
-			parser2->setPointer(&str[0]);
-			retFlag = parser1->parse(ch);
-			debugDisp("retFlag == ", retFlag);
-			if (retFlag)
-				debugDisp("ch == ", ch);
-
-			retFlag = parser2->parse(ch);
-			debugDisp("retFlag == ", retFlag);
-			if (retFlag)
-				debugDisp("ch == ", ch);
-
-			parser1->setPointer(&str[0]);
-			parser2->setPointer(&str[0]);
-			retFlag = parser1->parse(num);
-			debugDisp("retFlag == ", retFlag);
-			if (retFlag)
-				debugDisp("num == ", num);
-			retFlag = parser2->parse(num);
-			debugDisp("retFlag == ", retFlag);
-			if (retFlag)
-				debugDisp("num == ", num);
-		}
-		debugDisp("\n\n");
-		
-		// ushort序列：
-		std::vector<unsigned short> vec{ 99, 98, 1, 2, 3 };
-		str.resize(sizeof(unsigned short) * vec.size());
-		std::memcpy(&str[0], &vec[0], str.size());
-		{
-			parser1->setPointer(&str[0]);
-			parser2->setPointer(&str[0]);
-			retFlag = parser1->parse(ch);
-			debugDisp("retFlag == ", retFlag);
-			if (retFlag)
-				debugDisp("ch == ", ch);
-
-			retFlag = parser2->parse(ch);
-			debugDisp("retFlag == ", retFlag);
-			if (retFlag)
-				debugDisp("ch == ", ch);
-
-			parser1->setPointer(&str[0]);
-			parser2->setPointer(&str[0]);
-			retFlag = parser1->parse(num);
-			debugDisp("retFlag == ", retFlag);
-			if (retFlag)
-				debugDisp("num == ", num);
-			retFlag = parser2->parse(num);
-			debugDisp("retFlag == ", retFlag);
-			if (retFlag)
-				debugDisp("num == ", num);
-		}
-
-		debugDisp("test0 finished.");
-	}
-
-
-	void test1() 
-	{
-		std::string str;
-		baseParser* parser1 = nullptr;
-		baseParser* parser2 = nullptr;
-		baseParser* parser3 = nullptr;
-		char ch = 0;
-		unsigned short num = 0;
-		int numInt = 0;
-		bool retFlag = true;
-
-		// ushort序列：
-		std::vector<unsigned short> vec{ 99, 98, 1, 2, 3, 10 };
-		str.resize(sizeof(unsigned short) * vec.size());
-		std::memcpy(&str[0], &vec[0], str.size());
-
-		// 
-		parser1 = new dataParser<char>();
-		parser2 = new uShortParser(); 
-		parser3 = new dataParser<unsigned short>();
-		parser1->setPointer(&str[0]);
-		parser2->setPointer(&str[0]);
-		parser3->setPointer(&str[0]); 
-
-		// 解析：
-		const unsigned stringLen = str.size();
-		for (unsigned i = 0; i < stringLen; ++i)
-		{
-			parser1->parse(ch);
-			std::cout << ch << ", ";
-		}
-		debugDisp("\n");
-
-		for (unsigned i = 0; i < stringLen/sizeof(unsigned short); ++i)
-		{
-			parser2->parse(num);
-			std::cout << num << ", ";
-		}
-		debugDisp("\n");
-
-		auto elem = vec[0];
-		elem = 0;
-		for (unsigned i = 0; i < stringLen / sizeof(decltype(vec[0])); ++i)
-		{
-			parser3->parse(elem);
-			std::cout << elem << ", ";
-		} 
-		debugDisp("\n");
-
-		debugDisp("test1 finished.");
-	}
-
-
-	void test2()
-	{
-		std::string str;
-		baseParser* parser1 = nullptr;
-		baseParser* parser2 = nullptr;
-		baseParser* parser3 = nullptr;
-		char ch = 0;
-		unsigned short num = 0;
-		int numInt = 0;
-		bool retFlag = true;
-
-		// ushort序列：
-		std::vector<unsigned short> vec{ 99, 98, 1, 2, 3, 10 };
-		str.resize(sizeof(unsigned short) * vec.size());
-		std::memcpy(&str[0], &vec[0], str.size());
-
-		// 
-		parser1 = new dataParser<char>();
-		parser2 = new dataParser<unsigned short>();
-		parser3 = new dataParser<unsigned>();
-		parser1->setPointer(&str[0]);
-		parser2->setPointer(&str[0]);
-		parser3->setPointer(&str[0]);
-
-		// 解析：
-		const unsigned stringLen = str.size(); 
-		ch = *(reinterpret_cast<char*>(parser1->parse()));
-		debugDisp("ch == ", ch);
-		num = *(reinterpret_cast<unsigned short*>(parser2->parse()));
-		debugDisp("num == ", num);
-
-
-		debugDisp("test2 finished.");
-	}
-
-
-	void test3() 
-	{
-
-	}
 }
 
 
 
 int main()
-{    
-	// TEST_STL::STL_STRING::test1();
-
-	// TEST_WIN_API::test0();
-
-	// TEST_STD::test1(); 
-
-	TEST_OOP::test3();
+{      
+	// TEST_OOP::DECONSTRUCTOR::test0();
 
 	// TEST_TYPE_TRAITS::test2();
 
-	// TEST_UNKNOWN::POINTER::test2();
+	// TEST_UNKNOWN::TEST_IO::test3();
+
+	TEST_UNKNOWN::CHAR_STRING::test4();
+
 
 	debugDisp("main() finished."); 
 
