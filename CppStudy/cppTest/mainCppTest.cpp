@@ -792,6 +792,20 @@ namespace TEST_UNKNOWN
 
 			debugDisp("test4() finished.");
 		}
+
+
+		// std::locale类
+		void test5() 
+		{
+			// 1.
+			debugDisp("当前标准输出流对象绑定的locale对象名：std::cout.getloc().name() == ", std::cout.getloc().name());		
+			
+			// 2. 流对象绑定新的locale对象：
+			std::cout.imbue();
+
+
+			debugDisp("test5() finished.");
+		}
 	}
 
  
@@ -4306,7 +4320,7 @@ int main()
 
 	// TEST_UNKNOWN::TEST_IO::test3();
 
-	TEST_UNKNOWN::CHAR_STRING::test4();
+	TEST_UNKNOWN::CHAR_STRING::test5();
 
 
 	debugDisp("main() finished."); 
