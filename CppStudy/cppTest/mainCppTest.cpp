@@ -53,20 +53,148 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
 namespace MY_DEBUG
-{
-
+{ 
 	static void debugDisp()			// 递归终止
 	{						//		递归终止设为无参或者一个参数的情形都可以。
 		std::cout << std::endl;
 		return;
 	}
-
+	 
 
 	template <typename T, typename... Types>
 	static void debugDisp(const T& firstArg, const Types&... args)
 	{
 		std::cout << firstArg << " ";	// 递归递推；
 		debugDisp(args...);
+	}
+	 
+
+	// 针对编译器版本信息的宏
+	void print_compiler_info() 
+	{
+		std::cout << "Compiler Version: ";
+#if defined(_MSC_VER)
+		std::cout << "MSVC, version " << _MSC_VER << "\n";
+#elif defined(__GNUC__)
+		std::cout << "GCC, version " << __GNUC__ << "." << __GNUC_MINOR__ << "\n";
+#elif defined(__clang__)
+		std::cout << "Clang, version " << __clang_major__ << "." << __clang_minor__ << "\n";
+#else
+		std::cout << "Unknown compiler\n";
+#endif
+	}
+
+
+	// 打印操作系统信息
+	void print_os_info()
+	{
+#if defined(_WIN32)
+		std::cout << "Operating System: Windows\n";
+#elif defined(__linux__)
+		std::cout << "Operating System: Linux\n";
+#elif defined(__APPLE__)
+		std::cout << "Operating System: macOS\n";
+#else
+		std::cout << "Operating System: Unknown\n";
+#endif
+	}
+
+	// 打印build mode——是release或debug:
+	void print_build_mode() 
+	{
+#if defined(_DEBUG)
+		std::cout << "Build Mode: Debug\n";
+#else
+		std::cout << "Build Mode: Release\n";
+#endif
+	}
+
+	// 打印处理器架构信息
+	void print_architecture_info() 
+	{
+		std::cout << "Processor Architecture: ";
+#if defined(__x86_64__) || defined(_M_X64)
+		std::cout << "x64 (AMD or Intel)\n";
+#elif defined(__i386) || defined(_M_IX86)
+		std::cout << "x86\n";
+#elif defined(__arm__) || defined(_M_ARM)
+		std::cout << "ARM\n";
+#elif defined(__aarch64__)
+		std::cout << "ARM64\n";
+#else
+		std::cout << "Unknown architecture\n";
+#endif
+	}
+
+
+	// 打印处理器核心数量
+	void print_cpu_cores() 
+	{
+		unsigned int cores = std::thread::hardware_concurrency();
+		std::cout << "Number of Processor Cores: " << cores << "\n";
+	}
+
+
+	// 获取并打印CPU信息
+#if defined(__GNUC__) || defined(__clang__)
+#include <cpuid.h>
+	void print_cpu_info() 
+	{
+		unsigned int eax, ebx, ecx, edx;
+		char cpu_brand[49] = { 0 };
+
+		__get_cpuid(0x80000002, &eax, &ebx, &ecx, &edx);
+		std::memcpy(cpu_brand, &eax, sizeof(eax));
+		std::memcpy(cpu_brand + 4, &ebx, sizeof(ebx));
+		std::memcpy(cpu_brand + 8, &ecx, sizeof(ecx));
+		std::memcpy(cpu_brand + 12, &edx, sizeof(edx));
+
+		__get_cpuid(0x80000003, &eax, &ebx, &ecx, &edx);
+		std::memcpy(cpu_brand + 16, &eax, sizeof(eax));
+		std::memcpy(cpu_brand + 20, &ebx, sizeof(ebx));
+		std::memcpy(cpu_brand + 24, &ecx, sizeof(ecx));
+		std::memcpy(cpu_brand + 28, &edx, sizeof(edx));
+
+		__get_cpuid(0x80000004, &eax, &ebx, &ecx, &edx);
+		std::memcpy(cpu_brand + 32, &eax, sizeof(eax));
+		std::memcpy(cpu_brand + 36, &ebx, sizeof(ebx));
+		std::memcpy(cpu_brand + 40, &ecx, sizeof(ecx));
+		std::memcpy(cpu_brand + 44, &edx, sizeof(edx));
+
+		std::cout << "CPU: " << cpu_brand << "\n";
+	}
+#elif defined(_MSC_VER)
+#include <intrin.h>
+	void print_cpu_info() 
+	{
+		int cpuInfo[4] = { -1 };
+		char cpuBrand[0x40];
+		__cpuid(cpuInfo, 0x80000002);
+		memcpy(cpuBrand, cpuInfo, sizeof(cpuInfo));
+		__cpuid(cpuInfo, 0x80000003);
+		memcpy(cpuBrand + 16, cpuInfo, sizeof(cpuInfo));
+		__cpuid(cpuInfo, 0x80000004);
+		memcpy(cpuBrand + 32, cpuInfo, sizeof(cpuInfo));
+
+		std::cout << "CPU: " << cpuBrand << "\n";
+	}
+
+#else
+
+	void print_cpu_info()
+	{
+		std::cout << "CPU: Unknown\n";
+	}
+#endif
+
+	void print_env_info()
+	{
+		print_compiler_info();
+		print_os_info();
+		print_architecture_info();
+		print_build_mode();
+		print_cpu_cores();
+		print_cpu_info();
 	}
 
 
@@ -407,9 +535,10 @@ namespace MY_WIN_API
 using namespace MY_WIN_API;
 
 
+
+////////////////////////////////////////////////////////////////////////////////////////////// 测试windows API
 namespace TEST_WIN_API
 {
-
 	// 使用WINDOWS API调用.exe可执行程序:
 	void test0() 
 	{ 
@@ -465,7 +594,9 @@ namespace TEST_WIN_API
 
 		debugDisp("test0() finished.");
 	}
+	 
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 暂时不知如何分类：
@@ -553,6 +684,59 @@ namespace TEST_UNKNOWN
 
 	namespace CHAR_STRING
 	{
+		// std::string的find(), find_xxx()方法；
+		void test0()
+		{
+			std::string str1 = "asdfajiuiuwww.github.comasdfuoiup";
+			std::string tarStr = "df";
+			std::string::size_type posStart = 0;
+			std::string::size_type posRet = 0;
+			debugDisp("tarStr == ", tarStr);
+
+			while (std::string::npos != posRet)
+			{
+				posRet = str1.find(tarStr.c_str(), posStart);										// 第二个参数是搜索开始的位置。
+				if (std::string::npos != posRet)
+				{
+					char* strRest = &str1[posRet];
+					posStart = posRet + tarStr.size();
+					debugDisp("strRest == ", strRest);
+				}
+			}
+			debugDisp("test0 finished.");
+		}
+
+		
+		// std::string
+		void test00()
+		{
+			std::string str1(10, '\0');
+			std::string str2(10, '\0');
+			str1[0] = 'a';
+			str1[1] = 'b';
+			str2[0] = '1';
+			str2[1] = '2';
+			str2[2] = '3';
+			debugDisp("str1.size() == ", str1.size());						// 10
+			debugDisp("str1.length() == ", str1.length());				// 10
+
+			// 使用std::cout打印std::string时会跳过'\0'，不会截断；打印C风格字符串时碰到'\0'会停止；
+			std::string tmpStr1 = str1 + str2;
+			debugDisp("tmpStr1 == ", tmpStr1, ", tmpStr1.length() == ", tmpStr1.length());
+			debugDisp("tmpStr1.c_str() == ", tmpStr1.c_str());
+
+			// 去除std::string中的'\0'
+			const char* tmpCstr1 = tmpStr1.c_str();
+			std::string tmpStr2;
+			tmpStr2 += str1.c_str();
+			tmpStr2 += str2.c_str();
+			debugDisp("strlen(tmpCstr1) == ", strlen(tmpCstr1));
+			debugDisp("tmpStr2 == ", tmpStr2, ", tmpStr2.length() == ", tmpStr2.length());
+
+			debugDisp("test00() finished.");
+		}
+
+
 		// c/c++中的字符串转换接口
 		void test1()
 		{
@@ -601,6 +785,7 @@ namespace TEST_UNKNOWN
 			std::cout << "wstr1.size() == " << wstr1.size() << std::endl;
 		}
 
+
 		// std::string中的字符串匹配接口
 		void test2()
 		{
@@ -623,7 +808,6 @@ namespace TEST_UNKNOWN
 
 
 		// 手写KMP字符串匹配：  
-
 		void kmpSearch(std::vector<int>& result, const std::string& strTest, const std::string& pattern)
 		{
 			// lambda——构建Next数组
@@ -667,6 +851,7 @@ namespace TEST_UNKNOWN
 			}
 		}
 		 
+
 		void test3() 
 		{
 			std::string strTest = "ABC ABCDAB ABCDABCDABDE";
@@ -800,8 +985,8 @@ namespace TEST_UNKNOWN
 			// 1.
 			debugDisp("当前标准输出流对象绑定的locale对象名：std::cout.getloc().name() == ", std::cout.getloc().name());		
 			
-			// 2. 流对象绑定新的locale对象：
-			std::cout.imbue();
+			//// 2. 流对象绑定新的locale对象：
+			//std::cout.imbue();
 
 
 			debugDisp("test5() finished.");
@@ -1853,7 +2038,7 @@ namespace TEST_UNKNOWN
 			debugDisp("\n");
 
 			// tellg()方法
-			std::streampos pos;					// std::streampos和std::ios::pose_type类型是等价的；
+			std::streampos pos;					// std::streampos和std::ios::pos_type类型是等价的；
 			long long posNum = 0;				
 			debugDisp("tellg()方法：");
 			for (int i = 0; i < 3; ++i)
@@ -1917,6 +2102,7 @@ namespace TEST_UNKNOWN
  
 }
 using namespace TEST_UNKNOWN;
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// C++标准库
@@ -2277,62 +2463,7 @@ namespace TEST_NEW_FEATURES
 
 ////////////////////////////////////////////////////////////////////////////////////////////// STL
 namespace TEST_STL 
-{
-	namespace STL_STRING
-	{
-		// std::string的find(), find_xxx()方法；
-		void test0() 
-		{
-			std::string str1 = "asdfajiuiuwww.github.comasdfuoiup";
-			std::string tarStr = "df";
-			std::string::size_type posStart = 0;
-			std::string::size_type posRet = 0;
-			debugDisp("tarStr == ", tarStr);
-
-			while (std::string::npos != posRet)
-			{
-				posRet = str1.find(tarStr.c_str(), posStart);										// 第二个参数是搜索开始的位置。
-				if(std::string::npos != posRet)
-				{
-					char* strRest = &str1[posRet];
-					posStart = posRet + tarStr.size();
-					debugDisp("strRest == ", strRest);
-				}
-			}
-			debugDisp("test0 finished.");
-		}
-
-		// std::string
-		void test1() 
-		{
-			std::string str1(10, '\0');
-			std::string str2(10, '\0');
-			str1[0] = 'a';
-			str1[1] = 'b';
-			str2[0] = '1';
-			str2[1] = '2';
-			str2[2] = '3';
-			debugDisp("str1.size() == ", str1.size());						// 10
-			debugDisp("str1.length() == ", str1.length());				// 10
-
-			// 使用std::cout打印std::string时会跳过'\0'，不会截断；打印C风格字符串时碰到'\0'会停止；
-			std::string tmpStr1 = str1 + str2;
-			debugDisp("tmpStr1 == ", tmpStr1, ", tmpStr1.length() == ", tmpStr1.length()); 
-			debugDisp("tmpStr1.c_str() == ", tmpStr1.c_str());
-
-			// 去除std::string中的'\0'
-			const char* tmpCstr1 = tmpStr1.c_str();
-			std::string tmpStr2;
-			tmpStr2 += str1.c_str();
-			tmpStr2 += str2.c_str();
-			debugDisp("strlen(tmpCstr1) == ", strlen(tmpCstr1));
-			debugDisp("tmpStr2 == ", tmpStr2, ", tmpStr2.length() == ", tmpStr2.length());
-
-			debugDisp("test1() finished.");
-		}
-	}
-
-
+{  
 	// C++线程支持库，并发编程相关的WINDOWS API
 	namespace STD_THREAD
 	{
@@ -2839,46 +2970,7 @@ namespace TEST_STL
 
 
 	namespace STL_SET_MAP
-	{
-		// 1. std::set, std::map的insert方法、erase方法：
-		void test1()
-		{
-			std::set<int> numSet1;			
-			std::pair<std::set<int>::iterator, bool> retPairS;
-			std::map<int, double > numMap;
-			std::pair<std::map<int, double >::iterator, bool> retPairM;
-			std::set<int>::iterator iterS;
-
-			 // 1. insert方法返回一个pair，第一项是插入元素的迭代器，第二项是指示是否插入成功的BOOL值
-			numSet1.insert(1);
-			numSet1.insert(2);
-			numSet1.insert(3);
-			 retPairS = numSet1.insert(4);
-			 iterS = retPairS.first;
-			 debugDisp("*iter == ", *iterS); 
-			 debugDisp("retPairS.second == ", retPairS.second); 
-			retPairS = numSet1.insert(1);										//		 插入失败的话，返回阻止插入的元素的迭代器；
-			debugDisp("*retPairS.first ==  ", *retPairS.first);
-			debugDisp("retPairS.second == ", retPairS.second); 
-			 
-			numMap.insert({ 1, 1.0 });
-			numMap.insert({ 2, 2.0 });
-			numMap.insert({ 3, 3.0 });
-			numMap.insert({ 4, 4.0 });
-			retPairM = numMap.insert({ 5, 5.0 });
-			debugDisp("retPairM.first->first == ",  retPairM.first->first, \
-				", retPairM.first->second == ", retPairM.first->second, \
-				", retPairM.second == ", retPairM.second);
-			retPairM = numMap.insert({ 1, 1.1 });
-			debugDisp("insert failed: retPairM.second == ", retPairM.second); 
-
-			// 
-			int retS = 0;
-			retS = numSet1.erase(2);
-			debugDisp("retS == ", retS); 
-		}
-
-
+	{ 
 		// 3. multiset , multimap
 		void test3()
 		{
@@ -3062,21 +3154,7 @@ namespace TEST_STL
 
 			std::cout << "finished." << std::endl;
 		}
-
-
-		// 7. key_type, mapped_type, value_type
-		void test7()
-		{
-			using AsciiMap = std::map<char, int>;
-			AsciiMap::key_type c1;
-			AsciiMap::mapped_type num1;
-			AsciiMap::value_type pair1;						// std::pair<const char, int>类型，注意前一项是const
-			debugDisp("AsciiMap::key_type的类型为：", typeid(c1).name());
-			debugDisp("AsciiMap::mapped_type的类型为：", typeid(num1).name());
-			debugDisp("AsciiMap::value_type的类型为：", typeid(pair1).name());
-
-			debugDisp("test7() finished.");
-		}
+		 
 	}
 
 
@@ -3677,7 +3755,7 @@ namespace TEST_THIRD_LIBS
 #endif
 }
 
-
+ 
 
 ///////////////////////////////////////////////////////////////////////////////////////////// 面向对象
 namespace TEST_OOP 
@@ -3720,279 +3798,7 @@ namespace TEST_OOP
 			return os;
 		}
 	};
-
-	namespace PRIVATE
-	{
-		class foo
-		{
-		public:
-			foo(const int num0) :num(num0)
-			{}
-
-			void disp()
-			{
-				std::cout << this->num << std::endl;
-			}
-
-			void goo1(int* p)
-			{
-				*p = 88;
-			}
-
-			void goo2()
-			{
-				int* ptr = &this->num;
-				goo1(ptr);
-				std::cout << this->num << std::endl;
-			}
-
-		private:
-			int num;
-		};
-
-		void test1()
-		{
-			foo obj1(99);
-			obj1.disp();
-			obj1.goo2();
-			obj1.disp();
-
-		}
-
-	}
 	 
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////// 排列组合：
-namespace PERMUTATION_COMBINATION
-{  
-	// 递归函数：求解组合（基于回溯法）
-	void generateCombinations(std::vector<std::vector<int>>& combs, \
-		std::list<int>& tmpList, const int n, const int m, const int num)
-	{
-		/*
-			void generateCombinations(
-					std::vector<std::vector<int>>& combs,				输出的向量，每个元素为一个组合向量；
-					std::list<int>& tmpList,										辅助容器变量；	
-					const int n,															生成组合的元素为0, 1, 2, ...(n-1)一共n个整数；	
-					const int m,															组合中的元素数
-					const int num														当前组合中尝试添加的元素
-					)
-		
-		*/
-
-		// 递归终止：若当前的链表tmpList中已经添加的元素达到m个
-		if (tmpList.size() == m) 
-		{
-			std::vector<int> tmpVec;
-			tmpVec.insert(tmpVec.end(), tmpList.begin(), tmpList.end());
-			combs.push_back(tmpVec);
-			return;
-		}
-
-		// 递归递推：从当前索引开始，尝试添加数到组合中
-		for (int i = num; i < n; ++i) 
-		{
-			const int numNext = i + 1;
-			tmpList.push_back(i);
-			generateCombinations(combs, tmpList, n, m, numNext);		  
-			tmpList.pop_back();															// 回溯；					
-		}
-	} 
-
-
-	// 求解组合——基于位操作 
-	void generateCombinations(int n, int m) 
-	{
-		/*
-			将一个组合表示为一个长度为n的二进制数，其中第i位为1表示选择了第i个数，为0表示未选择。
-					因此，可以通过枚举所有可能的长度为n的二进制数来生成组合。		
-		*/
-
-		// lambda——计算二进制数中1的位数：Brian Kernighan's Algorithm
-		auto count1Bits = [](const std::int64_t num)->int
-		{
-			int onesCount = 0;
-			std::int64_t num0 = num;
-			while (num0 > 0)
-			{
-				num0 = num0 & (num0 - 1);
-				onesCount++;
-			}
-			return onesCount;
-		};
-
-		// lambda——打印二进制数表示的组合
-		auto printCombination = [](int bitmask, int n)
-		{
-			std::vector<int> combination;
-			for (int i = 0; i < n; ++i)
-				if (bitmask & (1 << i))
-					combination.push_back(i);
-
-			// 打印组合
-			for (int num : combination)
-				std::cout << num << " ";
-
-			std::cout << std::endl;
-		};
-
-		std::int64_t N = std::int64_t{1} << n;							 // 1左移n位，补0；得到的十进制数位：std::pow(2, n)，即n个元素可以组成的所有组合的个数；
-		for (std::int64_t i = 0; i < N; ++i)				 // 穷举n个元素可组成的所有组合，1表示该位被选中，0表示未选中；
-		{
-			// 计算二进制数中1的个数，即组合中的元素个数
-			int count = count1Bits(i);
-			if (count == m) 
-				printCombination(i, n);			
-		}
-	}
-
-
-	// 穷举组合：
-	void test0()
-	{
-		/*
-			给定n个数: 0, 1, ... (n-1), 从中取m个数，给出所有可能的组合：
-		*/ 
-		int n = 6;
-		int m = 3;
-
-		// 1. 基于backtracking的方法
-		std::vector<std::vector<int>> combs;
-		std::list<int> tmpList;
-		generateCombinations(combs, tmpList, n, m, 0);
-		
-		debugDisp("base on backtracking:");
-		traverseSTL(combs, [](const std::vector<int>& vec)
-			{
-				traverseSTL(vec, disp<int>());
-			});
-		debugDisp("\n");
-
-
-		//// 2. 基于位操作的方法；
-		//debugDisp("base on bit manipulation: ");
-		//generateCombinations(n, m);
-
-		debugDisp("test0 finished.");
-	}
-
-}
-
-
-// 类型信息
-namespace TEST_TYPE_TRAITS
-{
-	template<typename T>
-	void foo(const T& data)
-	{
-		auto typeName = typeid(data).name();
-		const std::type_info& typeInfo = typeid(data);
-
-		if (std::is_same<T, int>::value)
-			debugDisp("输入数据为int类型");
-		else if (std::is_same<T, float>::value)
-			debugDisp("输入数据为int类型");
-		else if (std::is_same<T, double>::value)
-			debugDisp("输入数据为int类型");
-		else
-			debugDisp("输入数据为其他类型；");
-	}
-
-
-	template <typename T>
-	void goo(const std::vector<T>& vec) 
-	{
-		if (std::is_same<T, int>::value)
-			debugDisp("输入数据为int类型");
-		else if (std::is_same<T, float>::value)
-			debugDisp("输入数据为int类型");
-		else if (std::is_same<T, double>::value)
-			debugDisp("输入数据为int类型");
-		else
-			debugDisp("输入数据为其他类型；");
-	}
-
-
-	void test0() 
-	{
-		int num1 = 1;
-		float num2 = 1.2;
-		double num3 = 11.2;
-		std::vector<int> vec1;
-		std::vector<float> vec2;
-		std::vector<double> vec3;
-		//foo(num1);
-		//foo(num2);
-		//foo(num3);
-
-		goo(vec1);
-		goo(vec2);
-		goo(vec3);
-
-		debugDisp("test0 finished.");
-	}
-
-
-	union NumType
-	{
-		int i;
-		float f; 
-	};
-	
-	// 
-	void test1() 
-	{
-		NumType num;
-		bool isInt = true;
-
-	}
-
-
-	template <typename T>
-	const char* hoo(const T& elem)
-	{
-		// typeid()——返回
-		const std::type_info& typeInfo = typeid(T);
-		const char* typeName = typeid(T).name();
-
-		// std::type_info支持operator==
-		if (typeInfo == typeid(int))
-			debugDisp("this is a int.");
-
-		debugDisp("pause");
-		return typeName;
-	}
-
-	template <typename TypeOut, typename TypeIn>
-	bool ioo(TypeOut& out, const TypeIn& elem)
-	{
-
-
-		out = static_cast<TypeOut>(elem);
-		return true;
-	}
-
-	// type mapping:
-	void test2() 
-	{
-		int num = 3;
-		debugDisp(hoo(num));
-		debugDisp(hoo("asdf"));
-
-		int numI = 5;
-		double numD = 0;
-		ioo(numD, numI);
-		debugDisp("numD == ", numD);
-
-		debugDisp("test2 finished.");
-	}
-}
-
-
-namespace TEST_OOP
-{
 	// 多态
 	namespace POLYMORPHISM
 	{
@@ -4249,21 +4055,21 @@ namespace TEST_OOP
 	}
 
 	// 析沟
-	namespace DECONSTRUCTOR 
+	namespace DECONSTRUCTOR
 	{
-		class Base 
+		class Base
 		{
 		public:
 			int objID = 0;
 			std::vector<int> elems;
 
-		public:		
-			Base() 
+		public:
+			Base()
 			{
 				debugDisp("A Base object is instantiated.");
 			}
-			
-			virtual ~Base() 
+
+			virtual ~Base()
 			{
 				elems.clear();
 				debugDisp("A Base object is deleted.");
@@ -4272,11 +4078,11 @@ namespace TEST_OOP
 
 		class Derived :public Base
 		{
-		public: 
+		public:
 			std::vector<float> elems1;
 
 		public:
-			Derived() :Base() 
+			Derived() :Base()
 			{
 				debugDisp("A Derived object is instantiated.");
 			}
@@ -4288,10 +4094,10 @@ namespace TEST_OOP
 			}
 		};
 
-		void test0() 
+		void test0()
 		{
 			Base* ptrBase1 = new Base;
-			delete ptrBase1; 
+			delete ptrBase1;
 			debugDisp("\n");
 
 			// delte派生类对象指针，会自顶向下调用析构函数
@@ -4305,23 +4111,321 @@ namespace TEST_OOP
 			delete pb;			// 若析构函数不是virtual的，则这里只会调用Base类的析构函数；
 
 			debugDisp("\ntest0() finished.");
-		} 
+		}
+	}
+
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////// 排列组合：
+namespace PERMUTATION_COMBINATION
+{  
+	// 递归函数：求解组合（基于回溯法）
+	void generateCombinations(std::vector<std::vector<int>>& combs, \
+		std::list<int>& tmpList, const int n, const int m, const int num)
+	{
+		/*
+			void generateCombinations(
+					std::vector<std::vector<int>>& combs,				输出的向量，每个元素为一个组合向量；
+					std::list<int>& tmpList,										辅助容器变量；	
+					const int n,															生成组合的元素为0, 1, 2, ...(n-1)一共n个整数；	
+					const int m,															组合中的元素数
+					const int num														当前组合中尝试添加的元素
+					)
+		
+		*/
+
+		// 递归终止：若当前的链表tmpList中已经添加的元素达到m个
+		if (tmpList.size() == m) 
+		{
+			std::vector<int> tmpVec;
+			tmpVec.insert(tmpVec.end(), tmpList.begin(), tmpList.end());
+			combs.push_back(tmpVec);
+			return;
+		}
+
+		// 递归递推：从当前索引开始，尝试添加数到组合中
+		for (int i = num; i < n; ++i) 
+		{
+			const int numNext = i + 1;
+			tmpList.push_back(i);
+			generateCombinations(combs, tmpList, n, m, numNext);		  
+			tmpList.pop_back();															// 回溯；					
+		}
+	} 
+
+
+	// 求解组合——基于位操作 
+	void generateCombinations(int n, int m) 
+	{
+		/*
+			将一个组合表示为一个长度为n的二进制数，其中第i位为1表示选择了第i个数，为0表示未选择。
+					因此，可以通过枚举所有可能的长度为n的二进制数来生成组合。		
+		*/
+
+		// lambda——计算二进制数中1的位数：Brian Kernighan's Algorithm
+		auto count1Bits = [](const std::int64_t num)->int
+		{
+			int onesCount = 0;
+			std::int64_t num0 = num;
+			while (num0 > 0)
+			{
+				num0 = num0 & (num0 - 1);
+				onesCount++;
+			}
+			return onesCount;
+		};
+
+		// lambda——打印二进制数表示的组合
+		auto printCombination = [](int bitmask, int n)
+		{
+			std::vector<int> combination;
+			for (int i = 0; i < n; ++i)
+				if (bitmask & (1 << i))
+					combination.push_back(i);
+
+			// 打印组合
+			for (int num : combination)
+				std::cout << num << " ";
+
+			std::cout << std::endl;
+		};
+
+		std::int64_t N = std::int64_t{1} << n;							 // 1左移n位，补0；得到的十进制数位：std::pow(2, n)，即n个元素可以组成的所有组合的个数；
+		for (std::int64_t i = 0; i < N; ++i)				 // 穷举n个元素可组成的所有组合，1表示该位被选中，0表示未选中；
+		{
+			// 计算二进制数中1的个数，即组合中的元素个数
+			int count = count1Bits(i);
+			if (count == m) 
+				printCombination(i, n);			
+		}
+	}
+
+
+	// 穷举组合：
+	void test0()
+	{
+		/*
+			给定n个数: 0, 1, ... (n-1), 从中取m个数，给出所有可能的组合：
+		*/ 
+		int n = 6;
+		int m = 3;
+
+		// 1. 基于backtracking的方法
+		std::vector<std::vector<int>> combs;
+		std::list<int> tmpList;
+		generateCombinations(combs, tmpList, n, m, 0);
+		
+		debugDisp("base on backtracking:");
+		traverseSTL(combs, [](const std::vector<int>& vec)
+			{
+				traverseSTL(vec, disp<int>());
+			});
+		debugDisp("\n");
+
+
+		//// 2. 基于位操作的方法；
+		//debugDisp("base on bit manipulation: ");
+		//generateCombinations(n, m);
+
+		debugDisp("test0 finished.");
+	}
+
+}
+
+
+
+// 类型信息
+namespace TEST_TYPE_TRAITS
+{
+	template<typename T>
+	void foo(const T& data)
+	{
+		auto typeName = typeid(data).name();
+		const std::type_info& typeInfo = typeid(data);
+
+		if (std::is_same<T, int>::value)
+			debugDisp("输入数据为int类型");
+		else if (std::is_same<T, float>::value)
+			debugDisp("输入数据为int类型");
+		else if (std::is_same<T, double>::value)
+			debugDisp("输入数据为int类型");
+		else
+			debugDisp("输入数据为其他类型；");
+	}
+
+
+	template <typename T>
+	void goo(const std::vector<T>& vec) 
+	{
+		if (std::is_same<T, int>::value)
+			debugDisp("输入数据为int类型");
+		else if (std::is_same<T, float>::value)
+			debugDisp("输入数据为int类型");
+		else if (std::is_same<T, double>::value)
+			debugDisp("输入数据为int类型");
+		else
+			debugDisp("输入数据为其他类型；");
+	}
+
+
+	void test0() 
+	{
+		int num1 = 1;
+		float num2 = 1.2;
+		double num3 = 11.2;
+		std::vector<int> vec1;
+		std::vector<float> vec2;
+		std::vector<double> vec3;
+		//foo(num1);
+		//foo(num2);
+		//foo(num3);
+
+		goo(vec1);
+		goo(vec2);
+		goo(vec3);
+
+		debugDisp("test0 finished.");
+	}
+
+
+	union NumType
+	{
+		int i;
+		float f; 
+	};
+	
+	// 
+	void test1() 
+	{
+		NumType num;
+		bool isInt = true;
+
+	}
+
+
+	template <typename T>
+	const char* hoo(const T& elem)
+	{
+		// typeid()——返回
+		const std::type_info& typeInfo = typeid(T);
+		const char* typeName = typeid(T).name();
+
+		// std::type_info支持operator==
+		if (typeInfo == typeid(int))
+			debugDisp("this is a int.");
+
+		debugDisp("pause");
+		return typeName;
+	}
+
+	template <typename TypeOut, typename TypeIn>
+	bool ioo(TypeOut& out, const TypeIn& elem)
+	{
+
+
+		out = static_cast<TypeOut>(elem);
+		return true;
+	}
+
+	// type mapping:
+	void test2() 
+	{
+		int num = 3;
+		debugDisp(hoo(num));
+		debugDisp(hoo("asdf"));
+
+		int numI = 5;
+		double numD = 0;
+		ioo(numD, numI);
+		debugDisp("numD == ", numD);
+
+		debugDisp("test2 finished.");
+	}
+}
+
+
+ 
+// std::function, 函数指针，函数子
+namespace TEST_FUNCTION
+{ 
+	void foo(const int arg) 
+	{
+		std::cout << arg +1 << ", ";
+	}
+
+	void test0() 
+	{
+		std::vector<int> numVec1{ 1,2,3,4,5,6,7 };
+
+		// 1. 传入lambda：
+		debugDisp("traverseSTL(numVec1, disp<int>());");
+		traverseSTL(numVec1, disp<int>());
+
+		// 2. 传入函数指针：
+		debugDisp("traverseSTL(numVec1, &foo);");
+		traverseSTL(numVec1, &foo);
+
+		// 3. 传入std::function对象封装的函数指针；
+		std::function<void(const int)> funcFoo = foo;
+		debugDisp("traverseSTL(numVec1, funcFoo)");
+		traverseSTL(numVec1, funcFoo);
+
+		debugDisp("test0() finished.");
+	}
+
+}
+
+
+
+// 测试不同环境：
+namespace TEST_ENV
+{
+	// 打印当前程序运行环境信息：
+	void test0() 
+	{
+		print_env_info();
+		debugDisp("test0() finished.");
+	}
+
+	// 测试不同环境下基本类型长度：
+	void test1() 
+	{
+		print_architecture_info();
+		print_build_mode();
+
+		debugDisp("\n");
+		debugDisp("sizeof(short) == ", sizeof(short));
+		debugDisp("sizeof(unsigned short) == ", sizeof(unsigned short));
+		debugDisp("sizeof(int) == ", sizeof(int));
+		debugDisp("sizeof(unsigned) == ", sizeof(unsigned));
+		debugDisp("sizeof(unsigned int) == ", sizeof(unsigned int));
+		debugDisp("sizeof(size_t) == ", sizeof(size_t));				// 32位下是unsigned int，长度为4；64为下是unsigned __int64，长度为8；
+		debugDisp("sizeof(long) == ", sizeof(long));
+		debugDisp("sizeof(long long) == ", sizeof(long long));
+
+		debugDisp("sizeof(float) == ", sizeof(float));
+		debugDisp("sizeof(double) == ", sizeof(double));
+
+		debugDisp("sizeof(char*) == ", sizeof(char*));				// 指针长度为操作系统位数；
+		debugDisp("sizeof(int*) == ", sizeof(int*));
+		debugDisp("sizeof(float*) == ", sizeof(float*));
+
+		debugDisp("test1() finished.");
 	}
 	 
+
 }
 
 
 
 int main()
-{      
-	// TEST_OOP::DECONSTRUCTOR::test0();
+{       
+	// TEST_FUNCTION::test0();
 
-	// TEST_TYPE_TRAITS::test2();
-
-	// TEST_UNKNOWN::TEST_IO::test3();
-
-	TEST_UNKNOWN::CHAR_STRING::test5();
-
+	// TEST_ENV::test1();
+	 
 
 	debugDisp("main() finished."); 
 

@@ -14,10 +14,7 @@
 #define EPS 1e-10					// 定义非常小的一个量EPSilon，当浮点数不大于这个值时，视为0
 #define PI 3.14159
 
-
  
-
-
 // 知识点
 /*
 	 1. std::map, multimap, unordered_map, unordered_multimap基本属性
@@ -46,9 +43,7 @@
 
 					4. 改（访问）		
 									下标运算[]
-				
-
-
+				 
 */
 
 
@@ -64,82 +59,146 @@ virtualModule* STL_map_module::getInstance()		// 线程不安全的单例模式
 
  
 
-struct person
+////////////////////////////////////////////////////////////////////////////////////////////// 辅助类型、接口
+namespace AUXILIARY
 {
-	std::string name;
-	bool sex;
-	int age;
-	std::string job;
-};
+	struct person
+	{
+		std::string name;
+		bool sex;
+		int age;
+		std::string job;
+	};
+	 
+	void dispPerson(person& p)
+	{
+		if (p.age)
+			std::cout << p.name << ", male, age: " << p.age << ", career: " << p.job << std::endl;
+		else
+			std::cout << p.name << ", female, age: " << p.age << ", career: " << p.job << std::endl;
+	}
 
-
-  
-void dispPerson(person& p)
-{
-	if(p.age)
-		std::cout << p.name << ", male, age: " << p.age << ", career: " << p.job << std::endl;
-	else
-		std::cout << p.name << ", female, age: " << p.age << ", career: " << p.job << std::endl;
 }
-
+using namespace AUXILIARY;
 
  
-// test0: std::map, std::unordered_map常用成员：
+ 
+// test0: std::map, std::unordered_map常用成员，相关定义
 void STL_map_module::test0(void)
 {
-	std::cout << "\n\n\n\n" << std::endl;
-	std::cout << "test0: std::map, std::unordered_map常用成员" << std::endl;
+	debugDisp("\n\n\n\n");
+	debugDisp("test0: std::map, std::unordered_map常用成员：\n"); 
 
 	std::map<int, std::string>  mis;
 	std::map<int, std::string>::iterator iter1;
 	pairPrinter pp; 
 
-	//	1. insert()——插入键值对：
-	mis.insert(std::make_pair(6, "xiaohong"));			// 插入pair对象
-	mis.insert(std::make_pair(5,"ali"));
+	//	1. insert()——插入键值对，返回一个pair，first是插入元素的迭代器，second是指示是否插入成功的BOOL值
+	debugDisp("insert()方法：");
+	{
+		std::pair<std::map<int, std::string>::iterator, bool> retPairS;
+		retPairS = mis.insert(std::make_pair(11, "xiaohong"));									// 插入std::pair对象
+		debugDisp("insert()是否成功：retPairS.second == ", retPairS.second);
 
+		retPairS = mis.insert(std::make_pair(12, "ali"));
+		retPairS = mis.insert(std::make_pair(12, "hahaha"));				// 插入失败的话，返回的retPairS.first是阻止插入的元素的迭代器；
+		debugDisp("insert()是否成功：retPairS.second == ", retPairS.second);
+		pp("retPairS.first == ",  * retPairS.first); 
+		debugDisp();
+		for (int i = 1; i < 10; ++i)
+			mis.insert(std::make_pair(i, std::to_string(100 * i + 10 * i + i)));
+
+		debugDisp("\n");
+	} 
 
 	//	2.operator[]()——返回输入键对应值的引用；注：如果输入键不存在，则在字典中生成该键值对，用默认constructor构造其值对象；
-	debugDisp("\noperator[](): ");
-	debugDisp("mis[5] == ", mis[5]);
+	debugDisp("operator[]()重载运算符： ");
+	{ 
+		debugDisp("mis[11] == ", mis[11]);
+		mis[11] = "bli";
+		debugDisp("mis[11] == ", mis[11]);
+		debugDisp("mis.size() == ", mis.size());
 
-	mis[5] = "bli";
-	debugDisp("mis[5] == ", mis[5]);
-	debugDisp("mis.size() == ", mis.size());
+		//			如果输入键不存在，则在字典中生成该键值对，用默认constructor构造其值对象；
+		debugDisp("mis[1] == ", mis[1]);
+		debugDisp("mis.size() == ", mis.size());
 
-	//			如果输入键不存在，则在字典中生成该键值对，用默认constructor构造其值对象；
-	debugDisp("mis[1] == ", mis[1]);
-	debugDisp("mis.size() == ", mis.size());
-	debugDisp("\n");
-
-
+		debugDisp("\n");
+	}
+	  
 	//	3. erase()——输入键或迭代器，删除对应的键值对；
-	/*
-		删除迭代器指向的键值对：
-				iterator erase( const_iterator pos ); 
+	debugDisp("erase()方法: ");
+	{
+		/*
+			删除迭代器指向的键值对，返回后一个键值对的迭代器；
+					iterator erase( const_iterator pos );
 
-		删除两个迭代器指定范围内的键值对：
-				iterator erase( iterator first, iterator last ); 
-				iterator erase( const_iterator first, const_iterator last ); 
+			删除两个迭代器指定范围内的键值对：
+					iterator erase( iterator first, iterator last );
+					iterator erase( const_iterator first, const_iterator last );
 
-		删除输入键对应的键值对，返回删除掉的键值对数量；
-				size_type erase( const Key& key );
-	*/
-	debugDisp("\nerase()方法: ");
-	debugDisp("mis.erase(1) == ", mis.erase(1));
-	for_each(mis.begin(), mis.end(), pp);
-	debugDisp("\n");
+			删除输入键对应的键值对，返回删除掉的键值对数量；
+					size_type erase( const Key& key );
+		*/ 
+		size_t eraseCount{0};
+		std::for_each(mis.begin(), mis.end(), pp);
+		debugDisp();
 
+		//		输入key 
+		eraseCount = mis.erase(1); 
+		debugDisp("mis.erase(1) == ", eraseCount);
+		std::for_each(mis.begin(), mis.end(), pp);
+		debugDisp();
 
-	//	4. find()——查找输入的键，返回对应的迭代器，如果没有找到则返回尾后迭代器；
-	debugDisp("\nfind()方法: ");
-	iter1 = mis.find(5);									// 迭代器指向的是键值对的std::pair
-	debugDisp("iter1->first == ", iter1->first);
-	debugDisp("iter1->second == ", iter1->second);
-	mis.erase(iter1);										// erase()方法输入迭代器删除元素
-	
-	for_each(mis.begin(), mis.end(), pp);
-	std::cout << std::endl;
+		//		输入键值对迭代器
+		auto iter = mis.begin();
+		pp("*iter == ", *iter);
+		debugDisp();
+		iter = mis.erase(iter);
+		pp("*iter == ", *iter);
+		debugDisp();
+		 
+		debugDisp("\n");
+	} 
+
+	//	4. find()——查找输入的键，返回对应的std::pair<>的迭代器，如果没有找到则返回尾后迭代器；
+	debugDisp("find()方法: ");
+	{ 
+		iter1 = mis.find(5);								 
+		if (mis.end() == iter1)
+			debugDisp("没有找到输入的键，返回尾后迭代器。");
+		else
+		{
+			pp("*iter1 == ", *iter1);
+			debugDisp();
+		} 
+		iter1 = mis.find(14);
+		if (mis.end() == iter1)
+			debugDisp("没有找到输入的键，返回尾后迭代器。");
+		else
+		{
+			pp("*iter1 == ", *iter1);
+			debugDisp();
+		}
+		 
+		debugDisp("\n");
+	}
+
+	// 5. 字典中的别名：key_type, mapped_type, value_type
+	debugDisp("字典中的别名：");
+	{
+		using AsciiMap = std::map<char, int>;
+		AsciiMap::key_type c1;							// 字典键类型：char
+		AsciiMap::mapped_type num1;				// 字典映射的类型：int
+		AsciiMap::value_type pair1;						// 字典中的键值对类型：std::pair<const char, int>，注意前一项是const，字典中的键是不可更改的；
+		debugDisp("AsciiMap::key_type的类型为：", typeid(c1).name());
+		debugDisp("AsciiMap::mapped_type的类型为：", typeid(num1).name());
+		debugDisp("AsciiMap::value_type的类型为：", typeid(pair1).name());
+
+		debugDisp("\n");
+	}
+
+	debugDisp("test0() finished.");
 }
 
 

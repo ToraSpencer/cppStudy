@@ -143,7 +143,14 @@ namespace MY_DEBUG
 		template<typename T1, typename T2>
 		void operator()(const std::pair<T1, T2>& p)
 		{
-			std::cout << "\t(" << p.first << ", " << p.second << ")";
+			std::cout << "(" << p.first << ", " << p.second << ") ";
+			this->count++;
+		}
+
+		template<typename T1, typename T2>
+		void operator()(const std::string& str, const std::pair<T1, T2>& p)
+		{
+			std::cout <<  str << "(" << p.first << ", " << p.second << ") ";
 			this->count++;
 		}
 

@@ -104,51 +104,52 @@ void basicTypes_strings_module::test0(void)
 // test1: std::string常用的API
 void basicTypes_strings_module::test1(void)
 {
-	std::cout << "\n\n\n\n" << std::endl;
-    std::cout << "test1: std::string类的接口" << std::endl;
+	debugDisp("\n\n\n\n");
+	debugDisp("test1: std::string类的接口");
+	debugDisp();
 
-	std::string str1;					// 默认构造函数构造的空std::string
+	std::string str1;							// 默认构造函数构造的空std::string
 	std::string str2(9,'a');				// 若干个相同字符构造的std::string
 	std::string str3("hello world");		// 字符串字面量构造的std::string
 
-	// 1. 访问单个元素的接口：operator[], at(), front(), back()
-	std::cout << "\t 访问单个元素的接口：operator[], at(), front(), back():" << std::endl;
-	std::cout << "\t str2[2] == " << str2[2] << std::endl;
+	// 1. 访问单个元素的接口：operator[], at(), front(), back() 
+	debugDisp("访问单个元素的接口：operator[], at(), front(), back():");
+	debugDisp("\t str2[2] == ", str2[2]);
 	try{ }
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << '\n';
 	}
-	std::cout << "\t str3.front() == "<< str3.front() << std::endl;
-	std::cout << "\t str3.back() == "<< str3.back() << std::endl;
-	std::cout << std::endl << std::endl;
-
+	debugDisp("\t str3.front() == ", str3.front());
+	debugDisp("\t str3.back() == ", str3.back());
+	debugDisp();
 
 	// 2. 操作多个元素的接口：insert, replace, substr, append
 	str1 = str2.substr(2,4);				
 	str2.replace(3, 2, "bcbcbc");
 	str3.insert(6, "new ");				// 在第6个字符后面插入，“第六”是指从“第一“开始数
-	std::cout << "\t 操作多个元素的接口：insert, replace, sub_str, append, clear" << std::endl;
-	std::cout << "\t str1 == "<< str1 << std::endl;
-	std::cout << "\t str2 == "<< str2 << std::endl;
-	std::cout << "\t str3 == "<< str3 << std::endl;
+	debugDisp("操作多个元素的接口：insert, replace, sub_str, append, clear");
+	debugDisp("\t str1 == ", str1);
+	debugDisp("\t str2 == ", str2);
+	debugDisp("\t str3 == ", str3);
 	str1.clear();
-	std::cout << "str1.clear(); str1 == " << str1 << std::endl;
-	std::cout << std::endl << std::endl;
+	debugDisp("str1.clear(); str1 == ", str1);
+	debugDisp();
 
 	// 3. std::string对象之间的操作：operator+=
 	str1 += str2;
 	str1 += str3;
-	std::cout << "\t string对象之间的操作：operator+=" << std::endl;
-	std::cout << "\t str1 == " << str1 << std::endl;
-	std::cout << std::endl << std::endl;
+	debugDisp("string对象之间的操作：operator+=");
+	debugDisp("\t str1 == " , str1);
+	debugDisp();
 
 	// 4. 迭代器接口：begin, cbegin(C++11), rbegin(C++11), crbegin(C++11)...
-	std::cout << "\t 使用反向迭代器，反向打印字符串："<< std::endl;
-	for_each(str3.rbegin(), str3.rend(), disp<char>());
-	std::cout << std::endl << std::endl;
+	debugDisp("迭代器接口：begin, cbegin(C++11), rbegin(C++11), crbegin(C++11)...：");
+	for_each(str3.rbegin(), str3.rend(), disp<char>());	// 使用反向迭代器，反向打印字符串：
+	debugDisp();
 
 	// 5. 1 字符串转换为其他类型std::stoi(), std::stol(), std::stoll(), std::stof() ———— 字符串、宽字符串、C风格字符串转为数值(c++11)：
+	debugDisp("字符串转换为其他类型:");
 	const char* cstr = "123";
 	str1 = "123";
 	str2 = "1234567890";
@@ -165,42 +166,41 @@ void basicTypes_strings_module::test1(void)
 	int num5 = std::stoi(str5);		// 前后的空格不影响数值转换
 	int num6 = std::stoi(str6);		// 数字中间有空格的话，会截断空格后面的数字。
 	
-	std::cout << num0 << std::endl;
-	std::cout << num1 << std::endl;
-	std::cout << num2 << std::endl;
-	std::cout << num3 << std::endl;
-	// std::cout << std::stoi(str3) << std::endl;		字符串中有非数值字符程序会中断。
-	std::cout << num4 << std::endl;
-	std::cout << num5 << std::endl;
-	std::cout << num6 << std::endl;
-	std::cout << std::endl << std::endl;
+	debugDisp(num0);
+	debugDisp(num1);
+	debugDisp(num2);
+	debugDisp(num3);
+	// debugDisp(std::stoi(str3));		字符串中有非数值字符程序会中断。
+	debugDisp(num4);
+	debugDisp(num5);
+	debugDisp(num6);
+	debugDisp();
 
 	// 5.2 其他类型转换为字符串：a. 使用stringstream实现； b. std::to_string()和std::to_wstring()——数值转换为字符串（C++11）
+	debugDisp("其他类型转换为字符串：");
 	str1 = std::to_string(321);
 	str2 = std::to_string(987654321);
 	wstr1 = std::to_wstring(12345);
-	std::cout << str1 << std::endl;
-	std::cout << str2 << std::endl;
+	debugDisp(str1);
+	debugDisp(str2);
 	std::wcout << wstr1 << std::endl;
-	std::cout << std::endl << std::endl;
+	debugDisp();
 
 	// 6. 子串操作：
-	str1 = "asdfhjkl12345";
+	debugDisp("子串操作：");
+	str1 = "https://github.com/ToraSpencer/cppStudy";
 
 	// substr(pos, count)——提取子串
-	str2 = str1.substr(3, 4);			// 前闭后开区间；
-	std::cout << str2 << std::endl;
-	str2 = "9999";
-	str1.erase(3, 4);
-	str1.insert(3, str2);
-	std::cout << "str1 == " << str1 << std::endl;		// asd9999l12345
+	str2 = str1.substr(3, 4);						
+	debugDisp("str2 == str1.substr(3, 4) == ", str2); 
 
-	// find_first_of()——查找子串：
-	unsigned index = str1.find_first_of("123");
-	str2 = str1.substr(0, index);
-	str3 = str1.substr(index, str1.size() - index);
-	std::cout << "str2 == " << str2 << std::endl;		// asd9999l
-	std::cout << "str3 == " << str3 << std::endl;		// 12345
+	// find_first_of(), find_last_of——查找子串第一次、最后一次出现的位置；
+	const size_t posNum1 = str1.find_first_of("/");
+	const size_t posNum2 = str1.find_last_of("/");
+	char* cstr1 = &str1[posNum1];
+	char* cstr2 = &str1[posNum2];
+	debugDisp("cstr1 == ", cstr1);
+	debugDisp("cstr2 == ", cstr2);
 }
 
 
@@ -407,13 +407,7 @@ void basicTypes_strings_module::test5(void)
 		std::cout << "没有找到模板字符串" << std::endl;
 	else
 		std::cout << "找到模板字符串，位置是" << num << std::endl;
-
-
-	//			std::string类的find_first_of()和find_last_of()方法——查找字符或子串第一次、最后一次出现的位置
-	std::string::size_type num1 = str1.find_first_of("asd");
-	std::string::size_type num2 = str1.find_last_of("asd");
-	if (num1 != num2)			
-		std::cout << "子串asd出现了不止一次" << std::endl;				// 可以用这种方法来判断子串在目标字符串中出现的次数
+	 
 }
 
 
@@ -496,8 +490,8 @@ void basicTypes_strings_module::test6(void)
 // test7: application: 使用字符串转换接口std::stoi(), std::stof(), std::stod()等来提取字符串中的所有数值；
 void basicTypes_strings_module::test7(void)
 {
-	std::cout << "\n\n\n\n" << std::endl;
-	std::cout << "test7: application: 使用字符串转换接口std::stoi(), std::stof(), std::stod()等来提取字符串中的所有数值。" << std::endl;
+	debugDisp("\n\n\n\n");
+	debugDisp("test7: application: 使用字符串转换接口std::stoi(), std::stof(), std::stod()等来提取字符串中的所有数值。");
 
 	// to be optimized——出现非小数点意义的"."会有bug;
 	std::string str{"asdf123, (5.12, 6.99)。。。iuio91*"};

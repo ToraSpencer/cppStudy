@@ -64,8 +64,7 @@ using namespace std;
 		都含有比较器value_compare，是一个函数子，用来规定集合中键的排序的规则
 */
 
-
-
+ 
 // STL——无序关联容器：unordered_set, unordered_map, unordered_multiset, unordered_multimap
 /*
 		(C++11 起)unordered_set 						唯一键的集合，按照键生成散列
@@ -81,6 +80,7 @@ using namespace std;
 */
 
 
+
 virtualModule* STL_set_module::getInstance()		// 线程不安全的单例模式
 {
 	if (nullptr != p_moduleIns) 
@@ -91,28 +91,34 @@ virtualModule* STL_set_module::getInstance()		// 线程不安全的单例模式
 
 
 
-// test0: set的基本使用方法、API
+// test0: set的基本使用方法、API——和std::map类似，详情见"STL_map键值对集合.cpp"
 void STL_set_module::test0(void) 
 {
-	cout << "\n\n\n\n" << endl;
-	cout << "test0: set的基本使用方法、API" << endl;
+	debugDisp("\n\n\n\n");
+	debugDisp("test0: set的基本使用方法、API：\n"); 
 
 	// 基本类型的set——插入到set中的基本类型元素会默认从小到大排序，插入到合适的位置。
-	set<int> seti1;									// 构造方法1
-	set<int>::iterator iter_i;
-	baseTypePrinter btp;
+	debugDisp("基本类型的set——插入到set中的基本类型元素会默认从小到大排序，插入到合适的位置：");
+	{
+		set<int> seti1;									// 构造方法1
+		set<int>::iterator iter_i;
+		baseTypePrinter btp;
 
-	seti1.insert(1);
-	seti1.insert(0);
-	seti1.insert(9);
-	seti1.insert(8);
-	seti1.insert(11);
-	seti1.insert(-3);
+		seti1.insert(1);
+		seti1.insert(0);
+		seti1.insert(9);
+		seti1.insert(8);
+		seti1.insert(11);
+		seti1.insert(-3);
+		for_each(seti1.begin(), seti1.end(), btp);
+		debugDisp();
 
-	for_each(seti1.begin(), seti1.end(), btp);
+		debugDisp("\n");
+	} 
 
+	// 		若想要修改元素排序的方式，则构造时传入一个严格弱序(strict weak ordering)比较器
 
-	// 		若想要修改元素排序的方式，则构造时
+	debugDisp("test0() finished.");
 }
 
 
@@ -203,8 +209,7 @@ namespace COMPARER1
 	};
 
 }
-
-
+ 
 void STL_set_module::test2(void) 
 {
 	using namespace COMPARER1;
@@ -247,7 +252,14 @@ void STL_set_module::test3(void)
 }
 
 
-void STL_set_module::test4(void) {}
+// test4: std::unordered_set<>——哈希表
+void STL_set_module::test4(void) 
+{
+
+
+
+	debugDisp("test4() finished.");
+}
 
 
 void STL_set_module::test5(void) {}

@@ -34,7 +34,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chap_stdlib", "chap_stdlib\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chap_DSA", "chap_DSA\chap_DSA.vcxproj", "{88CF4452-2FAE-4410-BFBC-4C8ECF4649E2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CppStudy解决方案", "CppStudy解决方案", "{5F2869E5-EC50-402A-9986-81AFBA5F1A60}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CppStudy", "CppStudy", "{5F2869E5-EC50-402A-9986-81AFBA5F1A60}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chap_errorHandling", "chap_errorHandling\chap_errorHandling.vcxproj", "{385EA6C6-ECAA-4A81-9A83-24FD76723504}"
 EndProject
