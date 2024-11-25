@@ -2097,6 +2097,54 @@ namespace TEST_UNKNOWN
 
 			debugDisp("test3() finished.");
 		}
+
+
+		void test4() 
+		{
+			std::ifstream offFile("C:/myData/fountain_NOFF.off");
+			std::string line;
+
+			// 1. 
+			line.resize(1024);
+			offFile.getline(&line[0], 1024);
+			debugDisp(line);
+
+			// 2. 
+			int retInt{ 0 };
+			int versCount{0};
+			int facesCount{ 0 };
+			int edgesCount{ 0 };
+			int tmpNum{0};
+			offFile.getline(&line[0], 1024);
+
+			debugDisp("sscanf_s: ");
+			{
+				retInt = sscanf_s(&line[0], "%d %d %d", &versCount, &facesCount, &edgesCount);
+				debugDisp("retInt == ", retInt);
+				debugDisp(versCount);
+				debugDisp(facesCount);
+				debugDisp(edgesCount);
+				debugDisp();
+			}
+			{
+				retInt = sscanf_s(&line[0], "%d %d", &versCount, &facesCount);
+				debugDisp("retInt == ", retInt);
+				debugDisp(versCount);
+				debugDisp(facesCount); 
+				debugDisp();
+			}
+			{
+				retInt = sscanf_s(&line[0], "%d %d %d %d", &versCount, &facesCount, &edgesCount, &tmpNum);
+				debugDisp("retInt == ", retInt);
+				debugDisp(versCount);
+				debugDisp(facesCount);
+				debugDisp(edgesCount);
+				debugDisp();
+			}
+
+
+			debugDisp("test4() finished.");
+		}
 	}
 
  
@@ -4426,6 +4474,11 @@ int main()
 
 	// TEST_ENV::test1();
 	 
+	// TEST_UNKNOWN::TEST_IO::test4();
+
+	size_t num = static_cast<size_t>(-1);
+	debugDisp(num);
+
 
 	debugDisp("main() finished."); 
 
