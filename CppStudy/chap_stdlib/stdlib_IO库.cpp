@@ -452,6 +452,7 @@ void stdlib_io_module::test3(void)
 	char cstr3[50] = "1";
 	ss << cstr1 << cstr2;
 	ss >> cstr1;				// c风格的字符串不可以使用"="赋值，c语言中使用strcpy();
+
 	// 经过上面的流输入操作后，流对象ss处于失效状态，必须调用clear()方法才能再次使用。
 	ss.clear();				// clear()方法——使流对象重新处于有效状态。
 	ss << cstr1;

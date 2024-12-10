@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>			// 字符串流
+#include <iomanip>
 
 #include <iterator>
 #include <utility>
@@ -35,15 +36,13 @@
 #include <windows.h> 
 #include <atlstr.h>				// 包含CString类。属于microsoft ATL(活动模板库avtive template library)
 #include <io.h>
-
-
-#include <memory>
-
+ 
+#include <memory> 
 #include <thread>					// c++线程支持库
 #include <mutex>
-#include <atomic>			// 原子类型
-
+#include <atomic>			// 原子类型 
 #include <cassert>			// 断言
+#include <omp.h>			// 
 
 
 // #define USE_BOOST

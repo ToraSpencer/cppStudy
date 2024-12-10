@@ -51,15 +51,162 @@ public:
 
 
 
+////////////////////////////////////////////////////////////////////////////////////////////// 工具接口
+namespace AUXILIARY
+{ 
+	// 字符串转换为宽字符串；
+	std::wstring s2ws(const std::string& s)
+	{
+		std::locale old_loc = std::locale::global(std::locale(""));
+		const char* src_str = s.c_str();
+		const size_t buffer_size = s.size() + 1;						// +1是因为字符串末尾有'\0'
+		wchar_t* dst_wstr = new wchar_t[buffer_size];
+		wmemset(dst_wstr, 0, buffer_size);
+		mbstowcs(dst_wstr, src_str, buffer_size);
+		std::wstring result = dst_wstr;
+		delete[]dst_wstr;
+		std::locale::global(old_loc);
+		return result;
+	} 
+
+
+	// 宽字符串转换为字符串；
+	std::string ws2s(const std::wstring& ws)
+	{
+		std::locale old_loc = std::locale::global(std::locale(""));
+		const wchar_t* src_wstr = ws.c_str();
+		size_t buffer_size = ws.size() * 4 + 1;
+		char* dst_str = new char[buffer_size];
+		memset(dst_str, 0, buffer_size);
+		wcstombs(dst_str, src_wstr, buffer_size);
+		std::string result = dst_str;
+		delete[]dst_str;
+		std::locale::global(old_loc);
+		return result;
+	}
+
+
+	// 在指定目录下创建文件夹：
+	bool CreateFolder(const std::string& dirPath)
+	{
+		bool retFlag = false;
+
+		// 1. 生成路径宽字符串： 
+		std::wstring wdirPath = s2ws(dirPath);
+
+		// 2. 创建文件夹
+#ifdef _WIN32
+		int retInt = CreateDirectory(wdirPath.c_str(), NULL);
+		retFlag = (retInt > 0);
+#endif 
+
+		return retFlag;
+	}
+
+
+	// 检测路径是否存在
+	bool CheckValidPath(const std::string& path)
+	{
+		bool retFlag = false; 
+
+		// 1. 生成路径宽字符串： 
+		std::wstring wPath = s2ws(path);
+
+		// 2. 使用GetFileAttributes()判断路径属性：
+#ifdef _WIN32 
+		DWORD attributes = GetFileAttributes(wPath.c_str());
+		if (attributes != INVALID_FILE_ATTRIBUTES)
+			retFlag = true;
+#endif 
+		return retFlag;
+	}
+
+
+	// 返回正确的文件夹路径
+	std::string CorrectDirPath(const std::string& dirPath)
+	{
+		const size_t length = dirPath.length();
+		if (length < 2)
+			return dirPath;
+		if ('/' == *dirPath.rbegin() || '\\' == *dirPath.rbegin())
+			return dirPath;
+		else
+			return dirPath + "/";
+	}
+
+
+	// 读取输入目录下的所有文件夹
+	void GetDirNames(std::vector<std::string>& files, std::string path)
+	{
+#ifdef _WIN32
+		intptr_t hFile = 0;                     // 文件句柄；注意：我发现有些文章代码此处是long类型，实测运行中会报错访问异常
+		struct _finddata_t fileinfo;        // 文件信息
+		std::string tmpPath;
+		if ('/' != *path.crbegin() && '\\' != *path.crbegin())
+			path.assign(path).append("/");
+		if ((hFile = _findfirst(tmpPath.assign(path).append("*").c_str(), &fileinfo)) != -1)
+		{
+			do
+			{
+				if (fileinfo.attrib & _A_SUBDIR)
+					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
+						files.push_back(tmpPath.assign(path).append(fileinfo.name).append("/"));
+			} while (_findnext(hFile, &fileinfo) == 0);
+			_findclose(hFile);
+		}
+#else
+		// to be optimized....
+		DIR* pDir;
+		struct dirent* ptr;
+		if (!(pDir = opendir(path.c_str())))
+			return;
+		while ((ptr = readdir(pDir)) != 0)
+			if (strcmp(ptr->d_name, ".") != 0 && strcmp(ptr->d_name, "..") != 0)
+				files.push_back(path + "/" + ptr->d_name);
+		closedir(pDir);
+#endif
+	}
+
+
+	// 输入文件完整路径，输出文件名字符串
+	std::string ExtractFileName(const std::string& filePath)
+	{
+		std::string retStr;
+		size_t posNum{ 0 };
+		if (filePath.empty())
+			return retStr;
+
+		size_t posNum1 = filePath.find_last_of("\\");
+		size_t posNum2 = filePath.find_last_of("/");
+		int pn1 = std::string::npos == posNum1 ? -1 : static_cast<int>(posNum1);
+		int pn2 = std::string::npos == posNum2 ? -1 : static_cast<int>(posNum2);
+		if (pn1 < 0 && pn2 < 0)
+			return filePath;
+		posNum = pn1 < pn2 ? posNum2 : posNum1;
+		if (posNum >= filePath.size() - 1)
+			return retStr;
+		retStr = &filePath[posNum + 1];
+
+		return retStr;
+	}
+
+}
+using namespace AUXILIARY;
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
 namespace MY_DEBUG
 { 
+	const std::string g_debugPath = "C:/myData/output/";
+
+
 	static void debugDisp()			// 递归终止
 	{						//		递归终止设为无参或者一个参数的情形都可以。
 		std::cout << std::endl;
 		return;
 	}
-	 
+	  
 
 	template <typename T, typename... Types>
 	static void debugDisp(const T& firstArg, const Types&... args)
@@ -67,7 +214,13 @@ namespace MY_DEBUG
 		std::cout << firstArg << " ";	// 递归递推；
 		debugDisp(args...);
 	}
-	 
+	  
+
+	static void debugDispWStr(const std::wstring& wstr)
+	{
+		std::wcout.imbue(std::locale(std::locale(), "", LC_CTYPE));		// 设置wcout的语言环境，缺少这一步打印中文会有错误。
+		std::wcout << wstr << std::endl;
+	}
 
 	// 针对编译器版本信息的宏
 	void print_compiler_info() 
@@ -2263,6 +2416,25 @@ namespace TEST_STD
 
 		debugDisp("test1() finished.");
 	}
+
+
+	// std::stringstream
+	void test2() 
+	{
+		std::stringstream ss;
+		auto foo = [](int number, int width)->std::string
+			{
+				std::stringstream ss;
+				ss << std::setw(width) << std::setfill('0') << number;			// 需要<iomanip>
+				return ss.str();
+			};
+
+		debugDisp(foo(12, 5));
+		debugDisp(foo(12, 4));
+		debugDisp(foo(1, 3));
+
+		debugDisp("test2() finished.");
+	}
 };
 
 
@@ -2808,6 +2980,53 @@ namespace TEST_STL
 		}
 
 
+		// 测试基于OpenMP的多线程并发：
+		void test22() 
+		{
+			// VS中需要将项目属性 → C/C++ → 语言 → “OpenMP支持”的值设定为“是”
+ 
+			{
+				int num_threads = omp_get_num_threads();
+				printf("Number of threads: %d\n", num_threads);
+				printf("Available processors: %d\n", omp_get_num_procs());
+			}
+
+			// 生成一个大容量的向量，存放随机数：
+			int elemCount = 30000;
+			std::vector<float> numVec(elemCount, 0);
+			std::vector<float> randVec(elemCount);  
+			std::default_random_engine e;									// 随机数生成器的引擎对象
+			std::uniform_real_distribution<float> URD_f(0, 1);
+			tiktok& tt = tiktok::getInstance();
+
+			std::cout << "多线程测试开始：" << std::endl;			// 生成一组随机数，求和，赋值给numVec中的元素；
+			tt.start();
+#pragma omp parallel for num_threads(omp_get_num_procs() - 1)  
+			for (int i = 0; i < elemCount; ++i)
+			{
+				for (auto& num : randVec)
+					num = URD_f(e);
+				numVec[i] = std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0));
+			}
+			tt.endCout("omp多线程耗时："); 
+			 
+			// 单线程耗时为9s+
+			{
+				std::cout << "单线程测试开始：" << std::endl;
+				tt.start();
+				for (int i = 0; i < elemCount; ++i)
+				{
+					for (auto& num : randVec)
+						num = URD_f(e);
+					numVec[i] = std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0));
+				}
+				tt.endCout("单线程耗时：");
+			} 
+
+			debugDisp("test22() finished.");
+		}
+
+
 		// test3()——测试原子操作：
 		std::atomic<bool> g_readySignal(false);
 		std::atomic<bool> g_winSignal(false);
@@ -3203,6 +3422,22 @@ namespace TEST_STL
 			std::cout << "finished." << std::endl;
 		}
 		 
+
+		// 7. 哈希表的迭代器：
+		void test7() 
+		{
+			std::vector<int> numVec{1,-1, 1, 2, -1, -3, 22, 22, 88, -999};
+			std::unordered_set<int> numSet;
+			for (const auto& num : numVec)
+				numSet.insert(num);
+			
+			// 迭代器访问顺序是按照元素插入的先后顺序；
+			auto iter = numSet.begin();
+			while (iter != numSet.end())
+				debugDisp(*iter++);
+
+			debugDisp("test7() finished.");
+		}
 	}
 
 
@@ -4466,19 +4701,28 @@ namespace TEST_ENV
 
 }
 
+namespace TEST_AUXILIARY 
+{
+	void test0() 
+	{
+		debugDisp("retFlag1 == ", CreateFolder(CorrectDirPath(g_debugPath) + "folder_a"));
+		debugDisp("retFlag1 == ", CreateFolder(CorrectDirPath(g_debugPath) + "文件夹_a"));
+		debugDisp("test0() finished.");
+	}
+
+}
+
 
 
 int main()
 {       
-	// TEST_FUNCTION::test0();
+	//TEST_STL::STL_SET_MAP::test22();
 
-	// TEST_ENV::test1();
+	// TEST_STL::STD_THREAD::test22();
+
+	// TEST_AUXILIARY::test0();
 	 
-	// TEST_UNKNOWN::TEST_IO::test4();
-
-	size_t num = static_cast<size_t>(-1);
-	debugDisp(num);
-
+	TEST_STD::test2();
 
 	debugDisp("main() finished."); 
 
