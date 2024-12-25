@@ -263,32 +263,6 @@ public:
 };
 
 
-
-//      函数子pairPrinter————功能是打印pair对象
-class pairPrinter
-{
-private:
-    unsigned int count = 0;
-
-public:
-	pairPrinter() = default;
-
-	template<typename T1, typename T2>
-	void operator()(const std::pair<T1, T2>& p) 
-	{
-		std::cout << "\t(" << p.first << ", " << p.second << ")";
-		this->count++;
-	}
-
-	unsigned int getCount(void) 
-	{
-		return this->count;
-	}
-
-};
-
-
-
 //      函数子FooPrinter————功能是打印classFoo对象。
 class FooPrinter
 {

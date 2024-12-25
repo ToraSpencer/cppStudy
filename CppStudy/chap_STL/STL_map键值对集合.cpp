@@ -91,7 +91,7 @@ void STL_map_module::test0(void)
 
 	std::map<int, std::string>  mis;
 	std::map<int, std::string>::iterator iter1;
-	pairPrinter pp; 
+	dispPair<std::pair<int, std::string>> pp;
 
 	//	1. insert()——插入键值对，返回一个pair，first是插入元素的迭代器，second是指示是否插入成功的BOOL值
 	debugDisp("insert()方法：");
@@ -103,7 +103,7 @@ void STL_map_module::test0(void)
 		retPairS = mis.insert(std::make_pair(12, "ali"));
 		retPairS = mis.insert(std::make_pair(12, "hahaha"));				// 插入失败的话，返回的retPairS.first是阻止插入的元素的迭代器；
 		debugDisp("insert()是否成功：retPairS.second == ", retPairS.second);
-		pp("retPairS.first == ",  * retPairS.first); 
+		debugDisp("retPairS.first == ", *retPairS.first); 
 		debugDisp();
 		for (int i = 1; i < 10; ++i)
 			mis.insert(std::make_pair(i, std::to_string(100 * i + 10 * i + i)));
@@ -305,7 +305,7 @@ void STL_map_module::test2(void)
 	std::cout << "multimap的基本使用方法、api" << std::endl;
 
 	std::multimap<std::string, int> mmss;
-	pairPrinter pp;
+	dispPair<std::pair<std::string, int>> pp;
 
 	mmss.insert(std::make_pair("xiaohong", 16));
 	mmss.insert(std::make_pair("xiaoming", 17));

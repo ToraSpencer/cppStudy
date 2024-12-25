@@ -3,6 +3,10 @@
 #include <algorithm>
 #include <vector>
 #include <cmath>
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif 
 #include <windows.h>
 
 #include "reader.h"

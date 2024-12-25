@@ -1,15 +1,6 @@
 #include "basicTools.h"
 
 
-// 从输入流inStream中跳过空格及制表符获取一字符
-char GetChar(std::istream &inStream)
-{
-	char ch;
-	while ((ch = (inStream).peek()) != EOF	// 文件结束符(peek()函数从输入流中接受1字符,流的当前位置不变)
-		&& ((ch = (inStream).get()) == ' '		// 空格( get()函数从输入流中接受1字符,流的当前位置向后移1个位置)
-			|| ch == '\t'));
-	return ch;
-}
 
 
 // 由mes构构通用异常对象
@@ -97,13 +88,12 @@ bool virtualChap::isNullModule() const
 }
 
 
-myString::myString(const myString& str)                                // ！！！类数据中有指针式，应该自己实现拷贝构造函数、重载赋值运算符，以实现深拷贝。否则系统分配浅拷贝的拷贝构造函数。
+// 从输入流inStream中跳过空格及制表符获取一字符
+char GetChar(std::istream& inStream)
 {
-	const char* cStr = str.c_str();
-	int size = strlen(cStr) + 1;
-
-	char* tempStr = new char[size];
-	strcpy_s(tempStr, size ,cStr);
-	this->pc = tempStr;
+	char ch;
+	while ((ch = (inStream).peek()) != EOF	// 文件结束符(peek()函数从输入流中接受1字符,流的当前位置不变)
+		&& ((ch = (inStream).get()) == ' '		// 空格( get()函数从输入流中接受1字符,流的当前位置向后移1个位置)
+			|| ch == '\t'));
+	return ch;
 }
- 

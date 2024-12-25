@@ -89,6 +89,19 @@ virtualModule* STL_set_module::getInstance()		// 线程不安全的单例模式
 	return p_moduleIns;
 }
 
+// 函数子baseTypePrinter——打印基本类型变量
+class baseTypePrinter
+{
+public:
+	baseTypePrinter() = default;
+
+	template<typename T>
+	void operator()(const T& arg)
+	{
+		std::cout << arg << "\t";
+	}
+
+};
 
 
 // test0: set的基本使用方法、API——和std::map类似，详情见"STL_map键值对集合.cpp"

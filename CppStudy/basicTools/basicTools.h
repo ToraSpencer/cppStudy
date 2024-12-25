@@ -18,12 +18,18 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #include <io.h>
+
+#include "AuxiliaryHeader.h"
  
  
 /////////////////////////////////////////////////////////////////////////////////////////////// 辅助数据结构：
-namespace AUXILIARY
+namespace AUXILIARY_DSA
 {
 	// 宏定义、常量
 	#define DEFAULT_SIZE 1000			// 缺省元素个数
@@ -89,213 +95,12 @@ namespace AUXILIARY
 		~Error(void) {};
 		void Show() const;					// 显示异常信息
 	};
-
-
-	// 自定义pointer-like字符串类
-	struct myString
-	{
-	private:
-		const char* pc;
-	public:
-		myString() = delete;
-		myString(const char* pc0) :pc(pc0) {}
-		myString(const myString& str);	// 应该自己实现拷贝构造函数、重载赋值运算符，以实现深拷贝。否则系统分配浅拷贝的拷贝构造函数。
-
-		const char* c_str() const
-		{
-			return this->pc;
-		}
-	};
+	 
 
 	// 从输入流inStream中跳过空格及制表符获取一字符
 	char GetChar(std::istream& inStream = std::cin); 
 }
-using namespace AUXILIARY;
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////// debug和disp接口：
-namespace MY_DEBUG
-{
-	// 函数子baseTypePrinter——打印基本类型变量
-	class baseTypePrinter
-	{
-	public:
-		baseTypePrinter() = default;
-
-		template<typename T>
-		void operator()(const T& arg)
-		{
-			std::cout << arg << "\t";
-		}
-
-	};
-
-
-	// 函数子pairPrinter————功能是打印pair对象
-	class pairPrinter
-	{
-	private:
-		unsigned int count = 0;
-
-	public:
-		pairPrinter() = default;
-
-		template<typename T1, typename T2>
-		void operator()(const std::pair<T1, T2>& p)
-		{
-			std::cout << "(" << p.first << ", " << p.second << ") ";
-			this->count++;
-		}
-
-		template<typename T1, typename T2>
-		void operator()(const std::string& str, const std::pair<T1, T2>& p)
-		{
-			std::cout <<  str << "(" << p.first << ", " << p.second << ") ";
-			this->count++;
-		}
-
-		unsigned int getCount(void)
-		{
-			return this->count;
-		}
-	};
-
-
-	// 传入函数子或函数指针遍历stl容器——函数子格式为void func(elemType& e)
-	template<typename T, typename F>
-	void traverseSTL(T& con, F f)
-	{
-		std::for_each(con.begin(), con.end(), f);
-		std::cout << std::endl;
-	}
-
-
-	// 传入函数子或函数指针遍历std::map, std::unordered_map等
-	template<typename mapType, typename F>
-	void traverseSTLmap(mapType& m, F f)
-	{
-		std::for_each(m.begin(), m.end(), f);
-		std::cout << std::endl;
-	}
-
-
-	// 反向遍历stl容器
-	template<typename T, typename F>
-	void revTraverseSTL(T& con, F f)
-	{
-		std::for_each(con.rbegin(), con.rend(), f);
-		std::cout << std::endl;
-	}
-
-
-	// 函数子——打印std::cout支持的类型变量。
-	template <typename	T>
-	class disp
-	{
-	public:
-		void operator()(const T& arg)
-		{
-			std::cout << arg << ", ";
-		}
-	};
-
-
-	// 函数子——打印std::pair
-	template <typename pairType>
-	class dispPair
-	{
-	public:
-		void operator()(const pairType& p)
-		{
-			std::cout << "(" << p.first << ", " << p.second << "), ";
-		}
-	};
-
-
-
-	static void debugDisp()			// 递归终止
-	{						//		递归终止设为无参或者一个参数的情形都可以。
-		std::cout << std::endl;
-		return;
-	}
-
-	template <typename T, typename... Types>
-	static void debugDisp(const T& firstArg, const Types&... args)
-	{
-		std::cout << firstArg << " ";
-		debugDisp(args...);
-	}
-
-
-	// 基于std::chrono的自定义计时器
-	using namespace std::chrono;
-	class tiktok
-	{
-	private:
-		tiktok() = default;
-		tiktok(const tiktok&) {}
-		~tiktok() = default;
-
-	public:
-		time_point<steady_clock> startTik;
-		time_point<steady_clock> endTik;
-		unsigned recordCount;
-		std::vector<time_point<steady_clock>> records;
-
-		static tiktok& getInstance()
-		{
-			static tiktok tt_instance;
-			return tt_instance;
-		}
-
-		// 开始计时
-		void start()
-		{
-			this->startTik = steady_clock::now();
-			this->recordCount = 0;
-			this->records.clear();
-		}
-
-		// 结束计时，控制台上打印时间间隔，单位为秒
-		void endCout(const char* str)
-		{
-			this->endTik = steady_clock::now();
-			microseconds duration = duration_cast<microseconds>(this->endTik - this->startTik);
-			std::cout << str << static_cast<double>(duration.count()) * \
-				microseconds::period::num / microseconds::period::den << std::endl;
-		}
-
-		// 结束计时，返回std::chrono::microseconds类型的时间间隔；
-		microseconds endGetCount()
-		{
-			this->endTik = steady_clock::now();
-			microseconds duration = duration_cast<microseconds>(this->endTik - this->startTik);
-			return duration;
-		}
-
-		// 结束计时，时间间隔写入到fileName的文本文件中，单位为秒；
-		bool endWrite(const char* fileName, const char* str)
-		{
-			this->endTik = steady_clock::now();
-			std::ofstream file(fileName, std::ios_base::out | std::ios_base::app);
-			if (!file)
-				return false;
-			microseconds duration = duration_cast<microseconds>(this->endTik - this->startTik);
-			file << str << static_cast<double>(duration.count()) * \
-				microseconds::period::num / microseconds::period::den << std::endl;
-			file.close();
-			return true;
-		}
-
-		// 按下秒表，记录此刻的时刻，保存在this->records向量中；
-		void takeArecord()
-		{
-			this->records.push_back(steady_clock::now());
-			recordCount++;
-		}
-	};
-}
-using namespace MY_DEBUG;
+using namespace AUXILIARY_DSA; 
 
 
 

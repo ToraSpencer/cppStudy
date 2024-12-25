@@ -15,21 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="temInpletation.tpp">
-      <Filter>源文件</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="mainCppTest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\Auxiliary.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="toolsHeader.h">
+    <ClInclude Include="..\Auxiliary.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="myTools.h">
+    <ClInclude Include="..\AuxiliaryHeader.h">
       <Filter>头文件</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\temInpletation.tpp">
+      <Filter>源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

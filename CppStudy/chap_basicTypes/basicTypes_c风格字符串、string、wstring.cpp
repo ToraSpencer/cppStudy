@@ -9,6 +9,10 @@
 #include <algorithm>
 #include <iterator>
 #include <atlstr.h>
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif 
 #include <windows.h>
 
 
@@ -109,33 +113,37 @@ void basicTypes_strings_module::test1(void)
 	debugDisp();
 
 	std::string str1;							// 默认构造函数构造的空std::string
-	std::string str2(9,'a');				// 若干个相同字符构造的std::string
+	std::string str2(9, 'a');				// 若干个相同字符构造的std::string
 	std::string str3("hello world");		// 字符串字面量构造的std::string
 
 	// 1. 访问单个元素的接口：operator[], at(), front(), back() 
-	debugDisp("访问单个元素的接口：operator[], at(), front(), back():");
-	debugDisp("\t str2[2] == ", str2[2]);
-	try{ }
-	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		debugDisp("访问单个元素的接口：operator[], at(), front(), back():");
+		debugDisp("\t str2[2] == ", str2[2]);
+		try {}
+		catch (const std::exception& e)
+		{
+			std::cerr << e.what() << '\n';
+		}
+		debugDisp("\t str3.front() == ", str3.front());
+		debugDisp("\t str3.back() == ", str3.back());
+		debugDisp();
 	}
-	debugDisp("\t str3.front() == ", str3.front());
-	debugDisp("\t str3.back() == ", str3.back());
-	debugDisp();
 
 	// 2. 操作多个元素的接口：insert, replace, substr, append
-	str1 = str2.substr(2,4);				
-	str2.replace(3, 2, "bcbcbc");
-	str3.insert(6, "new ");				// 在第6个字符后面插入，“第六”是指从“第一“开始数
-	debugDisp("操作多个元素的接口：insert, replace, sub_str, append, clear");
-	debugDisp("\t str1 == ", str1);
-	debugDisp("\t str2 == ", str2);
-	debugDisp("\t str3 == ", str3);
-	str1.clear();
-	debugDisp("str1.clear(); str1 == ", str1);
-	debugDisp();
-
+	{
+		str1 = str2.substr(2, 4);
+		str2.replace(3, 2, "bcbcbc");
+		str3.insert(6, "new ");				// 在第6个字符后面插入，“第六”是指从“第一“开始数
+		debugDisp("操作多个元素的接口：insert, replace, sub_str, append, clear");
+		debugDisp("\t str1 == ", str1);
+		debugDisp("\t str2 == ", str2);
+		debugDisp("\t str3 == ", str3);
+		str1.clear();
+		debugDisp("str1.clear(); str1 == ", str1);
+		debugDisp();
+	}
+	 
 	// 3. std::string对象之间的操作：operator+=
 	str1 += str2;
 	str1 += str3;
@@ -149,32 +157,35 @@ void basicTypes_strings_module::test1(void)
 	debugDisp();
 
 	// 5. 1 字符串转换为其他类型std::stoi(), std::stol(), std::stoll(), std::stof() ———— 字符串、宽字符串、C风格字符串转为数值(c++11)：
-	debugDisp("字符串转换为其他类型:");
-	const char* cstr = "123";
-	str1 = "123";
-	str2 = "1234567890";
-	str3 = "12fd132";
 	std::string str4 = "12.23";
 	std::string str5 = " 888";
 	std::string str6 = "123 456 678";
 	std::wstring wstr1 = L"54321";
-	int num0 = std::stoi(cstr);
-	int num1 = std::stoi(str1);
-	long num2 = std::stol(str2);
-	int num3 = std::stoi(wstr1);
-	float num4 = std::stof(str4);
-	int num5 = std::stoi(str5);		// 前后的空格不影响数值转换
-	int num6 = std::stoi(str6);		// 数字中间有空格的话，会截断空格后面的数字。
-	
-	debugDisp(num0);
-	debugDisp(num1);
-	debugDisp(num2);
-	debugDisp(num3);
-	// debugDisp(std::stoi(str3));		字符串中有非数值字符程序会中断。
-	debugDisp(num4);
-	debugDisp(num5);
-	debugDisp(num6);
-	debugDisp();
+	{
+		debugDisp("字符串转换为其他类型:");
+		const char* cstr = "123";
+		str1 = "123";
+		str2 = "1234567890";
+		str3 = "12fd132"; 
+		int num0 = std::stoi(cstr);
+		int num1 = std::stoi(str1);
+		long num2 = std::stol(str2);
+		int num3 = std::stoi(wstr1);
+		float num4 = std::stof(str4);
+		int num5 = std::stoi(str5);		// 前后的空格不影响数值转换
+		int num6 = std::stoi(str6);		// 数字中间有空格的话，会截断空格后面的数字。
+
+		debugDisp(num0);
+		debugDisp(num1);
+		debugDisp(num2);
+		debugDisp(num3);
+		// debugDisp(std::stoi(str3));		字符串中有非数值字符程序会中断。
+		debugDisp(num4);
+		debugDisp(num5);
+		debugDisp(num6);
+		debugDisp();
+	}
+
 
 	// 5.2 其他类型转换为字符串：a. 使用stringstream实现； b. std::to_string()和std::to_wstring()——数值转换为字符串（C++11）
 	debugDisp("其他类型转换为字符串：");

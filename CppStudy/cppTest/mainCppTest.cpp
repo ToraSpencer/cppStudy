@@ -1,4 +1,4 @@
-﻿#include "toolsHeader.h"
+﻿#include "AuxiliaryHeader.h"
  
 #include <list>
 #include <type_traits>
@@ -51,641 +51,7 @@ public:
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////// 工具接口
-namespace AUXILIARY
-{ 
-	// 字符串转换为宽字符串；
-	std::wstring s2ws(const std::string& s)
-	{
-		std::locale old_loc = std::locale::global(std::locale(""));
-		const char* src_str = s.c_str();
-		const size_t buffer_size = s.size() + 1;						// +1是因为字符串末尾有'\0'
-		wchar_t* dst_wstr = new wchar_t[buffer_size];
-		wmemset(dst_wstr, 0, buffer_size);
-		mbstowcs(dst_wstr, src_str, buffer_size);
-		std::wstring result = dst_wstr;
-		delete[]dst_wstr;
-		std::locale::global(old_loc);
-		return result;
-	} 
 
-
-	// 宽字符串转换为字符串；
-	std::string ws2s(const std::wstring& ws)
-	{
-		std::locale old_loc = std::locale::global(std::locale(""));
-		const wchar_t* src_wstr = ws.c_str();
-		size_t buffer_size = ws.size() * 4 + 1;
-		char* dst_str = new char[buffer_size];
-		memset(dst_str, 0, buffer_size);
-		wcstombs(dst_str, src_wstr, buffer_size);
-		std::string result = dst_str;
-		delete[]dst_str;
-		std::locale::global(old_loc);
-		return result;
-	}
-
-
-	// 在指定目录下创建文件夹：
-	bool CreateFolder(const std::string& dirPath)
-	{
-		bool retFlag = false;
-
-		// 1. 生成路径宽字符串： 
-		std::wstring wdirPath = s2ws(dirPath);
-
-		// 2. 创建文件夹
-#ifdef _WIN32
-		int retInt = CreateDirectory(wdirPath.c_str(), NULL);
-		retFlag = (retInt > 0);
-#endif 
-
-		return retFlag;
-	}
-
-
-	// 检测路径是否存在
-	bool CheckValidPath(const std::string& path)
-	{
-		bool retFlag = false; 
-
-		// 1. 生成路径宽字符串： 
-		std::wstring wPath = s2ws(path);
-
-		// 2. 使用GetFileAttributes()判断路径属性：
-#ifdef _WIN32 
-		DWORD attributes = GetFileAttributes(wPath.c_str());
-		if (attributes != INVALID_FILE_ATTRIBUTES)
-			retFlag = true;
-#endif 
-		return retFlag;
-	}
-
-
-	// 返回正确的文件夹路径
-	std::string CorrectDirPath(const std::string& dirPath)
-	{
-		const size_t length = dirPath.length();
-		if (length < 2)
-			return dirPath;
-		if ('/' == *dirPath.rbegin() || '\\' == *dirPath.rbegin())
-			return dirPath;
-		else
-			return dirPath + "/";
-	}
-
-
-	// 读取输入目录下的所有文件夹
-	void GetDirNames(std::vector<std::string>& files, std::string path)
-	{
-#ifdef _WIN32
-		intptr_t hFile = 0;                     // 文件句柄；注意：我发现有些文章代码此处是long类型，实测运行中会报错访问异常
-		struct _finddata_t fileinfo;        // 文件信息
-		std::string tmpPath;
-		if ('/' != *path.crbegin() && '\\' != *path.crbegin())
-			path.assign(path).append("/");
-		if ((hFile = _findfirst(tmpPath.assign(path).append("*").c_str(), &fileinfo)) != -1)
-		{
-			do
-			{
-				if (fileinfo.attrib & _A_SUBDIR)
-					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
-						files.push_back(tmpPath.assign(path).append(fileinfo.name).append("/"));
-			} while (_findnext(hFile, &fileinfo) == 0);
-			_findclose(hFile);
-		}
-#else
-		// to be optimized....
-		DIR* pDir;
-		struct dirent* ptr;
-		if (!(pDir = opendir(path.c_str())))
-			return;
-		while ((ptr = readdir(pDir)) != 0)
-			if (strcmp(ptr->d_name, ".") != 0 && strcmp(ptr->d_name, "..") != 0)
-				files.push_back(path + "/" + ptr->d_name);
-		closedir(pDir);
-#endif
-	}
-
-
-	// 输入文件完整路径，输出文件名字符串
-	std::string ExtractFileName(const std::string& filePath)
-	{
-		std::string retStr;
-		size_t posNum{ 0 };
-		if (filePath.empty())
-			return retStr;
-
-		size_t posNum1 = filePath.find_last_of("\\");
-		size_t posNum2 = filePath.find_last_of("/");
-		int pn1 = std::string::npos == posNum1 ? -1 : static_cast<int>(posNum1);
-		int pn2 = std::string::npos == posNum2 ? -1 : static_cast<int>(posNum2);
-		if (pn1 < 0 && pn2 < 0)
-			return filePath;
-		posNum = pn1 < pn2 ? posNum2 : posNum1;
-		if (posNum >= filePath.size() - 1)
-			return retStr;
-		retStr = &filePath[posNum + 1];
-
-		return retStr;
-	}
-
-}
-using namespace AUXILIARY;
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
-namespace MY_DEBUG
-{ 
-	const std::string g_debugPath = "C:/myData/output/";
-
-
-	static void debugDisp()			// 递归终止
-	{						//		递归终止设为无参或者一个参数的情形都可以。
-		std::cout << std::endl;
-		return;
-	}
-	  
-
-	template <typename T, typename... Types>
-	static void debugDisp(const T& firstArg, const Types&... args)
-	{
-		std::cout << firstArg << " ";	// 递归递推；
-		debugDisp(args...);
-	}
-	  
-
-	static void debugDispWStr(const std::wstring& wstr)
-	{
-		std::wcout.imbue(std::locale(std::locale(), "", LC_CTYPE));		// 设置wcout的语言环境，缺少这一步打印中文会有错误。
-		std::wcout << wstr << std::endl;
-	}
-
-	// 针对编译器版本信息的宏
-	void print_compiler_info() 
-	{
-		std::cout << "Compiler Version: ";
-#if defined(_MSC_VER)
-		std::cout << "MSVC, version " << _MSC_VER << "\n";
-#elif defined(__GNUC__)
-		std::cout << "GCC, version " << __GNUC__ << "." << __GNUC_MINOR__ << "\n";
-#elif defined(__clang__)
-		std::cout << "Clang, version " << __clang_major__ << "." << __clang_minor__ << "\n";
-#else
-		std::cout << "Unknown compiler\n";
-#endif
-	}
-
-
-	// 打印操作系统信息
-	void print_os_info()
-	{
-#if defined(_WIN32)
-		std::cout << "Operating System: Windows\n";
-#elif defined(__linux__)
-		std::cout << "Operating System: Linux\n";
-#elif defined(__APPLE__)
-		std::cout << "Operating System: macOS\n";
-#else
-		std::cout << "Operating System: Unknown\n";
-#endif
-	}
-
-	// 打印build mode——是release或debug:
-	void print_build_mode() 
-	{
-#if defined(_DEBUG)
-		std::cout << "Build Mode: Debug\n";
-#else
-		std::cout << "Build Mode: Release\n";
-#endif
-	}
-
-	// 打印处理器架构信息
-	void print_architecture_info() 
-	{
-		std::cout << "Processor Architecture: ";
-#if defined(__x86_64__) || defined(_M_X64)
-		std::cout << "x64 (AMD or Intel)\n";
-#elif defined(__i386) || defined(_M_IX86)
-		std::cout << "x86\n";
-#elif defined(__arm__) || defined(_M_ARM)
-		std::cout << "ARM\n";
-#elif defined(__aarch64__)
-		std::cout << "ARM64\n";
-#else
-		std::cout << "Unknown architecture\n";
-#endif
-	}
-
-
-	// 打印处理器核心数量
-	void print_cpu_cores() 
-	{
-		unsigned int cores = std::thread::hardware_concurrency();
-		std::cout << "Number of Processor Cores: " << cores << "\n";
-	}
-
-
-	// 获取并打印CPU信息
-#if defined(__GNUC__) || defined(__clang__)
-#include <cpuid.h>
-	void print_cpu_info() 
-	{
-		unsigned int eax, ebx, ecx, edx;
-		char cpu_brand[49] = { 0 };
-
-		__get_cpuid(0x80000002, &eax, &ebx, &ecx, &edx);
-		std::memcpy(cpu_brand, &eax, sizeof(eax));
-		std::memcpy(cpu_brand + 4, &ebx, sizeof(ebx));
-		std::memcpy(cpu_brand + 8, &ecx, sizeof(ecx));
-		std::memcpy(cpu_brand + 12, &edx, sizeof(edx));
-
-		__get_cpuid(0x80000003, &eax, &ebx, &ecx, &edx);
-		std::memcpy(cpu_brand + 16, &eax, sizeof(eax));
-		std::memcpy(cpu_brand + 20, &ebx, sizeof(ebx));
-		std::memcpy(cpu_brand + 24, &ecx, sizeof(ecx));
-		std::memcpy(cpu_brand + 28, &edx, sizeof(edx));
-
-		__get_cpuid(0x80000004, &eax, &ebx, &ecx, &edx);
-		std::memcpy(cpu_brand + 32, &eax, sizeof(eax));
-		std::memcpy(cpu_brand + 36, &ebx, sizeof(ebx));
-		std::memcpy(cpu_brand + 40, &ecx, sizeof(ecx));
-		std::memcpy(cpu_brand + 44, &edx, sizeof(edx));
-
-		std::cout << "CPU: " << cpu_brand << "\n";
-	}
-#elif defined(_MSC_VER)
-#include <intrin.h>
-	void print_cpu_info() 
-	{
-		int cpuInfo[4] = { -1 };
-		char cpuBrand[0x40];
-		__cpuid(cpuInfo, 0x80000002);
-		memcpy(cpuBrand, cpuInfo, sizeof(cpuInfo));
-		__cpuid(cpuInfo, 0x80000003);
-		memcpy(cpuBrand + 16, cpuInfo, sizeof(cpuInfo));
-		__cpuid(cpuInfo, 0x80000004);
-		memcpy(cpuBrand + 32, cpuInfo, sizeof(cpuInfo));
-
-		std::cout << "CPU: " << cpuBrand << "\n";
-	}
-
-#else
-
-	void print_cpu_info()
-	{
-		std::cout << "CPU: Unknown\n";
-	}
-#endif
-
-	void print_env_info()
-	{
-		print_compiler_info();
-		print_os_info();
-		print_architecture_info();
-		print_build_mode();
-		print_cpu_cores();
-		print_cpu_info();
-	}
-
-
-	// 自定义计时器，使用WINDOWS计时API
-	class tiktok
-	{
-	private:
-		tiktok() = default;
-		tiktok(const tiktok&) {}
-		~tiktok() = default;
-
-	public:
-		DWORD startTik;
-		DWORD endTik;
-		unsigned recordCount;
-		std::vector<DWORD> records;
-
-		static tiktok& getInstance()
-		{
-			static tiktok tt_instance;
-			return tt_instance;
-		}
-
-		void start()
-		{
-			this->startTik = GetTickCount();
-			this->recordCount = 0;
-			this->records.clear();
-		}
-
-		void endCout(const char* str)
-		{
-			this->endTik = GetTickCount();
-			std::cout << str << endTik - startTik << std::endl;
-		}
-
-		bool endWrite(const char* fileName, const char* str)
-		{
-			this->endTik = GetTickCount();
-			std::ofstream file(fileName, std::ios_base::out | std::ios_base::app);
-			if (!file)
-				return false;
-
-			file << str << endTik - startTik << std::endl;
-			file.close();
-			return true;
-		}
-
-		void takeArecord()
-		{
-			this->records.push_back(GetTickCount());
-			recordCount++;
-		}
-	};
-
-}
-using namespace MY_DEBUG;
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////// windows API
-namespace MY_WIN_API
-{ 
-	// 读取某个目录下所有文件名、目录名；
-	void getFileNames(std::string path, std::vector<std::string>& files, bool blRecur = true)
-	{
-		std::string str;
-		struct _finddata_t fileinfo;			// 文件信息
-		intptr_t hFile = _findfirst(str.assign(path).append("/*").c_str(), &fileinfo);							// 文件句柄	
-		bool blFileValid = (hFile != -1);
-
-		if (blFileValid)
-		{
-			do
-			{
-				bool isSubDir = (fileinfo.attrib & _A_SUBDIR);
-				//如果是目录,递归查找；如果不是,把文件绝对路径存入vector中
-				if (isSubDir & blRecur)
-				{
-					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
-						getFileNames(str.assign(path).append("/").append(fileinfo.name), files);
-				}
-				else
-					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
-						files.push_back(str.assign(path).append("/").append(fileinfo.name));
-			} while (_findnext(hFile, &fileinfo) == 0);
-			_findclose(hFile);
-		}
-	}
-
-
-	// 获得当前进程的进程ID
-	inline int GetCurrentPid()
-	{
-		return _getpid();
-	}
-
-
-	// get specific process cpu occupation ratio by pid
-#ifdef WIN32
-// 
-	static uint64_t convert_time_format(const FILETIME* ftime)
-	{
-		LARGE_INTEGER li;
-
-		li.LowPart = ftime->dwLowDateTime;
-		li.HighPart = ftime->dwHighDateTime;
-		return li.QuadPart;
-	}
-#else
-// FIXME: can also get cpu and mem status from popen cmd
-// the info line num in /proc/{pid}/status file
-#define VMRSS_LINE 22
-#define PROCESS_ITEM 14
-
-	static const char* get_items(const char* buffer, unsigned int item)
-	{
-		// read from buffer by offset
-		const char* p = buffer;
-
-		int len = strlen(buffer);
-		int count = 0;
-
-		for (int i = 0; i < len; i++)
-		{
-			if (' ' == *p)
-			{
-				count++;
-				if (count == item - 1)
-				{
-					p++;
-					break;
-				}
-			}
-			p++;
-		}
-
-		return p;
-	}
-
-	static inline unsigned long get_cpu_total_occupy()
-	{
-		// get total cpu use time
-
-		// different mode cpu occupy time
-		unsigned long user_time;
-		unsigned long nice_time;
-		unsigned long system_time;
-		unsigned long idle_time;
-
-		FILE* fd;
-		char buff[1024] = { 0 };
-
-		fd = fopen("/proc/stat", "r");
-		if (nullptr == fd)
-			return 0;
-
-		fgets(buff, sizeof(buff), fd);
-		char name[64] = { 0 };
-		sscanf(buff, "%s %ld %ld %ld %ld", name, &user_time, &nice_time, &system_time, &idle_time);
-		fclose(fd);
-
-		return (user_time + nice_time + system_time + idle_time);
-	}
-
-	static inline unsigned long get_cpu_proc_occupy(int pid)
-	{
-		// get specific pid cpu use time
-		unsigned int tmp_pid;
-		unsigned long utime;  // user time
-		unsigned long stime;  // kernel time
-		unsigned long cutime; // all user time
-		unsigned long cstime; // all dead time
-
-		char file_name[64] = { 0 };
-		FILE* fd;
-		char line_buff[1024] = { 0 };
-		sprintf(file_name, "/proc/%d/stat", pid);
-
-		fd = fopen(file_name, "r");
-		if (nullptr == fd)
-			return 0;
-
-		fgets(line_buff, sizeof(line_buff), fd);
-
-		sscanf(line_buff, "%u", &tmp_pid);
-		const char* q = get_items(line_buff, PROCESS_ITEM);
-		sscanf(q, "%ld %ld %ld %ld", &utime, &stime, &cutime, &cstime);
-		fclose(fd);
-
-		return (utime + stime + cutime + cstime);
-	}
-#endif
-
-
-	inline float GetCpuUsageRatio(int pid)
-	{
-#ifdef WIN32
-		static int64_t last_time = 0;
-		static int64_t last_system_time = 0;
-
-		FILETIME now;
-		FILETIME creation_time;
-		FILETIME exit_time;
-		FILETIME kernel_time;
-		FILETIME user_time;
-		int64_t system_time;
-		int64_t time;
-		int64_t system_time_delta;
-		int64_t time_delta;
-
-		// get cpu num
-		SYSTEM_INFO info;
-		GetSystemInfo(&info);
-		int cpu_num = info.dwNumberOfProcessors;
-
-		float cpu_ratio = 0.0;
-
-		// get process hanlde by pid
-		HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-		// use GetCurrentProcess() can get current process and no need to close handle
-
-		// get now time
-		GetSystemTimeAsFileTime(&now);
-
-		if (!GetProcessTimes(process, &creation_time, &exit_time, &kernel_time, &user_time))
-		{
-			// We don't assert here because in some cases (such as in the Task Manager)  
-			// we may call this function on a process that has just exited but we have  
-			// not yet received the notification.  
-			printf("GetCpuUsageRatio GetProcessTimes failed\n");
-			return 0.0;
-		}
-
-		// should handle the multiple cpu num
-		system_time = (convert_time_format(&kernel_time) + convert_time_format(&user_time)) / cpu_num;
-		time = convert_time_format(&now);
-
-		if ((last_system_time == 0) || (last_time == 0))
-		{
-			// First call, just set the last values.  
-			last_system_time = system_time;
-			last_time = time;
-			return 0.0;
-		}
-
-		system_time_delta = system_time - last_system_time;
-		time_delta = time - last_time;
-
-		CloseHandle(process);
-
-		if (time_delta == 0)
-		{
-			printf("GetCpuUsageRatio time_delta is 0, error\n");
-			return 0.0;
-		}
-
-		// We add time_delta / 2 so the result is rounded.  
-		cpu_ratio = (int)((system_time_delta * 100 + time_delta / 2) / time_delta); // the % unit
-		last_system_time = system_time;
-		last_time = time;
-
-		cpu_ratio /= 100.0; // convert to float number
-
-		return cpu_ratio;
-#else
-		unsigned long totalcputime1, totalcputime2;
-		unsigned long procputime1, procputime2;
-
-		totalcputime1 = get_cpu_total_occupy();
-		procputime1 = get_cpu_proc_occupy(pid);
-
-		// FIXME: the 200ms is a magic number, works well
-		usleep(200000); // sleep 200ms to fetch two time point cpu usage snapshots sample for later calculation
-
-		totalcputime2 = get_cpu_total_occupy();
-		procputime2 = get_cpu_proc_occupy(pid);
-
-		float pcpu = 0.0;
-		if (0 != totalcputime2 - totalcputime1)
-			pcpu = (procputime2 - procputime1) / float(totalcputime2 - totalcputime1); // float number
-
-		int cpu_num = get_nprocs();
-		pcpu *= cpu_num; // should multiply cpu num in multiple cpu machine
-
-		return pcpu;
-#endif
-	}
-
-
-	// get specific process physical memeory occupation size by pid (MB)
-	inline float GetMemoryUsage(int pid)
-	{
-#ifdef WIN32
-		uint64_t mem = 0, vmem = 0;
-		PROCESS_MEMORY_COUNTERS pmc;
-
-		// get process hanlde by pid
-		HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-		if (GetProcessMemoryInfo(process, &pmc, sizeof(pmc)))
-		{
-			mem = pmc.WorkingSetSize;
-			vmem = pmc.PagefileUsage;
-		}
-		CloseHandle(process);
-
-		// use GetCurrentProcess() can get current process and no need to close handle
-
-		// convert mem from B to MB
-		return mem / 1024.0 / 1024.0;
-
-#else
-		char file_name[64] = { 0 };
-		FILE* fd;
-		char line_buff[512] = { 0 };
-		sprintf(file_name, "/proc/%d/status", pid);
-
-		fd = fopen(file_name, "r");
-		if (nullptr == fd)
-			return 0;
-
-		char name[64];
-		int vmrss = 0;
-		for (int i = 0; i < VMRSS_LINE - 1; i++)
-			fgets(line_buff, sizeof(line_buff), fd);
-
-		fgets(line_buff, sizeof(line_buff), fd);
-		sscanf(line_buff, "%s %d", name, &vmrss);
-		fclose(fd);
-
-		// cnvert VmRSS from KB to MB
-		return vmrss / 1024.0;
-#endif
-	}
-
-
-}
-using namespace MY_WIN_API;
 
 
 
@@ -748,6 +114,28 @@ namespace TEST_WIN_API
 		debugDisp("test0() finished.");
 	}
 	 
+
+	// 复制文件：
+	void test1() 
+	{
+		// 定义源文件和目标文件路径
+		std::string sourceFile, destFile;
+		{
+			std::string sourceFile = "C:/myData/bunny.obj";
+			std::string destFile = "C:/myData/output/bunnyWrited.obj";
+			if (!CopyFileViaWinAPI(destFile, sourceFile))
+				debugDisp("Error!!!");
+		}
+		{
+			// 会自动创建文件夹：
+			std::string sourceFile = "C:/myData/bunny.obj";
+			std::string destFile = "C:/myData/output/newDir1/newDir11/bunnyWrited.obj";
+			if (!CopyFileViaWinAPI(destFile, sourceFile))
+				debugDisp("Error!!!");
+		}
+		 
+		debugDisp("test1() finished.");
+	}	
 }
 
 
@@ -772,7 +160,7 @@ namespace TEST_UNKNOWN
 		{
 			int num1 = 99;
 			transformConstInt(num1);
-		std:std::cout << num1 << std::endl;
+			std::cout << num1 << std::endl;
 
 			// const_cast<>()只能去除指针和引用的const属性，不可以将其他const变量修改成非const的；
 
@@ -966,7 +354,7 @@ namespace TEST_UNKNOWN
 			// lambda——构建Next数组
 			auto buildNext = [](const std::string& pattern)->std::vector<int>
 				{
-					int m = pattern.length();
+					int m = static_cast<int>(pattern.length());
 					std::vector<int> next(m, 0);		// 初始化Next数组，长度为模式串的长度
 					int index = 0;							 // index指向最长前缀的末尾字符
 
@@ -1031,7 +419,7 @@ namespace TEST_UNKNOWN
 			// lambda——构建Next数组
 			auto buildNext = [](const std::string& pattern)->std::vector<int>
 				{
-					int m = pattern.length();
+					int m = static_cast<int>(pattern.length());
 					std::vector<int> next(m, 0);		// 初始化Next数组，长度为模式串的长度
 					int index = 0;							 // index指向最长前缀的末尾字符
 
@@ -1440,7 +828,7 @@ namespace TEST_UNKNOWN
 
 					// allocator<T>类模板
 			std::allocator<char> ch_allo;
-			ch_allo.allocate(9);						// 开辟堆内存，大小为9个char
+			char* tmpPtr = ch_allo.allocate(9);						// 开辟堆内存，大小为9个char
 
 		}
 
@@ -1582,7 +970,7 @@ namespace TEST_UNKNOWN
 
 		void testTuple()
 		{
-			Tuple<int, float, std::string, char>   t(1, 2.2, "haha", 'a');
+			Tuple<int, float, std::string, char>   t(1, 2.2f, "haha", 'a');
 			std::cout << t.head() << std::endl;
 			std::cout << "类型个数为：" << t.size() << std::endl;
 
@@ -2040,7 +1428,7 @@ namespace TEST_UNKNOWN
 			ExpData.open("experiment_data.dat", std::ios_base::out | std::ios_base::binary);
 
 			std::string str1 = "实验项目：氧气实验。\n 结果：反应后物质质量（单位:g）:";
-			float fnum1 = 3.11;
+			float fnum1 = 3.11f;
 
 			// 1.1 写二进制文件，基本类型变量——可以用write()方法写入，也可以用输出流运算符。
 			ExpData << str1 << fnum1 << std::endl;
@@ -3568,13 +2956,12 @@ namespace TEST_STL
 
 		// 谓词(predicate)——可调用的表达式，如函数子、函数指针。	排序算法
 		void test4()
-		{
+		{  
 			std::vector<myString> strVec{ myString("sdsaasdfasdf"), myString("hahaha"), myString("j"), myString("kjasjdliuppoiulkj;l") };
 
 			// std::sort()——传入自定义比较器，有小到大排序
 			std::sort(strVec.begin(), strVec.end(), myComparer);
-			traverseSTL(strVec, dispMyString);
-
+			traverseSTL(strVec, dispMyString); 
 		}
 
 
@@ -4716,13 +4103,8 @@ namespace TEST_AUXILIARY
 
 int main()
 {       
-	//TEST_STL::STL_SET_MAP::test22();
-
-	// TEST_STL::STD_THREAD::test22();
-
-	// TEST_AUXILIARY::test0();
-	 
-	TEST_STD::test2();
+	//TEST_WIN_API::test1();
+	TEST_STL::STL_ALGORITHM::test4();
 
 	debugDisp("main() finished."); 
 
