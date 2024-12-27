@@ -33,18 +33,22 @@
 #include <typeinfo>
 #include <type_traits>
 
+#include <memory> 
+#include <thread>					// c++线程支持库
+#include <mutex>
+#include <atomic>			// 原子类型 
+#include <cassert>			// 断言
+
+// MFC
+#ifdef _WIN32
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif 
 #include <windows.h> 
 #include <atlstr.h>				// 包含CString类。属于microsoft ATL(活动模板库avtive template library)
 #include <io.h>
- 
-#include <memory> 
-#include <thread>					// c++线程支持库
-#include <mutex>
-#include <atomic>			// 原子类型 
-#include <cassert>			// 断言
+#endif  
+   
 #include <omp.h>			// openMP
 
 
@@ -55,7 +59,7 @@
  
 
 // 内存和CPU监视接口需要的一些头文件；
-#ifdef WIN32 
+#ifdef _WIN32 
 #include <psapi.h>   
 #include <direct.h>
 #include <process.h>

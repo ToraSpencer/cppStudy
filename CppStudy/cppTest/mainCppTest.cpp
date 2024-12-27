@@ -48,12 +48,7 @@ public:
 		std::cout << this->numInt << ", " << this->numFloat << std::endl;
 	}
 };
-
-
-
-
-
-
+ 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 测试windows API
 namespace TEST_WIN_API
