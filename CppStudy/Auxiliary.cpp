@@ -407,7 +407,7 @@ namespace MY_WIN_API
 			{
 				bool isSubDir = (fileinfo.attrib & _A_SUBDIR);
 				//如果是目录,递归查找；如果不是,把文件绝对路径存入vector中
-				if (isSubDir & blRecur)
+				if (isSubDir && blRecur)
 				{
 					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
 						getFileNames(str.assign(path).append("/").append(fileinfo.name), files);

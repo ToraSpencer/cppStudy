@@ -14,40 +14,46 @@
 */
 
 
-class Base 
+
+namespace AUXILIARY 
 {
-public:
-	int numInt = 0;
-
-public:
-	Base() {}
-	Base(const int n0) : numInt(n0) {}
-	
-	virtual void foo() 
+	class Base
 	{
-		std::cout << "foo base" << std::endl;
-	}
-};
- 
+	public:
+		int numInt = 0;
 
-class Derived : public Base 
-{
-public:
-	float numFloat = 0;
+	public:
+		Base() {}
+		Base(const int n0) : numInt(n0) {}
 
-public:
-	Derived() {}
-	Derived(const int n0, const float f0) : Base(n0) , numFloat(f0) {}
-	virtual void foo() 
+		virtual void foo()
+		{
+			std::cout << "foo base" << std::endl;
+		}
+	};
+
+
+	class Derived : public Base
 	{
-		std::cout << "foo derived" << std::endl;
-	}
+	public:
+		float numFloat = 0;
 
-	void goo() 
-	{
-		std::cout << this->numInt << ", " << this->numFloat << std::endl;
-	}
-};
+	public:
+		Derived() {}
+		Derived(const int n0, const float f0) : Base(n0), numFloat(f0) {}
+		virtual void foo()
+		{
+			std::cout << "foo derived" << std::endl;
+		}
+
+		void goo()
+		{
+			std::cout << this->numInt << ", " << this->numFloat << std::endl;
+		}
+	};
+}
+using namespace AUXILIARY;
+
  
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 测试windows API
@@ -4020,6 +4026,7 @@ namespace TEST_FUNCTION
 		std::cout << arg +1 << ", ";
 	}
 
+
 	void test0() 
 	{
 		std::vector<int> numVec1{ 1,2,3,4,5,6,7 };
@@ -4054,6 +4061,7 @@ namespace TEST_ENV
 		debugDisp("test0() finished.");
 	}
 
+
 	// 测试不同环境下基本类型长度：
 	void test1() 
 	{
@@ -4079,10 +4087,24 @@ namespace TEST_ENV
 
 		debugDisp("test1() finished.");
 	}
-	 
+	  
 
+	// 测试读取当前编译器信息：
+	void test2() 
+	{
+#ifdef _MSC_VER
+		debugDisp("_MSC_VER == ", _MSC_VER);
+
+#endif
+
+		debugDisp("__cplusplus == ", __cplusplus);
+
+		debugDisp("test2() finished.");
+	}
 }
 
+
+// 测试辅助工具接口
 namespace TEST_AUXILIARY 
 {
 	void test0() 
@@ -4093,13 +4115,12 @@ namespace TEST_AUXILIARY
 	}
 
 }
-
+ 
 
 
 int main()
 {       
-	//TEST_WIN_API::test1();
-	TEST_STL::STL_ALGORITHM::test4();
+	TEST_ENV::test2();
 
 	debugDisp("main() finished."); 
 
