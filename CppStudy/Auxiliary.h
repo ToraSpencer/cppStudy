@@ -71,6 +71,16 @@
 #endif
 
 
+#define BLUE_REGION
+#ifdef BLUE_REGION
+const std::string g_samplePath = "C:/myData/";
+const std::string g_debugPath = "C:/myData/output/";
+#else
+const std::string g_samplePath = "E:/myData/";
+const std::string g_debugPath = "E:/outputData/";
+#endif 
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////// 工具接口
 namespace AUXILIARY
 {
@@ -261,9 +271,6 @@ using namespace AUXILIARY;
 ////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
 namespace MY_DEBUG
 {
-	const std::string g_debugPath{ "C:/myData/output/" };
-
-
 	// 函数子——打印std::cout支持的类型变量。
 	template <typename	T>
 	class disp

@@ -3,6 +3,7 @@
 #include <list>
 #include <type_traits>
 
+ 
 
 //  WINDOWS提供的时间相关的接口
 /*
@@ -12,7 +13,6 @@
 			Sleep()
 
 */
-
 
 
 namespace AUXILIARY 
@@ -1686,6 +1686,113 @@ namespace TEST_UNKNOWN
 
 
 			debugDisp("test4() finished.");
+		}
+
+
+		enum class DATA_TYPE_ENUM
+		{
+			UNSUPPORTED = -1,
+			UNSIGNED_CHAR = 0,
+			CHAR = 1,
+			UINT32 = 2,
+			UINT64 = 3,
+			INT32 = 4,
+			INT64 = 5,
+		};
+
+
+		// 输入流中读取基本类型数据——除了bool
+		template <typename T>
+		void readStreamData(T& data, std::istream& is)
+		{
+			is.read(reinterpret_cast<char*>(&data), sizeof(T));
+		}
+
+
+		// 基本类型数据写入到输出流对象中；
+		template<typename T>
+		void writeStreamData(std::ostream& os, const T& data)
+		{
+			os.write(reinterpret_cast<const char*>(&data), sizeof(T));
+		}
+
+
+		// 数组序列化： 
+		bool serializeVector(const std::string& datFilePath, const std::vector<std::uint64_t>& vec)
+		{
+			std::ofstream fileOut(datFilePath.c_str(), std::ios::binary);
+			if (!fileOut.is_open())
+				return false;
+
+			// 0. char表示的元素类型信息；
+			writeStreamData(fileOut, char{3});
+
+			// 1. uint64_t表示的元素数
+			std::uint64_t elemsCount = vec.size();
+			writeStreamData(fileOut, elemsCount);
+
+			// 2. 具体元素
+			for (const auto& elem : vec)
+				writeStreamData(fileOut, elem);
+
+			// 
+			fileOut.close();
+
+			return true;
+		}
+
+
+		// 数组反序列化： 
+		bool deserializeVector(std::vector<std::uint64_t>& vec, const std::string& datFilePath)
+		{
+			std::ifstream file(datFilePath.c_str(), std::ios::binary);
+			if (!file.is_open())
+				return false;
+
+			// 0. char表示的元素类型信息；
+			char type{-1};
+			readStreamData(type, file); 
+			if (DATA_TYPE_ENUM::UINT64 != static_cast<DATA_TYPE_ENUM>(type))
+				return false;
+
+			// 1. uint64_t表示的元素数
+			std::uint64_t num0{ 0 };
+			size_t elemsCount{ 0 };
+			readStreamData(num0, file);
+			elemsCount = static_cast<size_t>(num0);
+
+			// 2. 具体元素
+			vec.clear();
+			vec.resize(elemsCount);
+			for (size_t i = 0; i < elemsCount; ++i)
+				readStreamData(vec[i], file); 
+
+			// 
+			file.close();
+
+			return true;
+		}
+
+
+		// 测试数组序列化/反序列化接口；
+		void test5()
+		{
+			std::vector<std::uint64_t> vec{0, 2, 99, 78, 77, 89, 89};
+			std::vector<std::uint64_t> vecRead;
+			if (!serializeVector(g_debugPath + "vec.dat", vec))
+			{
+				debugDisp("Error!!! serializeVector() failed");
+				return;
+			}
+			if(!deserializeVector(vecRead, g_debugPath + "vec.dat"))
+			{
+				debugDisp("Error!!! deserializeVector() failed");
+				return;
+			}
+
+			traverseSTL(vecRead, disp<std::uint64_t>());
+
+			debugDisp("test5() finished.");
 		}
 	}
 
@@ -4115,12 +4222,14 @@ namespace TEST_AUXILIARY
 	}
 
 }
- 
 
+ 
 
 int main()
 {       
-	TEST_ENV::test2();
+	// TEST_ENV::test2();
+
+	TEST_IO::test5();
 
 	debugDisp("main() finished."); 
 
