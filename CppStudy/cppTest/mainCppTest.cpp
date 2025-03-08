@@ -1700,6 +1700,26 @@ namespace TEST_UNKNOWN
 			INT64 = 5,
 		};
 
+		// 得到模板类型参数T对应的枚举量；
+		template <typename T>
+		DATA_TYPE_ENUM getDataType() 
+		{
+			if constexpr (std::is_same_v<T, unsigned char>)				// if constexpr和std::is_same_v需要c++17或以上
+				return DATA_TYPE_ENUM::UNSIGNED_CHAR;
+			else if constexpr (std::is_same_v<T, char>)							// c++17以下可用std::is_same<>::value替代；
+				return DATA_TYPE_ENUM::CHAR;
+			else if constexpr (std::is_same_v<T, std::uint32_t>)
+				return DATA_TYPE_ENUM::UINT32;
+			else if constexpr (std::is_same_v<T, std::uint64_t>)
+				return DATA_TYPE_ENUM::UINT64;
+			else if constexpr (std::is_same_v<T, std::int32_t>)
+				return DATA_TYPE_ENUM::INT32;
+			else if constexpr (std::is_same_v<T, std::int64_t>)
+				return DATA_TYPE_ENUM::INT64;
+			else
+				return DATA_TYPE_ENUM::UNSUPPORTED;
+		}
+
 
 		// 输入流中读取基本类型数据——除了bool
 		template <typename T>
@@ -1718,14 +1738,18 @@ namespace TEST_UNKNOWN
 
 
 		// 数组序列化： 
-		bool serializeVector(const std::string& datFilePath, const std::vector<std::uint64_t>& vec)
+		template <typename T>
+		bool serializeVector(const std::string& datFilePath, const std::vector<T>& vec)
 		{
 			std::ofstream fileOut(datFilePath.c_str(), std::ios::binary);
 			if (!fileOut.is_open())
 				return false;
 
 			// 0. char表示的元素类型信息；
-			writeStreamData(fileOut, char{3});
+			DATA_TYPE_ENUM dataType = getDataType<T>();
+			if (DATA_TYPE_ENUM::UNSUPPORTED == dataType)
+				return false;
+			writeStreamData(fileOut, static_cast<char>(dataType));
 
 			// 1. uint64_t表示的元素数
 			std::uint64_t elemsCount = vec.size();
@@ -1735,7 +1759,7 @@ namespace TEST_UNKNOWN
 			for (const auto& elem : vec)
 				writeStreamData(fileOut, elem);
 
-			// 
+			// 3. 关闭文件句柄；
 			fileOut.close();
 
 			return true;
@@ -1743,7 +1767,8 @@ namespace TEST_UNKNOWN
 
 
 		// 数组反序列化： 
-		bool deserializeVector(std::vector<std::uint64_t>& vec, const std::string& datFilePath)
+		template <typename T>
+		bool deserializeVector(std::vector<T>& vec, const std::string& datFilePath)
 		{
 			std::ifstream file(datFilePath.c_str(), std::ios::binary);
 			if (!file.is_open())
@@ -1751,8 +1776,9 @@ namespace TEST_UNKNOWN
 
 			// 0. char表示的元素类型信息；
 			char type{-1};
-			readStreamData(type, file); 
-			if (DATA_TYPE_ENUM::UINT64 != static_cast<DATA_TYPE_ENUM>(type))
+			DATA_TYPE_ENUM currentType = getDataType<T>();
+			readStreamData(type, file);
+			if (currentType != static_cast<DATA_TYPE_ENUM>(type))
 				return false;
 
 			// 1. uint64_t表示的元素数
@@ -1767,7 +1793,7 @@ namespace TEST_UNKNOWN
 			for (size_t i = 0; i < elemsCount; ++i)
 				readStreamData(vec[i], file); 
 
-			// 
+			// 3. 关闭文件句柄；
 			file.close();
 
 			return true;
@@ -4229,7 +4255,7 @@ int main()
 {       
 	// TEST_ENV::test2();
 
-	TEST_IO::test5();
+	TEST_IO::test5(); 
 
 	debugDisp("main() finished."); 
 
