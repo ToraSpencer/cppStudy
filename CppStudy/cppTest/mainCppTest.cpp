@@ -2760,7 +2760,7 @@ namespace TEST_STL
 
 	namespace STL_SET_MAP
 	{ 
-		// 3. multiset , multimap
+		// test3. multiset , multimap
 		void test3()
 		{
 			std::multiset<int> set1;
@@ -2806,7 +2806,7 @@ namespace TEST_STL
 		}
 
 
-		// 4. 基于哈希表的无序容器：unordered_set, unordered_map, unordered_multiset, unordered_multimap;
+		// test4. 基于哈希表的无序容器：unordered_set, unordered_map, unordered_multiset, unordered_multimap;
 		void test4()		// 插入和搜索的时间复杂度为O(1)
 		{
 			std::unordered_multimap<int, double> numMap;
@@ -2860,68 +2860,178 @@ namespace TEST_STL
 		}
 
 
-		// 5. 自定义哈希函数；貌似使用自定义哈希函数生成unordered_set和unordered_map时间效率很低，远不如基于基本类型的
+		// test5. 自定义哈希函数；貌似使用自定义哈希函数生成unordered_set和unordered_map时间效率很低，远不如基于基本类型的
+		using myEdge = std::pair<int, int>;
+		using myVert = std::tuple<double, double, double>;
 		class edgeHash	// 自定义哈希函数
 		{
 		public:
-			std::size_t operator()(const std::pair<int, int>& edge) const
+			std::size_t operator()(const myEdge& edge) const
 			{
 				return (std::hash<int>()(edge.first) + std::hash<int>()(edge.second));
+			}
+		}; 
+
+		class vertHash
+		{
+		public:
+			std::size_t operator()(const myVert& v) const
+			{
+				std::size_t h0 = std::hash<double>{}(std::get<0>(v));
+				std::size_t h1 = std::hash<double>{}(std::get<1>(v));
+				std::size_t h2 = std::hash<double>{}(std::get<2>(v));
+				h1 = h1 << 1;
+				h2 = h2 << 2;
+				return h0 ^ h1 ^ h2;
 			}
 		};
 
 		class edgeEqual	// 自定义等价比较器：
 		{
 		public:
-			bool operator()(const std::pair<int, int>& edge1, const std::pair<int, int>& edge2) const
+			bool operator()(const myEdge& edge1, const myEdge& edge2) const
 			{
 				return (edge1.first == edge2.first && edge1.second == edge2.second);
 			}
 		};
 
+		class vertEqual				// 顶点等价比较器（不带容差） 
+		{
+		public:
+			bool operator()(const myVert& v1, const myVert& v2) const
+			{
+				return (std::get<0>(v1) == std::get<0>(v2) && \
+					std::get<1>(v1) == std::get<1>(v2) && \
+					std::get<2>(v1) == std::get<2>(v2));
+			}
+		};
+
+		// 自定义顶点等价比较器： 
+		class vertEqualTolr			// 顶点等价比较器（带容差） 
+		{
+		protected:
+			static double m_tolr;
+
+		public:
+			bool operator()(const myVert& v1, const myVert& v2) const
+			{ 
+				if (std::fabs(std::get<0>(v1) - std::get<0>(v2)) > m_tolr)
+					return false;
+				if (std::fabs(std::get<1>(v1) - std::get<1>(v2)) > m_tolr)
+					return false;
+				if (std::fabs(std::get<2>(v1) - std::get<2>(v2)) > m_tolr)
+					return false;
+				return true;
+			}
+
+			static void reset()
+			{
+				m_tolr = 1e-10;
+			}
+
+			static void setTolr(const double tolr0)
+			{
+				m_tolr = tolr0;
+			}
+		};
+		 
+		double vertEqualTolr::m_tolr = 1e-10;
+
 
 		void test5()
 		{
-			// 
-			std::unordered_set < std::pair<int, int>, edgeHash, edgeEqual> edgeSet1;
-
+			// 1. 
+			std::unordered_set<myEdge, edgeHash, edgeEqual> edgeSet1; 
 			auto retPair1 = edgeSet1.insert({ 1,  2 });
-			retPair1 = edgeSet1.insert({ 2, 3 });
-			retPair1 = edgeSet1.insert({ -1, 0 });
-			retPair1 = edgeSet1.insert({ -2, -1 });
-			retPair1 = edgeSet1.insert({ 1, 3 });
-			retPair1 = edgeSet1.insert({ 1, 2 });
-			std::cout << "retPair1.second == " << retPair1.second << std::endl;
-			for (const auto& pair : edgeSet1)
-				std::cout << pair.first << ", " << pair.second << std::endl;
-			std::cout << std::endl;
+			{
+				retPair1 = edgeSet1.insert({ 2, 3 });
+				retPair1 = edgeSet1.insert({ -1, 0 });
+				retPair1 = edgeSet1.insert({ -2, -1 });
+				retPair1 = edgeSet1.insert({ 1, 3 });
+				retPair1 = edgeSet1.insert({ 1, 2 });
+				std::cout << "retPair1.second == " << retPair1.second << std::endl;
+				for (const auto& pair : edgeSet1)
+					std::cout << pair.first << ", " << pair.second << std::endl;
+				std::cout << std::endl;
+			}
 
-			// std::pair<int, int>表示的边的自定义哈希函数；
-			auto edgeHashLamb = [](const std::pair<int, int>& edge)->std::size_t
+
+			// 2. lambda形式的哈希函数和等价比较器：
+
+			//		lambda——
+			auto edgeHashLamb = [](const myEdge& edge)->std::size_t
 			{
 				return (std::hash<int>()(edge.first) + std::hash<int>()(edge.second));
 			};
 
-			// std::pair<int, int>表示的边的等价比较器；
-			auto edgeComLamb = [](const std::pair<int, int>& edge1, const std::pair<int, int>& edge2)->bool
+			//		lambda——
+			auto edgeComLamb = [](const myEdge& edge1, const myEdge& edge2)->bool
 			{
 				return (edge1.first == edge2.first && edge1.second == edge2.second);
 			};
 
-			std::unordered_set < std::pair<int, int>, decltype(edgeHashLamb), decltype(edgeComLamb)> edgeSet2;			// 模板参数是类型名；
+			std::unordered_set < myEdge, decltype(edgeHashLamb), decltype(edgeComLamb)> edgeSet2;			// 模板参数是类型名；
 			auto retPair2 = edgeSet2.insert({ 1,  2 });
-			retPair2 = edgeSet2.insert({ 2, 3 });
-			retPair2 = edgeSet2.insert({ -1, 0 });
-			retPair2 = edgeSet2.insert({ -2, -1 });
-			retPair2 = edgeSet2.insert({ 1, 3 });
-			retPair2 = edgeSet2.insert({ 1, 2 });
-			std::cout << "retPair1.second == " << retPair2.second << std::endl;
-			for (const auto& pair : edgeSet2)
-				std::cout << pair.first << ", " << pair.second << std::endl;
-			std::cout << std::endl;
+			{
+				retPair2 = edgeSet2.insert({ 2, 3 });
+				retPair2 = edgeSet2.insert({ -1, 0 });
+				retPair2 = edgeSet2.insert({ -2, -1 });
+				retPair2 = edgeSet2.insert({ 1, 3 });
+				retPair2 = edgeSet2.insert({ 1, 2 });
+				std::cout << "retPair1.second == " << retPair2.second << std::endl;
+				for (const auto& pair : edgeSet2)
+					std::cout << pair.first << ", " << pair.second << std::endl;
+				std::cout << std::endl;
+			}
+			 
+			// 3. 
+			std::unordered_set<myVert, vertHash, vertEqual> myVertSet; 
+			std::unordered_set<myVert, vertHash, vertEqualTolr> myVertSet_tolr;
+			const double epsilon{1e-12}; 
+			{
+				myVertSet.insert(myVert{ 1.0, 2.0, 3.0 });
+				myVertSet.insert(myVert{ 1.0, 2.0, 3.0 });
+				myVertSet.insert(myVert{ 1.0, 2.0, 3.0 + epsilon });			
+				myVertSet.insert(myVert{ 0.0, 0.0, 0.0 });
+				myVertSet.insert(myVert{ -1.0, -2.0, -3.0 });
+				traverseSTL(myVertSet, [](const myVert& v)
+					{
+						debugDisp("(", std::get<0>(v), ", ", std::get<1>(v), ", ", std::get<2>(v), ")");
+					});
+				debugDisp();
+			}
+			{
+				debugDisp("使用带容差的等价比较器，当差异在设定容差以内时，元素不会被区分：");
+				myVertSet_tolr.insert(myVert{ 1.0, 2.0, 3.0 });
+				myVertSet_tolr.insert(myVert{ 1.0, 2.0, 3.0 });
+				myVertSet_tolr.insert(myVert{ 1.0, 2.0, 3.0 + epsilon });	// epsilon小于容差，所以不可区分；
+				myVertSet_tolr.insert(myVert{ 0.0, 0.0, 0.0 });
+				myVertSet_tolr.insert(myVert{ -1.0, -2.0, -3.0 });
+				traverseSTL(myVertSet_tolr, [](const myVert& v)
+					{
+						debugDisp("(", std::get<0>(v), ", ", std::get<1>(v), ", ", std::get<2>(v), ")");
+					});
+				debugDisp();
+
+				debugDisp("缩小设定容差后：");
+				myVertSet_tolr.clear();
+				vertEqualTolr::setTolr(1e-15);
+				myVertSet_tolr.insert(myVert{ 1.0, 2.0, 3.0 });
+				myVertSet_tolr.insert(myVert{ 1.0, 2.0, 3.0 });
+				myVertSet_tolr.insert(myVert{ 1.0, 2.0, 3.0 + epsilon });
+				myVertSet_tolr.insert(myVert{ 0.0, 0.0, 0.0 });
+				myVertSet_tolr.insert(myVert{ -1.0, -2.0, -3.0 });
+				traverseSTL(myVertSet_tolr, [](const myVert& v)
+					{
+						debugDisp("(", std::get<0>(v), ", ", std::get<1>(v), ", ", std::get<2>(v), ")");
+					});
+				debugDisp();
+				vertEqualTolr::reset();
+			}
 
 
-			std::cout << "finished." << std::endl;
+
+			debugDisp("test5() finished.");
 		}
 
 
@@ -4253,9 +4363,7 @@ namespace TEST_AUXILIARY
 
 int main()
 {       
-	// TEST_ENV::test2();
-
-	TEST_IO::test5(); 
+	TEST_STL::STL_SET_MAP::test5();
 
 	debugDisp("main() finished."); 
 
