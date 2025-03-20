@@ -53,15 +53,23 @@ virtualModule* basicTypes_builtin_types_module::getInstance()		// 线程不安全的单
 void basicTypes_builtin_types_module::test0(void) 
 {
 	// ！！！注意：使用std::numeric_limits<T>::max()和std::numeric_limits<T>::min()需要在预处理器中定义NOMINMAX;
-	std::cout << "test0: std::numeric_limits<>模板：查询各种算术类型的属性 " << std::endl;
+	debugDisp("test0: std::numeric_limits<>模板：查询各种算术类型的属性 ");
 	constexpr int ret1 = std::numeric_limits<int>::max();						
 	constexpr float ret2 = std::numeric_limits<float>::max();
 	constexpr double ret3 = std::numeric_limits<double>::max();
 	constexpr char ret4 = std::numeric_limits<char>::max();
+	constexpr int ret5 = std::numeric_limits<int>::min();
+	constexpr float ret6 = std::numeric_limits<float>::min();
+	constexpr double ret7 = std::numeric_limits<double>::min();
+	constexpr char ret8 = std::numeric_limits<char>::min();
 	debugDisp("std::numeric_limits<int>::max() == ", ret1);
 	debugDisp("std::numeric_limits<float>::max() == ", ret2);
 	debugDisp("std::numeric_limits<double>::max() == ", ret3);
 	debugDisp("std::numeric_limits<char>::max() == ", ret4);
+	debugDisp("std::numeric_limits<int>::min() == ", ret5);
+	debugDisp("std::numeric_limits<float>::min() == ", ret6);
+	debugDisp("std::numeric_limits<double>::min() == ", ret7);
+	debugDisp("std::numeric_limits<char>::min() == ", ret8);
 
 	// std::numeric_limits<T>::max()返回类型为constexpr T; 
 	std::cout << "typeid(ret1).name() == " << typeid(ret1).name() << std::endl;

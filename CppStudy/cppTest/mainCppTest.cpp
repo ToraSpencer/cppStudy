@@ -1,4 +1,5 @@
-﻿#include "AuxiliaryHeader.h"
+﻿#include "Auxiliary.h"
+#include "AuxiliaryHeader.h"
  
 #include <list>
 #include <type_traits>
@@ -13,6 +14,330 @@
 			Sleep()
 
 */
+
+
+////////////////////////////////////////////////////////////////////////////////////////////// 基于windows API写的一些工具接口
+namespace MY_WIN_API
+{
+	// 读取某个目录下所有文件名、目录名；
+	void getFileNames(std::string path, std::vector<std::string>& files, bool blRecur = true)
+	{
+		std::string str;
+		struct _finddata_t fileinfo;			// 文件信息
+		intptr_t hFile = _findfirst(str.assign(path).append("/*").c_str(), &fileinfo);							// 文件句柄	
+		bool blFileValid = (hFile != -1);
+
+		if (blFileValid)
+		{
+			do
+			{
+				bool isSubDir = (fileinfo.attrib & _A_SUBDIR);
+				//如果是目录,递归查找；如果不是,把文件绝对路径存入vector中
+				if (isSubDir && blRecur)
+				{
+					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
+						getFileNames(str.assign(path).append("/").append(fileinfo.name), files);
+				}
+				else
+					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
+						files.push_back(str.assign(path).append("/").append(fileinfo.name));
+			} while (_findnext(hFile, &fileinfo) == 0);
+			_findclose(hFile);
+		}
+	}
+
+
+	// 获得当前进程的进程ID
+	int GetCurrentPid()
+	{
+		return _getpid();
+	}
+
+
+	// get specific process cpu occupation ratio by pid
+	std::uint64_t convert_time_format(const FILETIME* ftime)
+	{
+		LARGE_INTEGER li;
+
+		li.LowPart = ftime->dwLowDateTime;
+		li.HighPart = ftime->dwHighDateTime;
+		return li.QuadPart;
+	}
+
+
+	float GetCpuUsageRatio(int pid)
+	{
+#ifdef WIN32
+		static int64_t last_time = 0;
+		static int64_t last_system_time = 0;
+
+		FILETIME now;
+		FILETIME creation_time;
+		FILETIME exit_time;
+		FILETIME kernel_time;
+		FILETIME user_time;
+		int64_t system_time;
+		int64_t time;
+		int64_t system_time_delta;
+		int64_t time_delta;
+
+		// get cpu num
+		SYSTEM_INFO info;
+		GetSystemInfo(&info);
+		int cpu_num = info.dwNumberOfProcessors;
+
+		float cpu_ratio = 0.0;
+
+		// get process hanlde by pid
+		HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+		// use GetCurrentProcess() can get current process and no need to close handle
+
+		// get now time
+		GetSystemTimeAsFileTime(&now);
+
+		if (!GetProcessTimes(process, &creation_time, &exit_time, &kernel_time, &user_time))
+		{
+			// We don't assert here because in some cases (such as in the Task Manager)  
+			// we may call this function on a process that has just exited but we have  
+			// not yet received the notification.  
+			printf("GetCpuUsageRatio GetProcessTimes failed\n");
+			return 0.0;
+		}
+
+		// should handle the multiple cpu num
+		system_time = (convert_time_format(&kernel_time) + convert_time_format(&user_time)) / cpu_num;
+		time = convert_time_format(&now);
+
+		if ((last_system_time == 0) || (last_time == 0))
+		{
+			// First call, just set the last values.  
+			last_system_time = system_time;
+			last_time = time;
+			return 0.0;
+		}
+
+		system_time_delta = system_time - last_system_time;
+		time_delta = time - last_time;
+
+		CloseHandle(process);
+
+		if (time_delta == 0)
+		{
+			printf("GetCpuUsageRatio time_delta is 0, error\n");
+			return 0.0;
+		}
+
+		// We add time_delta / 2 so the result is rounded.  
+		cpu_ratio = (int)((system_time_delta * 100 + time_delta / 2) / time_delta); // the % unit
+		last_system_time = system_time;
+		last_time = time;
+
+		cpu_ratio /= 100.0; // convert to float number
+
+		return cpu_ratio;
+#else
+		unsigned long totalcputime1, totalcputime2;
+		unsigned long procputime1, procputime2;
+
+		totalcputime1 = get_cpu_total_occupy();
+		procputime1 = get_cpu_proc_occupy(pid);
+
+		// FIXME: the 200ms is a magic number, works well
+		usleep(200000); // sleep 200ms to fetch two time point cpu usage snapshots sample for later calculation
+
+		totalcputime2 = get_cpu_total_occupy();
+		procputime2 = get_cpu_proc_occupy(pid);
+
+		float pcpu = 0.0;
+		if (0 != totalcputime2 - totalcputime1)
+			pcpu = (procputime2 - procputime1) / float(totalcputime2 - totalcputime1); // float number
+
+		int cpu_num = get_nprocs();
+		pcpu *= cpu_num; // should multiply cpu num in multiple cpu machine
+
+		return pcpu;
+#endif
+	}
+
+
+	// get specific process physical memeory occupation size by pid (MB)
+	double GetMemoryUsage(int pid)
+	{
+#ifdef WIN32
+		uint64_t mem = 0, vmem = 0;
+		PROCESS_MEMORY_COUNTERS pmc;
+
+		// get process hanlde by pid
+		HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+		if (GetProcessMemoryInfo(process, &pmc, sizeof(pmc)))
+		{
+			mem = pmc.WorkingSetSize;
+			vmem = pmc.PagefileUsage;
+		}
+		CloseHandle(process);
+
+		// use GetCurrentProcess() can get current process and no need to close handle
+
+		// convert mem from B to MB
+		return mem / 1024.0 / 1024.0;
+
+#else
+		char file_name[64] = { 0 };
+		FILE* fd;
+		char line_buff[512] = { 0 };
+		sprintf(file_name, "/proc/%d/status", pid);
+
+		fd = fopen(file_name, "r");
+		if (nullptr == fd)
+			return 0;
+
+		char name[64];
+		int vmrss = 0;
+		for (int i = 0; i < VMRSS_LINE - 1; i++)
+			fgets(line_buff, sizeof(line_buff), fd);
+
+		fgets(line_buff, sizeof(line_buff), fd);
+		sscanf(line_buff, "%s %d", name, &vmrss);
+		fclose(fd);
+
+		// cnvert VmRSS from KB to MB
+		return vmrss / 1024.0;
+#endif
+	}
+	 
+
+
+	// 针对编译器版本信息的宏
+	void print_compiler_info()
+	{
+		std::cout << "Compiler Version: ";
+#if defined(_MSC_VER)
+		std::cout << "MSVC, version " << _MSC_VER << "\n";
+#elif defined(__GNUC__)
+		std::cout << "GCC, version " << __GNUC__ << "." << __GNUC_MINOR__ << "\n";
+#elif defined(__clang__)
+		std::cout << "Clang, version " << __clang_major__ << "." << __clang_minor__ << "\n";
+#else
+		std::cout << "Unknown compiler\n";
+#endif
+	}
+
+
+	// 打印操作系统信息
+	void print_os_info()
+	{
+#if defined(_WIN32)
+		std::cout << "Operating System: Windows\n";
+#elif defined(__linux__)
+		std::cout << "Operating System: Linux\n";
+#elif defined(__APPLE__)
+		std::cout << "Operating System: macOS\n";
+#else
+		std::cout << "Operating System: Unknown\n";
+#endif
+	}
+
+	// 打印build mode——是release或debug:
+	void print_build_mode()
+	{
+#if defined(_DEBUG)
+		std::cout << "Build Mode: Debug\n";
+#else
+		std::cout << "Build Mode: Release\n";
+#endif
+	}
+
+	// 打印处理器架构信息
+	void print_architecture_info()
+	{
+		std::cout << "Processor Architecture: ";
+#if defined(__x86_64__) || defined(_M_X64)
+		std::cout << "x64 (AMD or Intel)\n";
+#elif defined(__i386) || defined(_M_IX86)
+		std::cout << "x86\n";
+#elif defined(__arm__) || defined(_M_ARM)
+		std::cout << "ARM\n";
+#elif defined(__aarch64__)
+		std::cout << "ARM64\n";
+#else
+		std::cout << "Unknown architecture\n";
+#endif
+	}
+
+
+	// 打印处理器核心数量
+	void print_cpu_cores()
+	{
+		unsigned int cores = std::thread::hardware_concurrency();
+		std::cout << "Number of Processor Cores: " << cores << "\n";
+	}
+
+
+	// 获取并打印CPU信息
+#if defined(__GNUC__) || defined(__clang__)
+#include <cpuid.h>
+	void print_cpu_info()
+	{
+		unsigned int eax, ebx, ecx, edx;
+		char cpu_brand[49] = { 0 };
+
+		__get_cpuid(0x80000002, &eax, &ebx, &ecx, &edx);
+		std::memcpy(cpu_brand, &eax, sizeof(eax));
+		std::memcpy(cpu_brand + 4, &ebx, sizeof(ebx));
+		std::memcpy(cpu_brand + 8, &ecx, sizeof(ecx));
+		std::memcpy(cpu_brand + 12, &edx, sizeof(edx));
+
+		__get_cpuid(0x80000003, &eax, &ebx, &ecx, &edx);
+		std::memcpy(cpu_brand + 16, &eax, sizeof(eax));
+		std::memcpy(cpu_brand + 20, &ebx, sizeof(ebx));
+		std::memcpy(cpu_brand + 24, &ecx, sizeof(ecx));
+		std::memcpy(cpu_brand + 28, &edx, sizeof(edx));
+
+		__get_cpuid(0x80000004, &eax, &ebx, &ecx, &edx);
+		std::memcpy(cpu_brand + 32, &eax, sizeof(eax));
+		std::memcpy(cpu_brand + 36, &ebx, sizeof(ebx));
+		std::memcpy(cpu_brand + 40, &ecx, sizeof(ecx));
+		std::memcpy(cpu_brand + 44, &edx, sizeof(edx));
+
+		std::cout << "CPU: " << cpu_brand << "\n";
+	}
+#elif defined(_MSC_VER)
+#include <intrin.h>
+	void print_cpu_info()
+	{
+		int cpuInfo[4] = { -1 };
+		char cpuBrand[0x40];
+		__cpuid(cpuInfo, 0x80000002);
+		memcpy(cpuBrand, cpuInfo, sizeof(cpuInfo));
+		__cpuid(cpuInfo, 0x80000003);
+		memcpy(cpuBrand + 16, cpuInfo, sizeof(cpuInfo));
+		__cpuid(cpuInfo, 0x80000004);
+		memcpy(cpuBrand + 32, cpuInfo, sizeof(cpuInfo));
+
+		std::cout << "CPU: " << cpuBrand << "\n";
+	}
+
+#else
+
+	void print_cpu_info()
+	{
+		std::cout << "CPU: Unknown\n";
+	}
+#endif
+
+	void print_env_info()
+	{
+		print_compiler_info();
+		print_os_info();
+		print_architecture_info();
+		print_build_mode();
+		print_cpu_cores();
+		print_cpu_info();
+	}
+
+}
+using namespace MY_WIN_API;
+
 
 
 namespace AUXILIARY 
@@ -50,6 +375,39 @@ namespace AUXILIARY
 		{
 			std::cout << this->numInt << ", " << this->numFloat << std::endl;
 		}
+	};
+
+
+	// 自定义pointer-like字符串类
+	struct myString
+	{
+	private:
+		const char* pc;
+	public:
+		myString() = delete;
+		myString(const char* pc0) :pc(pc0) {}
+
+		const char* c_str() const
+		{
+			return this->pc;
+		}
+
+	};
+
+	// 自定义比较器——前者小于后者时返回true  
+	std::function<bool(const myString&, const myString&)> myComparer = \
+		[](const myString& str1, const myString& str2) ->bool
+		{
+			if (strlen(str1.c_str()) < strlen(str2.c_str()))
+				return true;
+			else
+				return false;
+		};
+
+
+	void dispMyString(const myString& str)
+	{
+		std::cout << str.c_str() << std::endl;
 	};
 }
 using namespace AUXILIARY;
@@ -1689,123 +2047,26 @@ namespace TEST_UNKNOWN
 		}
 
 
-		enum class DATA_TYPE_ENUM
-		{
-			UNSUPPORTED = -1,
-			UNSIGNED_CHAR = 0,
-			CHAR = 1,
-			UINT32 = 2,
-			UINT64 = 3,
-			INT32 = 4,
-			INT64 = 5,
-		};
-
-		// 得到模板类型参数T对应的枚举量；
-		template <typename T>
-		DATA_TYPE_ENUM getDataType() 
-		{
-			if constexpr (std::is_same_v<T, unsigned char>)				// if constexpr和std::is_same_v需要c++17或以上
-				return DATA_TYPE_ENUM::UNSIGNED_CHAR;
-			else if constexpr (std::is_same_v<T, char>)							// c++17以下可用std::is_same<>::value替代；
-				return DATA_TYPE_ENUM::CHAR;
-			else if constexpr (std::is_same_v<T, std::uint32_t>)
-				return DATA_TYPE_ENUM::UINT32;
-			else if constexpr (std::is_same_v<T, std::uint64_t>)
-				return DATA_TYPE_ENUM::UINT64;
-			else if constexpr (std::is_same_v<T, std::int32_t>)
-				return DATA_TYPE_ENUM::INT32;
-			else if constexpr (std::is_same_v<T, std::int64_t>)
-				return DATA_TYPE_ENUM::INT64;
-			else
-				return DATA_TYPE_ENUM::UNSUPPORTED;
-		}
-
-
-		// 输入流中读取基本类型数据——除了bool
-		template <typename T>
-		void readStreamData(T& data, std::istream& is)
-		{
-			is.read(reinterpret_cast<char*>(&data), sizeof(T));
-		}
-
-
-		// 基本类型数据写入到输出流对象中；
-		template<typename T>
-		void writeStreamData(std::ostream& os, const T& data)
-		{
-			os.write(reinterpret_cast<const char*>(&data), sizeof(T));
-		}
-
-
-		// 数组序列化： 
-		template <typename T>
-		bool serializeVector(const std::string& datFilePath, const std::vector<T>& vec)
-		{
-			std::ofstream fileOut(datFilePath.c_str(), std::ios::binary);
-			if (!fileOut.is_open())
-				return false;
-
-			// 0. char表示的元素类型信息；
-			DATA_TYPE_ENUM dataType = getDataType<T>();
-			if (DATA_TYPE_ENUM::UNSUPPORTED == dataType)
-				return false;
-			writeStreamData(fileOut, static_cast<char>(dataType));
-
-			// 1. uint64_t表示的元素数
-			std::uint64_t elemsCount = vec.size();
-			writeStreamData(fileOut, elemsCount);
-
-			// 2. 具体元素
-			for (const auto& elem : vec)
-				writeStreamData(fileOut, elem);
-
-			// 3. 关闭文件句柄；
-			fileOut.close();
-
-			return true;
-		}
-
-
-		// 数组反序列化： 
-		template <typename T>
-		bool deserializeVector(std::vector<T>& vec, const std::string& datFilePath)
-		{
-			std::ifstream file(datFilePath.c_str(), std::ios::binary);
-			if (!file.is_open())
-				return false;
-
-			// 0. char表示的元素类型信息；
-			char type{-1};
-			DATA_TYPE_ENUM currentType = getDataType<T>();
-			readStreamData(type, file);
-			if (currentType != static_cast<DATA_TYPE_ENUM>(type))
-				return false;
-
-			// 1. uint64_t表示的元素数
-			std::uint64_t num0{ 0 };
-			size_t elemsCount{ 0 };
-			readStreamData(num0, file);
-			elemsCount = static_cast<size_t>(num0);
-
-			// 2. 具体元素
-			vec.clear();
-			vec.resize(elemsCount);
-			for (size_t i = 0; i < elemsCount; ++i)
-				readStreamData(vec[i], file); 
-
-			// 3. 关闭文件句柄；
-			file.close();
-
-			return true;
-		}
-
-
 		// 测试数组序列化/反序列化接口；
 		void test5()
 		{
 			std::vector<std::uint64_t> vec{0, 2, 99, 78, 77, 89, 89};
+			std::vector<float> vecF{1.1, 1.2, -9.0, 13.1};
+			std::vector<double> vecD{ 1.1, 1.2, -9.0, 13.1 };
 			std::vector<std::uint64_t> vecRead;
+			std::vector<float> vecFRead;
+			std::vector<double> vecDRead;
 			if (!serializeVector(g_debugPath + "vec.dat", vec))
+			{
+				debugDisp("Error!!! serializeVector() failed");
+				return;
+			}
+			if (!serializeVector(g_debugPath + "vecF.dat", vecF))
+			{
+				debugDisp("Error!!! serializeVector() failed");
+				return;
+			}
+			if (!serializeVector(g_debugPath + "vecD.dat", vecD))
 			{
 				debugDisp("Error!!! serializeVector() failed");
 				return;
@@ -1815,8 +2076,19 @@ namespace TEST_UNKNOWN
 				debugDisp("Error!!! deserializeVector() failed");
 				return;
 			}
-
+			if (!deserializeVector(vecFRead, g_debugPath + "vecF.dat"))
+			{
+				debugDisp("Error!!! deserializeVector() failed");
+				return;
+			}
+			if (!deserializeVector(vecDRead, g_debugPath + "vecD.dat"))
+			{
+				debugDisp("Error!!! deserializeVector() failed");
+				return;
+			}
 			traverseSTL(vecRead, disp<std::uint64_t>());
+			traverseSTL(vecFRead, disp<float>());
+			traverseSTL(vecDRead, disp<double>());
 
 			debugDisp("test5() finished.");
 		}
@@ -4363,7 +4635,10 @@ namespace TEST_AUXILIARY
 
 int main()
 {       
-	TEST_STL::STL_SET_MAP::test5();
+	// TEST_STL::STL_SET_MAP::test5(); 
+
+	TEST_IO::test5();
+
 
 	debugDisp("main() finished."); 
 

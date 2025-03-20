@@ -1,9 +1,105 @@
 #include "Auxiliary.h"
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////  by tora: debug接口： 
+namespace MY_DEBUG
+{
+	void debugDisp()            // 递归终止
+	{                        //        递归终止设为无参或者一个参数的情形都可以。
+		std::cout << std::endl;
+		return;
+	}
+
+	void debugDispWStr(const std::wstring& wstr)
+	{
+		std::wcout.imbue(std::locale(std::locale(), "", LC_CTYPE));        // 设置wcout的语言环境，缺少这一步打印中文会有错误。
+		std::wcout << wstr << std::endl;
+	}
+
+}
+using namespace MY_DEBUG;
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////// 工具接口
 namespace AUXILIARY
 {
+	// config文件路径字符串字面量 → std::wstring字符串；
+	void GetConfigDir(std::wstring& confDir, const TCHAR* pszConfFile)
+	{
+#ifdef WIN32
+		std::wstring strRet(pszConfFile);
+		if ((std::string::npos != strRet.find(L"./")) ||
+			(std::string::npos != strRet.find(L".\\")))
+		{
+			TCHAR szCurDir[256] = { 0 };
+			GetCurrentDirectory(256, szCurDir);
+			confDir = szCurDir;
+			confDir += strRet.substr(1, strRet.length());
+
+			return;
+		}
+		confDir = strRet;
+#endif
+		return;
+	}
+
+
+	// 读取config文件中的某一个类型为double的键值
+	double INIGetFloat(const TCHAR* pszKey, const TCHAR* pszConfFile)
+	{
+		std::wstring strFileName;
+		GetConfigDir(strFileName, pszConfFile);
+		TCHAR szValue[256] = { 0 };
+		GetPrivateProfileString(L"MY_MESH_CONFIG", pszKey, L"", szValue, 256, strFileName.c_str());
+
+#ifdef UNICODE
+		std::string szValue0 = ws2s(szValue);
+		return atof(szValue0.c_str());
+#else
+		return atof(szValue);
+#endif 
+
+	}
+
+
+	// 读取config文件中的某一个类型为int的键值
+	DWORD INIGetInt(const TCHAR* pszKey, const TCHAR* pszConfFile)
+	{
+#ifdef WIN32
+		std::wstring strFileName;
+		GetConfigDir(strFileName, pszConfFile);
+		return GetPrivateProfileInt(L"MY_MESH_CONFIG", pszKey, 0, strFileName.c_str());
+#else
+		return 0;
+#endif
+	}
+
+}
+using namespace AUXILIARY;
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////// 工具接口——字符串、文件系统相关
+namespace AUXILIARY_STRING_FILE
+{
+	void SplitString(const std::string& s, std::vector<std::string>& v, const std::string& c)
+	{
+		std::string::size_type pos1, pos2;
+		pos2 = s.find(c);
+		pos1 = 0;
+		while (std::string::npos != pos2)
+		{
+			v.push_back(s.substr(pos1, pos2 - pos1));
+
+			pos1 = pos2 + c.size();
+			pos2 = s.find(c, pos1);
+		}
+		if (pos1 != s.length())
+			v.push_back(s.substr(pos1));
+	}
+
+
 	// 字符串转换为宽字符串；
 	std::wstring s2ws(const std::string& s)
 	{
@@ -238,347 +334,6 @@ namespace AUXILIARY
 #endif
 	}
 
-}
-using namespace AUXILIARY;
-
- 
-////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
-namespace MY_DEBUG
-{
-	void debugDisp()			// 递归终止
-	{						//		递归终止设为无参或者一个参数的情形都可以。
-		std::cout << std::endl;
-		return;
-	}
-	
-	void debugDispWStr(const std::wstring& wstr)
-	{
-		std::wcout.imbue(std::locale(std::locale(), "", LC_CTYPE));		// 设置wcout的语言环境，缺少这一步打印中文会有错误。
-		std::wcout << wstr << std::endl;
-	}
-
-	// 针对编译器版本信息的宏
-	void print_compiler_info()
-	{
-		std::cout << "Compiler Version: ";
-#if defined(_MSC_VER)
-		std::cout << "MSVC, version " << _MSC_VER << "\n";
-#elif defined(__GNUC__)
-		std::cout << "GCC, version " << __GNUC__ << "." << __GNUC_MINOR__ << "\n";
-#elif defined(__clang__)
-		std::cout << "Clang, version " << __clang_major__ << "." << __clang_minor__ << "\n";
-#else
-		std::cout << "Unknown compiler\n";
-#endif
-	}
-
-
-	// 打印操作系统信息
-	void print_os_info()
-	{
-#if defined(_WIN32)
-		std::cout << "Operating System: Windows\n";
-#elif defined(__linux__)
-		std::cout << "Operating System: Linux\n";
-#elif defined(__APPLE__)
-		std::cout << "Operating System: macOS\n";
-#else
-		std::cout << "Operating System: Unknown\n";
-#endif
-	}
-
-	// 打印build mode——是release或debug:
-	void print_build_mode()
-	{
-#if defined(_DEBUG)
-		std::cout << "Build Mode: Debug\n";
-#else
-		std::cout << "Build Mode: Release\n";
-#endif
-	}
-
-	// 打印处理器架构信息
-	void print_architecture_info()
-	{
-		std::cout << "Processor Architecture: ";
-#if defined(__x86_64__) || defined(_M_X64)
-		std::cout << "x64 (AMD or Intel)\n";
-#elif defined(__i386) || defined(_M_IX86)
-		std::cout << "x86\n";
-#elif defined(__arm__) || defined(_M_ARM)
-		std::cout << "ARM\n";
-#elif defined(__aarch64__)
-		std::cout << "ARM64\n";
-#else
-		std::cout << "Unknown architecture\n";
-#endif
-	}
-
-
-	// 打印处理器核心数量
-	void print_cpu_cores()
-	{
-		unsigned int cores = std::thread::hardware_concurrency();
-		std::cout << "Number of Processor Cores: " << cores << "\n";
-	}
-
-
-	// 获取并打印CPU信息
-#if defined(__GNUC__) || defined(__clang__)
-#include <cpuid.h>
-	void print_cpu_info()
-	{
-		unsigned int eax, ebx, ecx, edx;
-		char cpu_brand[49] = { 0 };
-
-		__get_cpuid(0x80000002, &eax, &ebx, &ecx, &edx);
-		std::memcpy(cpu_brand, &eax, sizeof(eax));
-		std::memcpy(cpu_brand + 4, &ebx, sizeof(ebx));
-		std::memcpy(cpu_brand + 8, &ecx, sizeof(ecx));
-		std::memcpy(cpu_brand + 12, &edx, sizeof(edx));
-
-		__get_cpuid(0x80000003, &eax, &ebx, &ecx, &edx);
-		std::memcpy(cpu_brand + 16, &eax, sizeof(eax));
-		std::memcpy(cpu_brand + 20, &ebx, sizeof(ebx));
-		std::memcpy(cpu_brand + 24, &ecx, sizeof(ecx));
-		std::memcpy(cpu_brand + 28, &edx, sizeof(edx));
-
-		__get_cpuid(0x80000004, &eax, &ebx, &ecx, &edx);
-		std::memcpy(cpu_brand + 32, &eax, sizeof(eax));
-		std::memcpy(cpu_brand + 36, &ebx, sizeof(ebx));
-		std::memcpy(cpu_brand + 40, &ecx, sizeof(ecx));
-		std::memcpy(cpu_brand + 44, &edx, sizeof(edx));
-
-		std::cout << "CPU: " << cpu_brand << "\n";
-	}
-#elif defined(_MSC_VER)
-#include <intrin.h>
-	void print_cpu_info()
-	{
-		int cpuInfo[4] = { -1 };
-		char cpuBrand[0x40];
-		__cpuid(cpuInfo, 0x80000002);
-		memcpy(cpuBrand, cpuInfo, sizeof(cpuInfo));
-		__cpuid(cpuInfo, 0x80000003);
-		memcpy(cpuBrand + 16, cpuInfo, sizeof(cpuInfo));
-		__cpuid(cpuInfo, 0x80000004);
-		memcpy(cpuBrand + 32, cpuInfo, sizeof(cpuInfo));
-
-		std::cout << "CPU: " << cpuBrand << "\n";
-	}
-
-#else
-
-	void print_cpu_info()
-	{
-		std::cout << "CPU: Unknown\n";
-	}
-#endif
-
-	void print_env_info()
-	{
-		print_compiler_info();
-		print_os_info();
-		print_architecture_info();
-		print_build_mode();
-		print_cpu_cores();
-		print_cpu_info();
-	}
-
-}
-using namespace MY_DEBUG;
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////// 基于windows API写的一些工具接口
-namespace MY_WIN_API
-{
-	// 读取某个目录下所有文件名、目录名；
-	void getFileNames(std::string path, std::vector<std::string>& files, bool blRecur)
-	{
-		std::string str;
-		struct _finddata_t fileinfo;			// 文件信息
-		intptr_t hFile = _findfirst(str.assign(path).append("/*").c_str(), &fileinfo);							// 文件句柄	
-		bool blFileValid = (hFile != -1);
-
-		if (blFileValid)
-		{
-			do
-			{
-				bool isSubDir = (fileinfo.attrib & _A_SUBDIR);
-				//如果是目录,递归查找；如果不是,把文件绝对路径存入vector中
-				if (isSubDir && blRecur)
-				{
-					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
-						getFileNames(str.assign(path).append("/").append(fileinfo.name), files);
-				}
-				else
-					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
-						files.push_back(str.assign(path).append("/").append(fileinfo.name));
-			} while (_findnext(hFile, &fileinfo) == 0);
-			_findclose(hFile);
-		}
-	}
-
-
-	// 获得当前进程的进程ID
-	int GetCurrentPid()
-	{
-		return _getpid();
-	}
-
-
-	// get specific process cpu occupation ratio by pid
-	std::uint64_t convert_time_format(const FILETIME* ftime)
-	{
-		LARGE_INTEGER li;
-
-		li.LowPart = ftime->dwLowDateTime;
-		li.HighPart = ftime->dwHighDateTime;
-		return li.QuadPart;
-	} 
-
-
-	float GetCpuUsageRatio(int pid)
-	{
-#ifdef WIN32
-		static int64_t last_time = 0;
-		static int64_t last_system_time = 0;
-
-		FILETIME now;
-		FILETIME creation_time;
-		FILETIME exit_time;
-		FILETIME kernel_time;
-		FILETIME user_time;
-		int64_t system_time;
-		int64_t time;
-		int64_t system_time_delta;
-		int64_t time_delta;
-
-		// get cpu num
-		SYSTEM_INFO info;
-		GetSystemInfo(&info);
-		int cpu_num = info.dwNumberOfProcessors;
-
-		float cpu_ratio = 0.0;
-
-		// get process hanlde by pid
-		HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-		// use GetCurrentProcess() can get current process and no need to close handle
-
-		// get now time
-		GetSystemTimeAsFileTime(&now);
-
-		if (!GetProcessTimes(process, &creation_time, &exit_time, &kernel_time, &user_time))
-		{
-			// We don't assert here because in some cases (such as in the Task Manager)  
-			// we may call this function on a process that has just exited but we have  
-			// not yet received the notification.  
-			printf("GetCpuUsageRatio GetProcessTimes failed\n");
-			return 0.0;
-		}
-
-		// should handle the multiple cpu num
-		system_time = (convert_time_format(&kernel_time) + convert_time_format(&user_time)) / cpu_num;
-		time = convert_time_format(&now);
-
-		if ((last_system_time == 0) || (last_time == 0))
-		{
-			// First call, just set the last values.  
-			last_system_time = system_time;
-			last_time = time;
-			return 0.0;
-		}
-
-		system_time_delta = system_time - last_system_time;
-		time_delta = time - last_time;
-
-		CloseHandle(process);
-
-		if (time_delta == 0)
-		{
-			printf("GetCpuUsageRatio time_delta is 0, error\n");
-			return 0.0;
-		}
-
-		// We add time_delta / 2 so the result is rounded.  
-		cpu_ratio = (int)((system_time_delta * 100 + time_delta / 2) / time_delta); // the % unit
-		last_system_time = system_time;
-		last_time = time;
-
-		cpu_ratio /= 100.0; // convert to float number
-
-		return cpu_ratio;
-#else
-		unsigned long totalcputime1, totalcputime2;
-		unsigned long procputime1, procputime2;
-
-		totalcputime1 = get_cpu_total_occupy();
-		procputime1 = get_cpu_proc_occupy(pid);
-
-		// FIXME: the 200ms is a magic number, works well
-		usleep(200000); // sleep 200ms to fetch two time point cpu usage snapshots sample for later calculation
-
-		totalcputime2 = get_cpu_total_occupy();
-		procputime2 = get_cpu_proc_occupy(pid);
-
-		float pcpu = 0.0;
-		if (0 != totalcputime2 - totalcputime1)
-			pcpu = (procputime2 - procputime1) / float(totalcputime2 - totalcputime1); // float number
-
-		int cpu_num = get_nprocs();
-		pcpu *= cpu_num; // should multiply cpu num in multiple cpu machine
-
-		return pcpu;
-#endif
-	}
-
-
-	// get specific process physical memeory occupation size by pid (MB)
-	double GetMemoryUsage(int pid)
-	{
-#ifdef WIN32
-		uint64_t mem = 0, vmem = 0;
-		PROCESS_MEMORY_COUNTERS pmc;
-
-		// get process hanlde by pid
-		HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-		if (GetProcessMemoryInfo(process, &pmc, sizeof(pmc)))
-		{
-			mem = pmc.WorkingSetSize;
-			vmem = pmc.PagefileUsage;
-		}
-		CloseHandle(process);
-
-		// use GetCurrentProcess() can get current process and no need to close handle
-
-		// convert mem from B to MB
-		return mem / 1024.0 / 1024.0;
-
-#else
-		char file_name[64] = { 0 };
-		FILE* fd;
-		char line_buff[512] = { 0 };
-		sprintf(file_name, "/proc/%d/status", pid);
-
-		fd = fopen(file_name, "r");
-		if (nullptr == fd)
-			return 0;
-
-		char name[64];
-		int vmrss = 0;
-		for (int i = 0; i < VMRSS_LINE - 1; i++)
-			fgets(line_buff, sizeof(line_buff), fd);
-
-		fgets(line_buff, sizeof(line_buff), fd);
-		sscanf(line_buff, "%s %d", name, &vmrss);
-		fclose(fd);
-
-		// cnvert VmRSS from KB to MB
-		return vmrss / 1024.0;
-#endif
-	}
-
 
 	// 复制文件：
 	bool CopyFileViaWinAPI(const std::string& outputPath, const std::string& inputPath)
@@ -602,21 +357,6 @@ namespace MY_WIN_API
 
 		return true;
 	}
+
 }
-using namespace MY_WIN_API;
 
-
-std::function<bool(const myString&, const myString&)> myComparer =\
-[](const myString& str1, const myString& str2) ->bool
-	{
-		if (strlen(str1.c_str()) < strlen(str2.c_str()))
-			return true;
-		else
-			return false;
-	};
-
-
-void dispMyString(const myString& str)
-{
-	std::cout << str.c_str() << std::endl;
-};
