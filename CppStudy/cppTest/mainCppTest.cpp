@@ -4442,6 +4442,7 @@ namespace TEST_TYPE_TRAITS
 	}
 
 
+	// 打印输入vector的元素类型std::is_same<T1, T2>::value实现；
 	template <typename T>
 	void goo(const std::vector<T>& vec) 
 	{
@@ -4480,14 +4481,17 @@ namespace TEST_TYPE_TRAITS
 	{
 		int i;
 		float f; 
+
+		using FloatType = float;
 	};
 	
 	// 
 	void test1() 
 	{
 		NumType num;
-		bool isInt = true;
+		bool isInt = true; 
 
+		debugDisp("test1() finished.");
 	}
 
 
@@ -4508,9 +4512,7 @@ namespace TEST_TYPE_TRAITS
 
 	template <typename TypeOut, typename TypeIn>
 	bool ioo(TypeOut& out, const TypeIn& elem)
-	{
-
-
+	{ 
 		out = static_cast<TypeOut>(elem);
 		return true;
 	}
@@ -4637,8 +4639,9 @@ int main()
 {       
 	// TEST_STL::STL_SET_MAP::test5(); 
 
-	TEST_IO::test5();
+	//TEST_IO::test5();
 
+	TEST_TYPE_TRAITS::test1();
 
 	debugDisp("main() finished."); 
 
