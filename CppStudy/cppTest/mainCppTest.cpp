@@ -1,5 +1,5 @@
 ﻿#include "Auxiliary.h"
-#include "AuxiliaryHeader.h"
+#include "TemplateTest.h"
  
 #include <list>
 #include <type_traits>
@@ -4641,7 +4641,9 @@ int main()
 
 	//TEST_IO::test5();
 
-	TEST_TYPE_TRAITS::test1();
+	// TEST_TYPE_TRAITS::test1();
+
+	debugDisp(std::make_pair(65, 3.145));
 
 	debugDisp("main() finished."); 
 

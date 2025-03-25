@@ -286,51 +286,62 @@ void STL_algorithm_module::test0(void)
 	std::vector<int> vi = {1,2,5,6,1,3,-1,-9};
 	std::vector<std::string> vs = {"dog","cat","panda"};
     int iarr[] = {1,-3,5,4,5,-6,4,-4,6};
-    int* pi = NULL;
     int sum;
-	std::vector<int>::iterator iti;
+
     const char* sarr[] = {"dog","cat","duck"};
     bool flag;
 
-
-    std::cout << "\n\n\n\n" << std::endl;
-    std::cout << "test0：algorithm中一些常用的只读算法" << std::endl;
+    debugDisp("\n\n\n\n"); 
+    debugDisp("test0：algorithm中一些常用的只读算法"); 
 
     // find()——容器中查找元素。
-    pi = std::find(std::begin(iarr), std::end(iarr), 5);                                        // 返回查找元素的迭代器。
-  
-    if (pi)         // 若没找到相符元素，返回的指针是NULL
-        std::cout << "\tthe number 5 is present in the int array iarr."<< std::endl;
-    else 
-        std::cout << "\tthe number 5 is not present in the int array iarr" << std::endl;
+    debugDisp("find()——容器中查找元素。");
+    {
+        int* pi = nullptr;
+        std::vector<int>::iterator intIter;
 
-    iti = find(begin(vi), end(vi), 99);
-    if (iti != vi.end())      // vec.end()表示vec最后一个元素后一个位置，可以认为是空位置。
-        std::cout << "\tthe number -4 is present in the int vector vi." << std::endl;
-    else
-        std::cout << "\tthe number -4 is not present in the int vector vi." << std::endl;
-    std::cout << std::endl;
+        // retPtr = std::find(p1, p2, elem)——数组中查找元素
+        pi = std::find(std::begin(iarr), std::end(iarr), 5);                                         
+        if (pi)         // 若没找到相符元素，返回空指针
+            std::cout << "\t the number 5 is present in the int array iarr." << std::endl;
+        else
+            std::cout << "\tthe number 5 is not present in the int array iarr" << std::endl;
 
+        // retIter = std::find(iter1, iter2, elem)——STL容器中查找元素；
+        intIter = std::find(std::begin(vi), std::end(vi), 99);
+        if (intIter != vi.end())             // vec.end()表示vec最后一个元素后一个位置，可以认为是空位置。
+            std::cout << "\tthe number -4 is present in the int vector vi." << std::endl;
+        else
+            std::cout << "\tthe number -4 is not present in the int vector vi." << std::endl;
 
-    // accumulate——容器元素求和
-    sum = accumulate(vi.cbegin(),vi.cend(),0);    // 参数列表第三项表示额外加上的量。
-    std::cout << sum << std::endl;
-    sum = std::accumulate(std::begin(iarr), std::end(iarr), 0);			// 对数组也可用，不只是STL容器。
-    std::cout << sum << std::endl;
-    std::cout << std::endl;
+        debugDisp("\n");
+    }
+      
 
+    // accumulate()——容器元素求和
+    debugDisp("accumulate()——容器元素求和");
+    {
+        sum = accumulate(vi.cbegin(), vi.cend(), 0);    // 参数列表第三项表示额外加上的量。
+        std::cout << sum << std::endl;
+        sum = std::accumulate(std::begin(iarr), std::end(iarr), 0);			// 对数组也可用，不只是STL容器。
+        std::cout << sum << std::endl;
+        std::cout << std::endl;
+    } 
 
-    // equal——比较容器中的元素
-    flag = equal(vs.begin(),vs.end(), std::begin(sarr));
-    if (flag)
-        std::cout << "\telements from two containers are the same. " << std::endl;
-    else 
-        std::cout << "\telements from two containers are not the same." << std::endl;
-    std::cout << std::endl;
+    // equal()——比较容器中的元素
+    debugDisp("equal()——比较容器中的元素");
+    {
+        flag = equal(vs.begin(), vs.end(), std::begin(sarr));
+        if (flag)
+            std::cout << "\telements from two containers are the same. " << std::endl;
+        else
+            std::cout << "\telements from two containers are not the same." << std::endl;
+        std::cout << std::endl;
+    }
+     
 
-
-    // for_each——遍历容器中的元素:
-    std::cout << "for_each——遍历容器中的元素:" << std::endl;
+    // for_each()——遍历容器中的元素:
+    std::cout << "for_each()——遍历容器中的元素:" << std::endl;
  
 
     std::cout << "传递函数遍历：" << std::endl;
@@ -342,12 +353,16 @@ void STL_algorithm_module::test0(void)
  
 
 	// max_element(), min_element()——返回容器中的最值元素的迭代器或指针。
-	iti = std::max_element(vi.begin(), vi.end());
-	pi = std::min_element(std::begin(iarr), std::end(iarr));
-	std::cout << *iti << std::endl;
-	std::cout << *pi << std::endl;
-	
-   
+    {
+        std::vector<int>::iterator intIter;
+        int* intPtr{ nullptr };
+        intIter = std::max_element(vi.begin(), vi.end());
+        intPtr = std::min_element(std::begin(iarr), std::end(iarr));
+        debugDisp("*intIter == ", *intIter);
+        debugDisp("*intPtr == ", *intPtr); 
+    }
+
+    debugDisp("test0() finished.");
 }
 
 

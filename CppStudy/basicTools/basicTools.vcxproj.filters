@@ -18,7 +18,7 @@
     <ClCompile Include="basicTools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\Auxiliary.cpp">
+    <ClCompile Include="..\Auxiliary\Auxiliary.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -26,10 +26,7 @@
     <ClInclude Include="basicTools.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\Auxiliary.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\AuxiliaryHeader.h">
+    <ClInclude Include="..\Auxiliary\Auxiliary.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

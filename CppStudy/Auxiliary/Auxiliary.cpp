@@ -1,5 +1,5 @@
 #include "Auxiliary.h"
-
+ 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////  by tora: debug接口： 
 namespace MY_DEBUG
@@ -15,7 +15,7 @@ namespace MY_DEBUG
 		std::wcout.imbue(std::locale(std::locale(), "", LC_CTYPE));        // 设置wcout的语言环境，缺少这一步打印中文会有错误。
 		std::wcout << wstr << std::endl;
 	}
-
+	 
 }
 using namespace MY_DEBUG;
 
@@ -23,7 +23,7 @@ using namespace MY_DEBUG;
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 工具接口
 namespace AUXILIARY
-{
+{  
 	// config文件路径字符串字面量 → std::wstring字符串；
 	void GetConfigDir(std::wstring& confDir, const TCHAR* pszConfFile)
 	{

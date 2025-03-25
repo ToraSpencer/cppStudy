@@ -49,7 +49,7 @@
 #include <atlstr.h>				// 包含CString类。属于microsoft ATL(活动模板库avtive template library)
 #include <io.h>
 #endif  
-
+   
 #include <omp.h>			// openMP
 
 
@@ -57,7 +57,7 @@
 #ifdef  USE_BOOST
 #include <boost/tuple/tuple.hpp>
 #endif  
-
+ 
 
 // 内存和CPU监视接口需要的一些头文件；
 #ifdef _WIN32 
@@ -130,8 +130,10 @@ namespace AUXILIARY
 
     // 传入函数子或函数指针遍历stl容器
     template<typename T, typename F>
-    void traverseSTL(T& con, F f)
+    void traverseSTL(T& con, F f, const std::string& headStr = std::string{})
     {
+        if (!headStr.empty())
+            std::cout << headStr << std::endl;
         std::for_each(con.begin(), con.end(), f);
         std::cout << std::endl;
     }
@@ -152,8 +154,8 @@ namespace AUXILIARY
     {
         std::for_each(con.rbegin(), con.rend(), f);
         std::cout << std::endl;
-    }
-
+    } 
+     
 
     // 并行for循环——传入函数子原型为：void(const size_t index)
     template<typename Func>
@@ -603,9 +605,15 @@ namespace MY_DEBUG
         debugDisp(args...);
     }
 
+    template <typename T1, typename T2>
+    std::ostream& operator<<(std::ostream& os, const std::pair<T1, T2>& pair)
+    {
+        os << "(" << pair.first << ", " << pair.second << ")";
+        return os;
+    }
 
     void debugDispWStr(const std::wstring& wstr);
-
+     
 
     // 基于std::chrono的自定义计时器
     using namespace std::chrono;

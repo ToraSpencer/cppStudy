@@ -104,33 +104,51 @@ public:
 };
 
 
-// test0: set的基本使用方法、API——和std::map类似，详情见"STL_map键值对集合.cpp"
+// test0: set的基本使用方法、API 
 void STL_set_module::test0(void) 
 {
 	debugDisp("\n\n\n\n");
-	debugDisp("test0: set的基本使用方法、API：\n"); 
+	debugDisp("test0: set的基本使用方法、API：\n");  
 
 	// 基本类型的set——插入到set中的基本类型元素会默认从小到大排序，插入到合适的位置。
 	debugDisp("基本类型的set——插入到set中的基本类型元素会默认从小到大排序，插入到合适的位置：");
 	{
-		set<int> seti1;									// 构造方法1
-		set<int>::iterator iter_i;
-		baseTypePrinter btp;
+		set<int> seti1;									 
+		set<int>::iterator iter_i; 
+		std::pair<set<int>::iterator, bool> retIter;					// insert()方法返回的pair;
 
-		seti1.insert(1);
-		seti1.insert(0);
-		seti1.insert(9);
-		seti1.insert(8);
-		seti1.insert(11);
-		seti1.insert(-3);
-		for_each(seti1.begin(), seti1.end(), btp);
-		debugDisp();
+		// 1. 1 insert() 方法：
+		debugDisp("insert()方法：");
+		{
+			retIter = seti1.insert(3);
+			debugDisp("retIter.second == ", retIter.second);
+			debugDisp("*retIter.first == ", *retIter.first);
+			retIter = seti1.insert(3);
+			debugDisp("retIter.second == ", retIter.second);
+			seti1.insert(0);
+			seti1.insert(9);
+			seti1.insert(8);
+			seti1.insert(11);
+			seti1.insert(-3);
+			for_each(seti1.begin(), seti1.end(), baseTypePrinter{});
+			debugDisp(); 
 
-		debugDisp("\n");
+			debugDisp("\n");
+		}  
+
+		// 1.2 erase()方法
+		debugDisp("erase()方法：");
+		{
+			size_t retNum{0};
+			retNum = seti1.erase(3);
+			debugDisp("retNum == ", retNum);
+			retNum = seti1.erase(4);
+			debugDisp("retNum == ", retNum); 
+		}
 	} 
 
 	// 		若想要修改元素排序的方式，则构造时传入一个严格弱序(strict weak ordering)比较器
-
+ 
 	debugDisp("test0() finished.");
 }
 

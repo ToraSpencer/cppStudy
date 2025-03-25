@@ -85,7 +85,7 @@ using namespace AUXILIARY;
  
 // test0: std::map, std::unordered_map常用成员，相关定义
 void STL_map_module::test0(void)
-{
+{ 
 	debugDisp("\n\n\n\n");
 	debugDisp("test0: std::map, std::unordered_map常用成员：\n"); 
 
@@ -114,13 +114,14 @@ void STL_map_module::test0(void)
 	//	2.operator[]()——返回输入键对应值的引用；注：如果输入键不存在，则在字典中生成该键值对，用默认constructor构造其值对象；
 	debugDisp("operator[]()重载运算符： ");
 	{ 
+		traverseSTL(mis, disp<std::pair<int, std::string>>{}, "mis中的所有元素：");
 		debugDisp("mis[11] == ", mis[11]);
 		mis[11] = "bli";
 		debugDisp("mis[11] == ", mis[11]);
 		debugDisp("mis.size() == ", mis.size());
 
 		//			如果输入键不存在，则在字典中生成该键值对，用默认constructor构造其值对象；
-		debugDisp("mis[1] == ", mis[1]);
+		debugDisp("mis[-1] == ", mis[-1]);				// ！！！哪怕不对其赋值，只要调用了operator[]()，就会创建该键值对，所以要慎重使用。
 		debugDisp("mis.size() == ", mis.size());
 
 		debugDisp("\n");
@@ -197,7 +198,7 @@ void STL_map_module::test0(void)
 
 		debugDisp("\n");
 	}
-
+	 
 	debugDisp("test0() finished.");
 }
 
@@ -226,7 +227,7 @@ void STL_map_module::test1()
 {
 	debugDisp("\n\n\n\n");
 	debugDisp("默认/自定义比较器：");
-
+	 
 	// 1. 默认比较器：
 	std::set<float> set1;
 	std::map<int, float> map1;
@@ -290,7 +291,7 @@ void STL_map_module::test1()
 	retPair2 = edgeSet2.insert({ 1, 3 });
 	retPair2 = edgeSet2.insert({ 1, 2 });
 	debugDisp("edgeSet2: ");
-	traverseSTL(edgeSet2, dispPair<std::pair<int, int>>());
+	traverseSTL(edgeSet2, dispPair<std::pair<int, int>>()); 
 
 	debugDisp("test1 finished.");
 }
