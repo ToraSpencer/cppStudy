@@ -1289,9 +1289,7 @@ namespace TEST_UNKNOWN
 			static unsigned int size()
 			{
 				return 0;
-			}
-
-
+			} 
 		};
 
 
@@ -3759,10 +3757,56 @@ namespace TEST_STL
 
 }
 
- 
- 
-///////////////////////////////////////////////////////////////////////////////////////////// 模板&模板元编程
+
+///////////////////////////////////////////////////////////////////////////////////////////// 模板元编程
 namespace TEST_TEMPLATE
+{
+	// test0——模板特化
+	template <typename T>
+	void dispTypeName() 
+	{
+		return;
+	}
+
+	template<>
+	void dispTypeName<char>() 
+	{
+		std::cout << "type name : char" << std::endl;
+	}
+
+	template<>
+	void dispTypeName<double>()
+	{
+		std::cout << "type name : double" << std::endl;
+	}
+
+	template <typename T>
+	void dispVecElems(const std::vector<T>& vec) 
+	{
+		std::cout << "Input vector elements ";
+		dispTypeName<T>();
+		traverseSTL(vec, disp<T>{});
+	}
+
+	void test0() 
+	{
+		std::vector<char> vecChar{'a', 'b', 'c'};
+		std::vector<double> vecNum{1.2, 3.14, -0.8};
+		dispVecElems(vecChar);
+		dispVecElems(vecNum);
+
+
+		debugDisp("test0() finished.");
+	}
+
+
+
+}
+
+
+ 
+///////////////////////////////////////////////////////////////////////////////////////////// 模板元编程
+namespace TEST_TEMPLATE_METAPROGRAMMING
 {
 	namespace TEMPLATE1				// 模板作为元函数的输入：
 	{
@@ -3784,43 +3828,7 @@ namespace TEST_TEMPLATE
 
 		Fun<std::remove_reference, int&> value0 = 1;					// 元函数Fun<>返回的类型是int；
 	}
-
-#if 0
-	namespace TEMPLATE2		// 模板作为元函数的输出：
-	{
-		template <bool AddOrRemoveRef> struct Fun_;
-
-		template <>
-		struct Fun_<true>
-		{
-			template <typename T>
-			using type = std::add_lvalue_reference<T>;
-		};
-
-		template <>
-		struct Fun_<false>
-		{
-			template<typename T>
-			using type = std::remove_reference<T>;
-		};
-
-		// 元函数Fun<>——
-		/*
-			输入为true时，输出的是函数模板std::add_lvalue_reference<>：为类型增加左值引用；
-			输入为false是，输出的是函数模板std::remove_reference<>：去除类型中的引用；
-
-		*/
-		template<typename T>
-			template <bool AddOrRemove>
-		using Fun = typename Fun_<AddOrRemove>::template type<T>;
-
-		template <typename T>
-		using Res_ = Fun<false>;
-
-		Res_<int&>::type value0 = 3;
-	}
-#endif
-
+	 
 	namespace TEMPLATE3				// 容器模板：
 	{
 		template <int... Vals> struct IntContainer;
@@ -4643,7 +4651,7 @@ int main()
 
 	// TEST_TYPE_TRAITS::test1();
 
-	debugDisp(std::make_pair(65, 3.145));
+	TEST_TEMPLATE::test0();
 
 	debugDisp("main() finished."); 
 

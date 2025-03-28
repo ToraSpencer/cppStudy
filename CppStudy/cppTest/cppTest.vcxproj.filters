@@ -18,7 +18,7 @@
     <ClCompile Include="mainCppTest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\Auxiliary\Auxiliary.cpp">
+    <ClCompile Include="..\..\..\TTTML\Auxiliary\Auxiliary.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -26,7 +26,7 @@
     <ClInclude Include="..\TemplateTest.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\Auxiliary\Auxiliary.h">
+    <ClInclude Include="..\..\..\TTTML\Auxiliary\Auxiliary.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
