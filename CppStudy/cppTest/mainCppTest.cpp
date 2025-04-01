@@ -4640,18 +4640,21 @@ namespace TEST_AUXILIARY
 	}
 
 }
-
  
 
+
 int main()
-{       
-	// TEST_STL::STL_SET_MAP::test5(); 
+{         
+	// TEST_TEMPLATE::test0();
 
-	//TEST_IO::test5();
+	auto hoo = [](const std::initializer_list<int>& nums) 
+		{
+			auto iter = nums.begin();
+			for (; iter != nums.end(); ++iter)
+				std::cout << *iter << ", ";
+		};
 
-	// TEST_TYPE_TRAITS::test1();
-
-	TEST_TEMPLATE::test0();
+	hoo({1,2,3,4,5});
 
 	debugDisp("main() finished."); 
 
