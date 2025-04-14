@@ -4642,6 +4642,23 @@ namespace TEST_AUXILIARY
 }
  
 
+// TO DO:
+namespace TO_DO 
+{
+	// 应用Protobuf库实现任意类型对象的序列化
+	template <typename T>
+	void serialize(std::vector<char>& result, const T& obj)
+	{ }
+
+
+	// 递归地从多重容器中获取元素，存入数组
+	template <typename T, typename Container>
+	void getDataRecur(std::vector<T>& vecOut, const Container& con)
+	{}
+
+
+}
+
 
 int main()
 {         
