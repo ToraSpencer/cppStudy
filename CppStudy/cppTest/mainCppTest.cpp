@@ -4,7 +4,12 @@
 #include <list>
 #include <type_traits>
 
- 
+#define TEST_PROTOBUF_MACRO
+
+#ifdef  TEST_PROTOBUF_MACRO
+#include "test_protobuf/person.pb.h"
+#endif 
+
 
 //  WINDOWS提供的时间相关的接口
 /*
@@ -2235,6 +2240,7 @@ namespace TEST_STD
 namespace TEST_NEW_FEATURES
 {
 	// 折叠表达式（C++17）（fold expression）
+#if 0
 	namespace FOLDEXP
 	{
 		// 使用折叠表达式可以更加方便地实现可变参数模板
@@ -2251,7 +2257,7 @@ namespace TEST_NEW_FEATURES
 		}
 
 	}
-
+#endif
 
 	// 常量表达式constexpr ( c++11)
 	namespace CONSTEXPR
@@ -3226,7 +3232,8 @@ namespace TEST_STL
 			}
 
 
-			// 2. lambda形式的哈希函数和等价比较器：
+			// 2. lambda形式的哈希函数和等价比较器；貌似c++14还不支持
+#if 0
 
 			//		lambda——
 			auto edgeHashLamb = [](const myEdge& edge)->std::size_t
@@ -3253,6 +3260,7 @@ namespace TEST_STL
 					std::cout << pair.first << ", " << pair.second << std::endl;
 				std::cout << std::endl;
 			}
+#endif
 			 
 			// 3. 
 			std::unordered_set<myVert, vertHash, vertEqual> myVertSet; 
@@ -3345,19 +3353,34 @@ namespace TEST_STL
 
 	namespace STL_STACK_QUEUE
 	{
-		// 优先队列priority_queue（C++11）
-		void test1()
-		{
-			// 自定义的std::string的优先级比较器——字符越多优先级越高；
-			auto strPriCmp = [](const std::string& str1, const std::string& str2)->bool
+		// 貌似C++14还不支持std::priority_queue中传入lambda表示的比较器
+#if 0
+		// 自定义的std::string的优先级比较器——字符越多优先级越高；
+		auto strPriCmp = [](const std::string& str1, const std::string& str2)->bool
 			{
 				if (str1.size() < str2.size())
 					return true;
 				else
 					return false;
 			};
-
-			std::priority_queue<std::string, std::vector<std::string>, decltype(strPriCmp)> pQueue1;
+#else
+		class strPriCmp
+		{
+		public:
+			bool operator()(const std::string& str1, const std::string& str2)
+			{
+				if (str1.size() < str2.size())
+					return true;
+				else
+					return false;
+			}
+		};
+#endif
+		// 优先队列priority_queue（C++11）
+		void test1()
+		{ 
+			// std::priority_queue<std::string, std::vector<std::string>, decltype(strPriCmp)> pQueue1;
+			std::priority_queue<std::string, std::vector<std::string>, strPriCmp> pQueue1;
 			pQueue1.push(std::string("asdfasdf"));
 			pQueue1.push(std::string("a1212sdfasdf"));
 			pQueue1.push(std::string("asdf"));
@@ -4660,18 +4683,107 @@ namespace TO_DO
 }
 
 
+#ifdef  TEST_PROTOBUF_MACRO
+namespace TEST_PROTOBUF
+{
+	// 序列化 PersonList 到二进制字符串
+	std::string serialize_to_string(const google::protobuf::Message& message)
+	{
+		std::string binary_data;
+		if (!message.SerializeToString(&binary_data)) 
+			std::cerr << "Failed to serialize message." << std::endl;
+		
+		return binary_data;
+	}
+
+
+	// 从二进制字符串反序列化 PersonList
+	bool parse_from_string(const std::string& binary_data, google::protobuf::Message& message)
+	{
+		if (!message.ParseFromString(binary_data)) 
+		{
+			std::cerr << "Failed to parse message." << std::endl;
+			return false;
+		}
+
+		return true;
+	}
+
+
+	void test0() 
+	{
+		// 初始化 protobuf 库
+		GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+		// 创建一个动态容器（std::vector<Person> 的 protobuf 等价物）
+		PersonList person_list;
+
+		// 添加自定义对象到容器
+		Person* p1 = person_list.add_people();  // 动态添加 Person
+		Person* p2 = person_list.add_people();
+		{
+			p1->set_name("Alice");
+			p1->set_age(25);
+			p1->add_hobbies("Reading");  // 添加动态数组元素
+			p1->add_hobbies("Hiking");
+			p2->set_name("Bob");
+			p2->set_age(30);
+			p2->add_hobbies("Gaming");
+		}
+
+
+		// 序列化容器到二进制
+		std::string binary_data = serialize_to_string(person_list);
+		std::cout << "Serialized size: " << binary_data.size() << " bytes\n";
+
+		// 反序列化
+		PersonList new_list;
+		if (parse_from_string(binary_data, new_list))
+		{
+			// 遍历容器中的对象
+			for (const Person& p : new_list.people()) 
+			{
+				std::cout << "\nName: " << p.name() << ", Age: " << p.age() << "\nHobbies: ";
+				for (const auto& hobby : p.hobbies()) 
+					std::cout << hobby << " ";
+				
+			}
+		}
+
+		// 清理 protobuf 资源
+		google::protobuf::ShutdownProtobufLibrary();
+
+		debugDisp("TEST_PROTOBUF::test0() finished.");
+	}
+}
+#endif
+
+ 
+
+ 
+
+
 int main()
 {         
-	// TEST_TEMPLATE::test0();
-
-	auto hoo = [](const std::initializer_list<int>& nums) 
-		{
-			auto iter = nums.begin();
-			for (; iter != nums.end(); ++iter)
-				std::cout << *iter << ", ";
+	{
+		std::vector<double> v1 = { 1.1, 2.2, 3.3 };
+		std::vector<std::vector<double>> v2 = { {1.1, 2.2}, {3.3, 4.4} };
+		std::vector<std::vector<std::vector<double>>> v3 = { \
+			{{ -1.1, -9.9 }, { -3.1415 }}, \
+			{ { 1.1, 2.2 }, {3.3, 4.4} }, \
+			{ {999.0}}
 		};
 
-	hoo({1,2,3,4,5});
+		std::vector<double> result1, result2, result3;
+		FlattenVector(result1, v1);
+		FlattenVector(result2, v2);
+		FlattenVector(result3, v3);
+
+		traverseSTL(result1, disp<double>{}, "result1 == ");
+		traverseSTL(result2, disp<double>{}, "result2 == ");
+		traverseSTL(result3, disp<double>{}, "result3 == ");
+		debugDisp();
+	} 
 
 	debugDisp("main() finished."); 
 

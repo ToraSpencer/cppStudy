@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message Person {
+  string name = 1;
+  int32 age = 2;
+  repeated string hobbies = 3;  // 动态数组
+}
+
+message PersonList {
+  repeated Person people = 1;   // 动态容器（存储多个 Person）
+}
