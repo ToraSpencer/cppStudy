@@ -21,18 +21,12 @@
     <ClCompile Include="..\..\..\TTTML\Auxiliary\Auxiliary.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\test_protobuf\person.pb.cc">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\TemplateTest.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\TTTML\Auxiliary\Auxiliary.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\test_protobuf\person.pb.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

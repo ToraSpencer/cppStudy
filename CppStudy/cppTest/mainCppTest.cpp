@@ -2,14 +2,9 @@
 #include "TemplateTest.h"
  
 #include <list>
+#include <tuple>
 #include <type_traits>
-
-#define TEST_PROTOBUF_MACRO
-
-#ifdef  TEST_PROTOBUF_MACRO
-#include "test_protobuf/person.pb.h"
-#endif 
-
+ 
 
 //  WINDOWS提供的时间相关的接口
 /*
@@ -520,6 +515,7 @@ namespace TEST_UNKNOWN
 			std::cout << "num == " << num << std::endl;
 		}
 
+
 		void test1()
 		{
 			int num1 = 99;
@@ -536,34 +532,310 @@ namespace TEST_UNKNOWN
 	}
 
 
-	// tuple
-	namespace TEST_TUPLE
+
+	// 变参模板
+	namespace VAR_TEMP
 	{
-		// std::make_tuple();
-		void test0()
+		// 自定义变参模板类Tuple
+		template <typename... Types> class Tuple;
+
+		//		递归终止
+		template <>
+		class Tuple<>
 		{
-			std::tuple<int, float, bool> t1(1, 2.0, false);
-			std::tuple<double, unsigned, bool> t2 = std::make_tuple(2.0, 3, true);
+		public:
+			static unsigned int size()
+			{
+				return 0;
+			}
+		};
+
+
+		//		递归递推
+		template<typename T, typename... Types>
+		class Tuple<T, Types...> : private Tuple<Types...>
+		{
+		protected:
+			T m_head;
+		public:
+			Tuple() {}
+
+			// 递归的构造函数
+			Tuple(T h, Types... tail) :m_head(h), Tuple<Types...>(tail...) {}
+
+			T head()
+			{
+				return m_head;
+			}
+
+			Tuple<Types...>& tail()
+			{
+				return *this;
+			}
+
+
+			// 递归求出Tuple中的元素个数。
+			static unsigned int size()
+			{
+				return (1 + Tuple<Types...>::size());
+			}
+
+		};
+
+
+		void testTuple()
+		{
+			Tuple<int, float, std::string, char>   t(1, 2.2f, "haha", 'a');
+			std::cout << t.head() << std::endl;
+			std::cout << "类型个数为：" << t.size() << std::endl;
+
+			auto t2 = t.tail();
+			std::cout << t2.head() << std::endl;
+			std::cout << "类型个数为：" << t2.size() << std::endl;
 		}
 
 
-		// std::get<>
+		// 仿照项目中TVBuilderArgTuple类模板写的一个可变参数类模板。
+#if 0
+		//		除了使用vector代替序列化数据对象，和resume()方法读取的是vector对象以外，其他都一样。
+		template <typename... Types> class vecSet;
+
+		template <>
+		class vecSet<>
+		{
+		public:
+			vecSet() {}
+			~vecSet() {}
+
+			template<typename TA>
+			void resume(const std::vector<TA>& v)
+			{
+			}
+
+
+			template <typename F>
+			void travel(F f)
+			{
+				f();
+			}
+
+			void disp() {}
+
+		};
+
+		template <typename T, typename... Types>
+		class vecSet<T, Types...> : protected vecSet<Types...>
+		{
+		private:
+			std::vector<T> m_vec;
+			vecSet<Types...> m_sub;
+
+
+		public:
+			vecSet() {}
+
+
+			vecSet(const std::initializer_list<T>& list)
+			{
+				auto iter = list.begin();
+				for (const T& elem : list)
+				{
+					m_vec.push_back(elem);
+				}
+			}
+
+
+			~vecSet() {}
+
+
+			template<typename TA>
+			void resume(const std::vector<TA>& v)
+			{
+				TA elem;
+				void* ptr1 = NULL;
+				T* ptr2 = NULL;
+
+				if (typeid(T).name() == typeid(TA).name())		// 若参数和成员数据m_vec是同一类型，则拷贝元素。		
+				{
+					for (auto iter = v.begin(); iter != v.end(); iter++)
+					{
+						elem = *iter;
+						ptr1 = reinterpret_cast<void*>(&elem);
+						ptr2 = reinterpret_cast<T*>(ptr1);
+						this->m_vec.push_back(*ptr2);
+					}
+				}
+
+				this->m_sub.resume(v);			// 子集合递归调用。
+			}
+
+
+			template <typename F>
+			void travel(F f)				// f为函数子	
+			{
+				// 若vecSet对象只含一种类型，则可以传入普通的lambda表达式；
+				// 若不止含一种类型，则传入的函数子应该定义为可变参数类。
+				m_sub.travel([this, f](const Types& ... args)
+					{
+						f(m_vec, args ...);
+					});
+
+			}
+
+
+			void disp()
+			{
+				for (auto elem : this->m_vec)
+				{
+					std::cout << elem << "  ";
+				}
+				std::cout << std::endl;
+
+				this->m_sub.disp();				// 子集合递归调用。
+			}
+
+
+		};
+
+
+		void testVecSet()
+		{
+			vecSet<int, double, std::string > vvv;
+			std::vector<int> vi = { 1,2,3,4,5 };
+			std::vector<double> vf = { 1.1, 2.2, 3.3, 4.4 };
+			std::vector<std::string> vs = { "haha","hello","world" };
+
+			vvv.resume(vi);
+			vvv.resume(vf);
+			vvv.resume(vs);
+
+			vvv.disp();
+
+
+			vecSet<int> vseti = vecSet<int>({ 11,22,33,44,55 });
+			vseti.disp();
+
+
+			vecSet<std::string> v;
+			v.resume(vs);
+			v.travel([](const std::vector<std::string>& vec_input)			// 此时v的成员数据m_vec类型是std::vector<std::string>，lambda表达式的形参类型要与之匹配。
+				{
+					std::cout << "遍历向量中的元素：" << std::endl;
+					for (const std::string& elem : vec_input)
+					{
+						std::cout << elem << std::endl;
+					}
+
+				});
+
+
+			// 自定义一个函数子类，使用可变参数类模板，生成函数子传入travel()函数看看是否能正常工作。
+
+		}
+#endif
+
+
+		// a. 模板特化举例： 
+		template <typename T>				// a.1 函数模板特化
+		bool isEqual(T arg1, T arg2)
+		{
+			return arg1 == arg2;
+		}
+
+
+		template <>				// 函数模板isEqual的全特化
+		bool isEqual(char* arg1, char* arg2)
+		{
+			return strcmp(arg1, arg2);
+		} 
+
+
+		// test: 测试模板特化
 		void test1()
 		{
-			std::tuple<int, double, double, std::string> tetrad = std::make_tuple(3, 1.1, 2.2, "hahaha");
-
-			auto ret1 = std::get<2>(tetrad);
-			auto ret2 = std::get<int>(tetrad);
-			auto ret3 = std::get<std::string>(tetrad);
-			// auto ret4 = std::get<double>(tetrad);				有二义性，编译不通过；
-
-			debugDisp("ret1 == ", ret1);
-			debugDisp("ret2 == ", ret2);
-			debugDisp("ret3 == ", ret3);
-
-			debugDisp("finished.");
+			std::cout << isEqual("ahahah", "wawaa") << std::endl;
+			std::cout << isEqual("ahahah", "ahhah") << std::endl;
 		}
 
+
+	}
+
+
+
+	// tuple
+	namespace TEST_TUPLE
+	{		
+		// 打印tuple的辅助函数
+		template<typename Tuple, std::size_t N>
+		struct TuplePrinter
+		{
+			static void print(const Tuple& t) 
+			{
+				TuplePrinter<Tuple, N - 1>::print(t);
+				std::cout << ", " << std::get<N - 1>(t);
+			}
+		};
+
+
+		template<typename Tuple>
+		struct TuplePrinter<Tuple, 1>
+		{
+			static void print(const Tuple& t)
+			{
+				std::cout << std::get<0>(t);
+			} 
+		};
+
+
+		template<typename... Args>
+		void print_tuple(const std::tuple<Args...>& t, const std::string& headStr = "")
+		{
+			std::cout << headStr << "(";
+			TuplePrinter<decltype(t), sizeof...(Args)>::print(t);
+			std::cout << ")";
+		}
+
+
+		void test0()
+		{
+			// std::make_tuple();
+			std::tuple<int, float, bool> t1(1, 2.0, false);
+			std::tuple<double, unsigned, bool> t2 = std::make_tuple(2.0, 3, true);
+			std::tuple<int, double, double, std::string> t3 = std::make_tuple(3, 1.1, 2.2, "hahaha");
+
+			// std::tuple_size
+			{
+				const size_t elemsCount1 = std::tuple_size<decltype(t1)>::value;
+				const size_t elemsCount2 = std::tuple_size<decltype(t2)>::value;
+				const size_t elemsCount3 = std::tuple_size<decltype(t3)>::value;
+				debugDisp("elemsCount1 == ", elemsCount1);
+				debugDisp("elemsCount2 == ", elemsCount2);
+				debugDisp("elemsCount3 == ", elemsCount3);
+			} 
+			
+			// std::get<>()——获取std::tuple元素的引用
+			{
+				auto ret1 = std::get<2>(t3);
+				auto ret2 = std::get<int>(t3);
+				auto ret3 = std::get<std::string>(t3);
+				// auto ret4 = std::get<double>(t3);				有二义性，编译不通过；
+				debugDisp("ret1 == ", ret1);
+				debugDisp("ret2 == ", ret2);
+				debugDisp("ret3 == ", ret3); 
+
+				debugDisp();
+			}
+
+			// print_tuple()——自定义递归打印std::tuple元素的接口
+			{ 
+				print_tuple(t1, "t1: ");
+
+				debugDisp();
+			}
+
+			debugDisp("TEST_TUPLE::test0() finished.");
+		}
+		 
 	}
 
 	 
@@ -1277,241 +1549,8 @@ namespace TEST_UNKNOWN
 			debugDisp("test2() finished.");
 		}
 	}
+ 
 
-
-	 
-	// 变参模板
-	namespace VAR_TEMP
-	{
-		// 自定义变参模板类Tuple
-		template <typename... Types> class Tuple;
-
-		//		递归终止
-		template <>
-		class Tuple<>
-		{
-		public:
-			static unsigned int size()
-			{
-				return 0;
-			} 
-		};
-
-
-		//		递归递推
-		template<typename T, typename... Types>
-		class Tuple<T, Types...> : private Tuple<Types...>
-		{
-		protected:
-			T m_head;
-		public:
-			Tuple() {}
-
-			// 递归的构造函数
-			Tuple(T h, Types... tail) :m_head(h), Tuple<Types...>(tail...) {}
-
-			T head()
-			{
-				return m_head;
-			}
-
-			Tuple<Types...>& tail()
-			{
-				return *this;
-			}
-
-
-			// 递归求出Tuple中的元素个数。
-			static unsigned int size()
-			{
-				return (1 + Tuple<Types...>::size());
-			}
-
-		};
-
-
-		void testTuple()
-		{
-			Tuple<int, float, std::string, char>   t(1, 2.2f, "haha", 'a');
-			std::cout << t.head() << std::endl;
-			std::cout << "类型个数为：" << t.size() << std::endl;
-
-			auto t2 = t.tail();
-			std::cout << t2.head() << std::endl;
-			std::cout << "类型个数为：" << t2.size() << std::endl;
-
-
-		}
-
-
-
-		// 仿照项目中TVBuilderArgTuple类模板写的一个可变参数类模板。
-
-		//		除了使用vector代替序列化数据对象，和resume()方法读取的是vector对象以外，其他都一样。
-		template <typename... Types> class vecSet;
-
-		template <>
-		class vecSet<>
-		{
-		public:
-			vecSet() {}
-			~vecSet() {}
-
-			template<typename TA>
-			void resume(const std::vector<TA>& v)
-			{}
-
-
-			template <typename F>
-			void travel(F f)
-			{
-				f();
-			}
-
-			void disp() {}
-
-		};
-
-		template <typename T, typename... Types>
-		class vecSet<T, Types...> : protected vecSet<Types...>
-		{
-		private:
-			std::vector<T> m_vec;
-			vecSet<Types...> m_sub;
-
-
-		public:
-			vecSet() {}
-
-
-			vecSet(const std::initializer_list<T>& list)
-			{
-				auto iter = list.begin();
-				for (const T& elem : list)
-				{
-					m_vec.push_back(elem);
-				}
-			}
-
-
-			~vecSet() {}
-
-
-			template<typename TA>
-			void resume(const std::vector<TA>& v)
-			{
-				TA elem;
-				void* ptr1 = NULL;
-				T* ptr2 = NULL;
-
-				if (typeid(T).name() == typeid(TA).name())		// 若参数和成员数据m_vec是同一类型，则拷贝元素。		
-				{
-					for (auto iter = v.begin(); iter != v.end(); iter++)
-					{
-						elem = *iter;
-						ptr1 = reinterpret_cast<void*>(&elem);
-						ptr2 = reinterpret_cast<T*>(ptr1);
-						this->m_vec.push_back(*ptr2);
-					}
-				}
-
-				this->m_sub.resume(v);			// 子集合递归调用。
-			}
-
-
-			template <typename F>
-			void travel(F f)				// f为函数子	
-			{
-				// 若vecSet对象只含一种类型，则可以传入普通的lambda表达式；
-				// 若不止含一种类型，则传入的函数子应该定义为可变参数类。
-				m_sub.travel([this, f](const Types& ... args)
-					{
-						f(m_vec, args ...);
-					});
-
-			}
-
-
-			void disp()
-			{
-				for (auto elem : this->m_vec)
-				{
-					std::cout << elem << "  ";
-				}
-				std::cout << std::endl;
-
-				this->m_sub.disp();				// 子集合递归调用。
-			}
-
-
-		};
-
-
-		void testVecSet()
-		{
-			vecSet<int, double, std::string > vvv;
-			std::vector<int> vi = { 1,2,3,4,5 };
-			std::vector<double> vf = { 1.1, 2.2, 3.3, 4.4 };
-			std::vector<std::string> vs = { "haha","hello","world" };
-
-			vvv.resume(vi);
-			vvv.resume(vf);
-			vvv.resume(vs);
-
-			vvv.disp();
-
-
-			vecSet<int> vseti = vecSet<int>({ 11,22,33,44,55 });
-			vseti.disp();
-
-
-			vecSet<std::string> v;
-			v.resume(vs);
-			v.travel([](const std::vector<std::string>& vec_input)			// 此时v的成员数据m_vec类型是std::vector<std::string>，lambda表达式的形参类型要与之匹配。
-				{
-					std::cout << "遍历向量中的元素：" << std::endl;
-					for (const std::string& elem : vec_input)
-					{
-						std::cout << elem << std::endl;
-					}
-
-				});
-
-
-			// 自定义一个函数子类，使用可变参数类模板，生成函数子传入travel()函数看看是否能正常工作。
-
-		}
-
-
-		// a. 模板特化举例：
-		// a.1 函数模板特化
-		template <typename T>
-		bool isEqual(T arg1, T arg2)
-		{
-			return arg1 == arg2;
-		}
-
-
-		template <>				// 函数模板isEqual的全特化
-		bool isEqual(char* arg1, char* arg2)
-		{
-			return strcmp(arg1, arg2);
-		}
-
-
-
-		// test: 测试模板特化
-		void test1()
-		{
-			std::cout << isEqual("ahahah", "wawaa") << std::endl;
-			std::cout << isEqual("ahahah", "ahhah") << std::endl;
-
-		}
-
-
-	}
-
-	 
 	// 宏
 	namespace TEST_MACRO
 	{
@@ -1844,12 +1883,10 @@ namespace TEST_UNKNOWN
 			datafile.close();
 
 			int readInt[50];
-			// std::fstream::seekg()
-			// std::fstream::tellg()
-			// 成员数据——beg, end;
+			// std::fstream::seekg(), std::fstream::tellg(), 成员数据——beg, end;
 			datafile.open("data.dat", std::ios::in | std::ios::binary);
 			datafile.seekg(0, datafile.end);							// 追溯到流的尾部
-			unsigned int size = datafile.tellg();						// 获取文件流的长度。
+			std::streampos size = datafile.tellg();						// 获取当前流指针的位置
 			datafile.seekg(0, datafile.beg);							// 回到流的头部	
 			std::cout << "size == " << size << std::endl;
 
@@ -1873,7 +1910,7 @@ namespace TEST_UNKNOWN
 			TDline vlineRead[10];
 			telDirectory.open("telephone_directory.dat", std::ios_base::in | std::ios_base::binary);
 			telDirectory.seekg(0, telDirectory.end);					//追溯到文件流的尾部
-			unsigned int TDsize = telDirectory.tellg();				// 获取文件流的长度。
+			unsigned int TDsize = telDirectory.tellg();				 
 			telDirectory.seekg(0, telDirectory.beg);					//回到文件流的头部	
 			std::cout << "TDsize == " << TDsize << std::endl;
 			if (telDirectory.is_open())
@@ -3781,6 +3818,7 @@ namespace TEST_STL
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////// 模板元编程
 namespace TEST_TEMPLATE
 {
@@ -4652,6 +4690,7 @@ namespace TEST_ENV
 }
 
 
+
 // 测试辅助工具接口
 namespace TEST_AUXILIARY 
 {
@@ -4664,6 +4703,7 @@ namespace TEST_AUXILIARY
 
 }
  
+
 
 // TO DO:
 namespace TO_DO 
@@ -4681,109 +4721,91 @@ namespace TO_DO
 
 
 }
+  
 
 
-#ifdef  TEST_PROTOBUF_MACRO
-namespace TEST_PROTOBUF
-{
-	// 序列化 PersonList 到二进制字符串
-	std::string serialize_to_string(const google::protobuf::Message& message)
+namespace TEST_DAT 
+{ 
+
+	// 序列化字符串写入到DAT文件 
+	bool writeDAT(const std::string& filePath, const std::vector<std::string>& dataStrVec)
 	{
-		std::string binary_data;
-		if (!message.SerializeToString(&binary_data)) 
-			std::cerr << "Failed to serialize message." << std::endl;
-		
-		return binary_data;
-	}
-
-
-	// 从二进制字符串反序列化 PersonList
-	bool parse_from_string(const std::string& binary_data, google::protobuf::Message& message)
-	{
-		if (!message.ParseFromString(binary_data)) 
-		{
-			std::cerr << "Failed to parse message." << std::endl;
+		if (dataStrVec.empty())
 			return false;
-		}
 
+		const size_t strsCount = dataStrVec.size();
+
+		// 1. 打开文件句柄
+		std::ofstream fileOut(filePath, std::ios::binary); 
+		if (!fileOut.is_open())
+			return false;
+
+		// 2. 用32位uint写入字符串个数：
+		writeStreamData(fileOut, static_cast<std::uint32_t>(strsCount));
+
+		// 3. 逐个写入字符串：
+		for (size_t i = 0; i < strsCount; ++i)
+			writeStreamStr(fileOut, dataStrVec[i]); 
+
+		fileOut.close();
 		return true;
 	}
 
 
-	void test0() 
+	// DAT文件中读取序列化字符串
+	bool readDAT(std::vector<std::string>& dataStrVec, const std::string& filePath)
 	{
-		// 初始化 protobuf 库
-		GOOGLE_PROTOBUF_VERIFY_VERSION;
+		dataStrVec.clear(); 
 
-		// 创建一个动态容器（std::vector<Person> 的 protobuf 等价物）
-		PersonList person_list;
+		std::ifstream fileIn(filePath, std::ios::binary);  
+		if (!fileIn.is_open())
+			return false;
 
-		// 添加自定义对象到容器
-		Person* p1 = person_list.add_people();  // 动态添加 Person
-		Person* p2 = person_list.add_people();
+		// 1. 读取字符串个数： 
+		std::uint32_t strsCount{ 0 };
 		{
-			p1->set_name("Alice");
-			p1->set_age(25);
-			p1->add_hobbies("Reading");  // 添加动态数组元素
-			p1->add_hobbies("Hiking");
-			p2->set_name("Bob");
-			p2->set_age(30);
-			p2->add_hobbies("Gaming");
-		}
-
-
-		// 序列化容器到二进制
-		std::string binary_data = serialize_to_string(person_list);
-		std::cout << "Serialized size: " << binary_data.size() << " bytes\n";
-
-		// 反序列化
-		PersonList new_list;
-		if (parse_from_string(binary_data, new_list))
-		{
-			// 遍历容器中的对象
-			for (const Person& p : new_list.people()) 
+			readStreamData(strsCount, fileIn);
+			if (0 == strsCount)
 			{
-				std::cout << "\nName: " << p.name() << ", Age: " << p.age() << "\nHobbies: ";
-				for (const auto& hobby : p.hobbies()) 
-					std::cout << hobby << " ";
-				
+				fileIn.close();
+				return false;
 			}
 		}
-
-		// 清理 protobuf 资源
-		google::protobuf::ShutdownProtobufLibrary();
-
-		debugDisp("TEST_PROTOBUF::test0() finished.");
+		 
+		// 2. 逐个读取字符串内容：
+		{
+			const size_t strsCount0{ static_cast<size_t>(strsCount) };
+			dataStrVec.resize(strsCount0);
+			for (size_t i = 0; i < strsCount0; ++i)
+				readStreamStr(dataStrVec[i], fileIn);
+		}
+		
+		fileIn.close();
+		return true;
 	}
+	 
 }
-#endif
+using namespace TEST_DAT;
 
- 
-
- 
 
 
 int main()
-{         
+{        
+#if 0
+	std::string str1, str2, str3;
+	str1 = "z";
+	str2 = "asdfqwxcv";
+	str3 = "14852";
+	writeDAT(g_debugPath + "out.dat", std::vector<std::string>{str1, str2, str3});
+
+	std::vector<std::string> strVecRead;
+	if (readDAT(strVecRead, g_debugPath + "out.dat"))
 	{
-		std::vector<double> v1 = { 1.1, 2.2, 3.3 };
-		std::vector<std::vector<double>> v2 = { {1.1, 2.2}, {3.3, 4.4} };
-		std::vector<std::vector<std::vector<double>>> v3 = { \
-			{{ -1.1, -9.9 }, { -3.1415 }}, \
-			{ { 1.1, 2.2 }, {3.3, 4.4} }, \
-			{ {999.0}}
-		};
+		traverseSTL(strVecRead, disp<std::string>{});
+	}
+#endif
 
-		std::vector<double> result1, result2, result3;
-		FlattenVector(result1, v1);
-		FlattenVector(result2, v2);
-		FlattenVector(result3, v3);
-
-		traverseSTL(result1, disp<double>{}, "result1 == ");
-		traverseSTL(result2, disp<double>{}, "result2 == ");
-		traverseSTL(result3, disp<double>{}, "result3 == ");
-		debugDisp();
-	} 
+	TEST_UNKNOWN::TEST_TUPLE::test0();
 
 	debugDisp("main() finished."); 
 
