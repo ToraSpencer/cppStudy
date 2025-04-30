@@ -3861,7 +3861,35 @@ namespace TEST_TEMPLATE
 	}
 
 
+	// test1: 编译期计算多重数组的重数
+	
+	template<typename T>
+	struct VecDepthHelper									// 基础模板：非vector类型，深度为0
+	{
+		static const int value = 0;
+	};
+		
+	template<typename T>
+	struct VecDepthHelper<std::vector<T>>		// 特化模板：vector类型，深度=1+内部元素类型的深度
+	{
+		static const int value = 1 + VecDepthHelper<T>::value;
+	};
 
+	// 对外接口函数模板
+	template<typename VecType>
+	int VecDepth()
+	{
+		return VecDepthHelper<VecType>::value;
+	}
+
+	void test1() 
+	{
+		debugDisp("VecDepth<std::vector<std::vector<int>>>() == ", VecDepth<std::vector<std::vector<int>>>());
+		debugDisp("VecDepth<std::vector<double>>() == ", VecDepth < std::vector < double >> ());
+		debugDisp("VecDepth<float>() == ", VecDepth<float>());
+
+		debugDisp("TEST_TEMPLATE::test1() finished.");
+	}
 }
 
 
@@ -4805,7 +4833,7 @@ int main()
 	}
 #endif
 
-	TEST_UNKNOWN::TEST_TUPLE::test0();
+	TEST_TEMPLATE::test1();
 
 	debugDisp("main() finished."); 
 
