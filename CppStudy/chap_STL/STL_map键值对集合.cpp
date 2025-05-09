@@ -223,7 +223,7 @@ public:
 	}
 };
 
-void STL_map_module::test1() 
+void STL_map_module::test1(void) 
 {
 	debugDisp("\n\n\n\n");
 	debugDisp("默认/自定义比较器：");
@@ -283,6 +283,8 @@ void STL_map_module::test1()
 				return false;
 		}
 	};
+
+#if 0
 	std::set<std::pair<int, int>, decltype(edgeComLambda)> edgeSet2;			// 模板参数是类型名；
 	auto retPair2 = edgeSet2.insert({ 1,  2 });
 	retPair2 = edgeSet2.insert({ 2, 3 });
@@ -292,6 +294,7 @@ void STL_map_module::test1()
 	retPair2 = edgeSet2.insert({ 1, 2 });
 	debugDisp("edgeSet2: ");
 	traverseSTL(edgeSet2, dispPair<std::pair<int, int>>()); 
+#endif
 
 	debugDisp("test1 finished.");
 }

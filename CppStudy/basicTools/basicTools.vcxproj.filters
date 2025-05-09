@@ -18,7 +18,7 @@
     <ClCompile Include="basicTools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\Auxiliary\Auxiliary.cpp">
+    <ClCompile Include="..\..\..\TTTML\Auxiliary\Auxiliary.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

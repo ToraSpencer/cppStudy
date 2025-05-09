@@ -62,15 +62,10 @@ virtualModule* STL_linear_container_module::getInstance()		// 线程不安全的单例模
 // test0():向量构造函数、初始化方法。
 void STL_linear_container_module::test0(void)
 {
-	std::vector<int> vi1;												// 构造一个空向量。
+	debugDisp("\n\n\n\n");
+	debugDisp("test0(): 向量构造函数、初始化方法。");
 
-
-	std::cout << "\n\n\n\n" << std::endl;
-	std::cout << "test0(): 向量构造函数、初始化方法。" << std::endl << std::endl;
-
-	std::cout << "\tvi1.empty == " << vi1.empty() << std::endl;
-	std::cout << std::endl;
-
+	std::vector<int> vi1;												// 构造一个空向量。 
 
 	// 1. 指定向量的容量。
 	std::vector<int> vi2(3);
@@ -107,79 +102,83 @@ void STL_linear_container_module::test0(void)
 // test1(): 线性容器的增删查改
 void STL_linear_container_module::test1(void)
 {
-	std::cout << "\n\n\ntest1():线性容器的增删查改" << std::endl << std::endl;
+	debugDisp("\n\n\n\n");
+	debugDisp("test0(): 线性容器的增删查改。"); 
 
 	// lambda——执行条件判断的函数子
 	auto badValue = [](const int& num) -> bool
 	{
-		if (num == 4)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		if (num == 4) 
+			return true; 
+		else 
+			return false; 
 	};
 
 	std::vector<int> vi1{ 1,2,3,4,5,4,6,7,8,9,4 };
 	std::list<int> li1{ 1,2,3,4,5,4,6,7,8,9,4 };
 	std::deque<int> di1{ 1,2,3,4,5,4,6,7,8,9,4 };
 
-	// 增——insert()方法插入元素，可以插入单个，也可以插入一定范围的所有元素；
-	std::cout << "insert()方法——" << std::endl;
-	auto iter1 = vi1.begin();
-	iter1++;
-	iter1 = vi1.insert(iter1, 999);						// 在当前迭代器指向的元素之前插入新元素；若成功，则返回插入新元素的迭代器；
-	traverseSTL(vi1, disp<int>());
-	std::cout << "*iter1 == " << *iter1 << std::endl;
+	// 增——insert()方法插入元素，可以插入单个，也可以插入一定范围的所有元素； 
+	{
+		int arri[] = { 1,2,3,4,5,6,77,88,999 };
+		std::vector<int> vec1{ 1, 2, 3 };
+		std::vector<int> vec2{ 4, 5, 6, 7 };
+		std::vector<int> vec12, vec21, vec12rev;
 
-	std::vector<int> vec1{ 1, 2, 3 };
-	std::vector<int> vec2{ 4, 5, 6, 7 };
-	std::vector<int> vec12, vec21, vec12rev;
-	vec12 = vec1; vec21 = vec1; vec12rev = vec1;
-	vec12.insert(vec12.end(), vec2.begin(), vec2.end());
-	vec21.insert(vec21.begin(), vec2.begin(), vec2.end());				// 可以在任意位置插入；
-	vec12rev.insert(vec12rev.end(), vec2.rbegin(), vec2.rend());		// 可以输入反向迭代器反向插入元素；
-	traverseSTL(vec12, disp<int>());			// 1234567
-	traverseSTL(vec21, disp<int>());			// 4567123 
-	traverseSTL(vec12rev, disp<int>());			// 1237654
-	std::cout << std::endl << std::endl;
+		// insert单个元素
+		{
+			auto iter1 = vi1.begin();
+			iter1++;
+			iter1 = vi1.insert(iter1, 999);						// 在当前迭代器指向的元素之前插入新元素；若成功，则返回插入新元素的迭代器；
+			traverseSTL(vi1, disp<int>());
+			debugDisp("*iter1 == ", *iter1);
+			debugDisp();
+		}
+		 
+		// insert一个范围内所有元素；
+		{
+			vec12 = vec1; vec21 = vec1; vec12rev = vec1;
+			vec12.insert(vec12.end(), vec2.begin(), vec2.end());
+			vec21.insert(vec21.begin(), vec2.begin(), vec2.end());				// 可以在任意位置插入；
+			vec12rev.insert(vec12rev.end(), vec2.rbegin(), vec2.rend());		// 可以输入反向迭代器反向插入元素；
+			traverseSTL(vec12, disp<int>());					// 1234567
+			traverseSTL(vec21, disp<int>());					// 4567123 
+			traverseSTL(vec12rev, disp<int>());			// 1237654
 
-	//		数组区间拷贝到顺序表STL容器——vector中
-	int arri[] = { 1,2,3,4,5,6,77,88,999 };
-	std::vector<int> vi2(9);
-	memcpy(&vi2[0], &arri[0], sizeof(int) * 9);
-	traverseSTL(vi2, disp<decltype(vi1[0])>());
+			debugDisp();
+		}
+	}
 
 	// 删除元素：
-
-	//		earase()重载1——删除迭代器指定的元素
-	vi1.erase(vi1.begin());
-	traverseSTL(vi1, disp<decltype(vi1[0])>());
-
-	//		erase()重载2——删除一对迭代器指定范围的元素
-	li1.erase(++li1.begin(), --li1.end());	// list的迭代器是双向迭代器，不是vector那样的随机访问迭代器，不支持常数加减功能,++可以。
-	traverseSTL(li1, disp<decltype(*li1.begin())>());
-
-	//		erase()方法和remove_if()接口配合成特殊的操作，条件删除STL线性容器中的元素
-	vi1.erase(remove_if(vi1.begin(), vi1.end(), badValue), vi1.end());
-	traverseSTL(vi1, disp<decltype(vi1[0])>());
-
-	//		erase()方法返回值的应用——返回值是被删除元素下一个元素的迭代器
-	for (std::deque<int>::iterator iter = di1.begin(); iter != di1.end();)
 	{
-		// 条件删除元素，并且在删除的时候打印字符串。
-		if (badValue(*iter))
-		{
-			std::cout << "删除了一个元素。" << std::endl;
-			iter = di1.erase(iter);		// 获得被删除元素下一个元素的迭代器
-		}
-		else
-			++iter;
-	}
-	traverseSTL(di1, disp<decltype(*di1.begin())>());
+		//		earase()重载1——删除迭代器指定的元素
+		vi1.erase(vi1.begin());
+		traverseSTL(vi1, disp<decltype(vi1[0])>());
 
+		//		erase()重载2——删除一对迭代器指定范围的元素
+		li1.erase(++li1.begin(), --li1.end());	// list的迭代器是双向迭代器，不是vector那样的随机访问迭代器，不支持常数加减功能,++可以。
+		traverseSTL(li1, disp<decltype(*li1.begin())>());
+
+		//		erase()方法和remove_if()接口配合成特殊的操作，条件删除STL线性容器中的元素
+		vi1.erase(remove_if(vi1.begin(), vi1.end(), badValue), vi1.end());
+		traverseSTL(vi1, disp<decltype(vi1[0])>());
+
+		//		erase()方法返回值的应用——返回值是被删除元素下一个元素的迭代器
+		for (std::deque<int>::iterator iter = di1.begin(); iter != di1.end();)
+		{
+			// 条件删除元素，并且在删除的时候打印字符串。
+			if (badValue(*iter))
+			{
+				std::cout << "删除了一个元素。" << std::endl;
+				iter = di1.erase(iter);		// 获得被删除元素下一个元素的迭代器
+			}
+			else
+				++iter;
+		}
+		traverseSTL(di1, disp<decltype(*di1.begin())>());
+	}
+	 
+	debugDisp("STL_linear_container_module::test1() finished.");
 }
 
 
