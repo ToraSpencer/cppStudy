@@ -31,7 +31,7 @@ virtualModule* DSA_graph_module::getInstance()		// 线程不安全的单例模式
 
 
 // 构造图实例、深度优先遍历、广度优先遍历。
-void DSA_graph_module::test0(void) 
+void DSA_graph_module::test0() 
 {
 	AdjListDirGraph<int> intGraph1;
 	intGraph1.InsertVex(0);
@@ -57,7 +57,7 @@ void DSA_graph_module::test0(void)
  
 
 // 测试逆邻接表
-void DSA_graph_module::test1(void) 
+void DSA_graph_module::test1() 
 {
 	int arrInt[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 	AdjListDirGraph<int> graph1(arrInt, 10);
@@ -84,18 +84,18 @@ void DSA_graph_module::test1(void)
 }
 
  
-void DSA_graph_module::test2(void) {}
+void DSA_graph_module::test2() {}
 
 
-void DSA_graph_module::test3(void) {}
+void DSA_graph_module::test3() {}
 
 
-void DSA_graph_module::test4(void) {}
-
-
-
-void DSA_graph_module::test5(void) {}
+void DSA_graph_module::test4() {}
 
 
 
-void DSA_graph_module::test6(void) {}
+void DSA_graph_module::test5() {}
+
+
+
+void DSA_graph_module::test6() {}

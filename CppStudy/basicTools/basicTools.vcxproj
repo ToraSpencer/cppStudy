@@ -168,7 +168,6 @@
     <ClCompile Include="basicTools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Auxiliary\Auxiliary.h" />
     <ClInclude Include="basicTools.h" />
   </ItemGroup>
   <ItemGroup>

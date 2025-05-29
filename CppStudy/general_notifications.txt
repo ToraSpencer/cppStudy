@@ -70,8 +70,8 @@
 
 
 
-功能.cpp文件中添加void testX(void)：
-		void start_XXXX(void)的函数实现内增加内容：
+功能.cpp文件中添加void testX()：
+		void start_XXXX()的函数实现内增加内容：
 					要在三级界面的打印界面中添加testX的标题打印语句。
 					三级界面的输入响应switch case中增加case X
 
@@ -82,8 +82,8 @@
 
 添加.cpp文件：
 		main.cpp中增加内容：
-					extern void set_fun_XXXX(void);
-					extern void start_XXXX(void);
+					extern void set_fun_XXXX();
+					extern void start_XXXX();
 		一级循环界面中：
 					若需要新增章节，则在打印界面增添打印语句。
 					若需要新增章节，则在一级界面的输入响应switch case部分中增加case

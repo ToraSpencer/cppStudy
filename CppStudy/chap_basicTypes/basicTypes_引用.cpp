@@ -45,7 +45,7 @@ virtualModule* basicTypes_reference_module::getInstance()		// 线程不安全的单例模
 
 
 // test0:  
-void basicTypes_reference_module::test0(void)
+void basicTypes_reference_module::test0()
 {
 	int num1 = 99;
 	int& num2 = num1;								// 引用num2和num1的值绑定在一起。
@@ -58,37 +58,37 @@ void basicTypes_reference_module::test0(void)
 
 
 // test1: 
-void basicTypes_reference_module::test1(void)
+void basicTypes_reference_module::test1()
 {
 
 }
 
 
-void basicTypes_reference_module::test2(void)
+void basicTypes_reference_module::test2()
 {
 
 }
 
 
-void basicTypes_reference_module::test3(void)
+void basicTypes_reference_module::test3()
 {
 
 }
 
 
-void basicTypes_reference_module::test4(void)
+void basicTypes_reference_module::test4()
 {
 
 }
 
 
-void basicTypes_reference_module::test5(void)
+void basicTypes_reference_module::test5()
 {
 
 }
 
 
-void basicTypes_reference_module::test6(void)
+void basicTypes_reference_module::test6()
 {
 
 }

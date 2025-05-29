@@ -18,7 +18,7 @@
 
 extern HMODULE g_Hdll;
 using VOIDP = void*;
-using pVV = VOIDP(*)(void);
+using pVV = VOIDP(*)();
 
 
 enum CHAP_ENUM

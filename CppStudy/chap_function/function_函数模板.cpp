@@ -38,7 +38,7 @@ namespace FUNCTION_TEMPLATE_EXAMPLE1
 
 
 // test0: 函数模板的基本使用
-void function_function_template_module::test0(void)
+void function_function_template_module::test0()
 {
 	using namespace FUNCTION_TEMPLATE_EXAMPLE1;
 	int arri[10] = {0,1,2,3,4,5,6,7,8,9};
@@ -55,30 +55,30 @@ void function_function_template_module::test0(void)
 }
 
 
-void function_function_template_module::test1(void)
+void function_function_template_module::test1()
 {}
 
 
 
-void function_function_template_module::test2(void)
+void function_function_template_module::test2()
 {}
 
 
 
-void function_function_template_module::test3(void)
+void function_function_template_module::test3()
 {}
 
 
 
-void function_function_template_module::test4(void)
+void function_function_template_module::test4()
 {}
 
 
 
-void function_function_template_module::test5(void)
+void function_function_template_module::test5()
 {}
 
 
 
-void function_function_template_module::test6(void)
+void function_function_template_module::test6()
 {}

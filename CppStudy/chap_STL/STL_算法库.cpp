@@ -281,7 +281,7 @@ virtualModule* STL_algorithm_module::getInstance()		// 线程不安全的单例模式
 
 
 // test0：algorithm中一些常用的只读算法——find(), accumulate(), equal(), for_each(), max_element()
-void STL_algorithm_module::test0(void)
+void STL_algorithm_module::test0()
 {
 	std::vector<int> vi = {1,2,5,6,1,3,-1,-9};
 	std::vector<std::string> vs = {"dog","cat","panda"};
@@ -367,7 +367,7 @@ void STL_algorithm_module::test0(void)
 
 
 // test1: algorithm中常用的非只读算法——shuffle()
-void STL_algorithm_module::test1(void)
+void STL_algorithm_module::test1()
 {
     std::cout << "\n\n\n\n" << std::endl;
     std::cout << "test1: algorithm中常用的非只读算法" << std::endl;

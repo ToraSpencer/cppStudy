@@ -26,9 +26,6 @@
     <ClInclude Include="basicTools.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\Auxiliary\Auxiliary.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

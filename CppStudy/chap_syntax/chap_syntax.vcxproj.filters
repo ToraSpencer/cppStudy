@@ -53,32 +53,5 @@
     <ClInclude Include="chap_syntax.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="syntax_重载运算符.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="syntax_声明、定义、初始化.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="syntax_类型转换.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="syntax_几个特殊运算符.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="syntax_关键字.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="syntax_表达式.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="syntax_基本语句、新增语句.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="syntax_内存管理.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="syntax_预处理指令.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

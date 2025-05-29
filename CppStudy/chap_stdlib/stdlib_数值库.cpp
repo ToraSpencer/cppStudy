@@ -59,7 +59,7 @@ virtualModule* stdlib_numerical_module::getInstance()		// 线程不安全的单例模式
 
 
 // test0: <cmath>中的无穷大宏定义，及相关函数
-void stdlib_numerical_module::test0(void)
+void stdlib_numerical_module::test0()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test0: <cmath>中的无穷大宏定义，及相关函数" << std::endl;
@@ -82,7 +82,7 @@ void stdlib_numerical_module::test0(void)
 
 
 // test1: <cmath>中的常用普通数值函数
-void stdlib_numerical_module::test1(void)
+void stdlib_numerical_module::test1()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test1: <cmath>中的常用普通数值函数" << std::endl;
@@ -94,7 +94,7 @@ void stdlib_numerical_module::test1(void)
 
 
 // test2: <complex>中的实例化复数对象，及其成员函数、相关函数、运算符重载。
-void stdlib_numerical_module::test2(void)
+void stdlib_numerical_module::test2()
 {
 	std::complex<double>	z1(0,1);
 	std::complex<double> z2 = std::polar(1.0, PI/3);
@@ -133,7 +133,7 @@ void stdlib_numerical_module::test2(void)
 
 
 // test3: C++中生成随机数——<random>随机数生成器的使用
-void stdlib_numerical_module::test3(void)
+void stdlib_numerical_module::test3()
 {
 	std::default_random_engine e;								// 随机数生成器的引擎对象
 	std::uniform_int_distribution<unsigned int>	UID_ui(1, 10);
@@ -156,7 +156,7 @@ void stdlib_numerical_module::test3(void)
 
 
 // test4: C语言中生成随机数
-void stdlib_numerical_module::test4(void)
+void stdlib_numerical_module::test4()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test4: C语言中生成随机数" << std::endl;
@@ -177,7 +177,7 @@ void stdlib_numerical_module::test4(void)
 
 
 // test5: C++中生成整数序列
-void stdlib_numerical_module::test5(void)
+void stdlib_numerical_module::test5()
 { 
 	debugDisp("\n\n\n");
 	debugDisp("test5: C++中生成整数序列"); 
@@ -194,7 +194,7 @@ void stdlib_numerical_module::test5(void)
 }
 
 
-void stdlib_numerical_module::test6(void) {}
+void stdlib_numerical_module::test6() {}
 
 
 

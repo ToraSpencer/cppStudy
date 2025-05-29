@@ -41,30 +41,30 @@ virtualModule* function_function_pointer_module::getInstance()		// Ïß³Ì²»°²È«µÄµ
 // test0: º¯ÊıÖ¸Õë¡¢º¯ÊıÖ¸ÕëÊı×é¡£
 namespace FUNC_POINTER_EXAMPLE1
 {
-	// ¶ÔÓ¦µÄº¯ÊıÖ¸ÕëÀàĞÍÎª£ºvoid (*)(void)
-	void foo(void)				
+	// ¶ÔÓ¦µÄº¯ÊıÖ¸ÕëÀàĞÍÎª£ºvoid (*)()
+	void foo()				
 	{
 		std::cout << "function foo is called." << std::endl;
 	}
 
-	void goo(void)
+	void goo()
 	{
 		std::cout << "function goo is called." << std::endl;
 	}
 
 }
 
-void function_function_pointer_module::test0(void)
+void function_function_pointer_module::test0()
 {
 	using namespace FUNC_POINTER_EXAMPLE1;
-	using PVV = void (*)(void);
+	using PVV = void (*)();
 
 	// 1. ÉùÃ÷º¯ÊıÖ¸ÕëÊı×é
-	void(*pfv[10])(void) = { nullptr };
+	void(*pfv[10])() = { nullptr };
 	PVV pfv2[10] = {nullptr};
 
 	// 2. ¶ş¼¶Ö¸Õë
-	void(**ppfv)(void) = nullptr;
+	void(**ppfv)() = nullptr;
 
 	printf("\n\n\n\n");
 	printf("test1: º¯ÊıÖ¸ÕëÊı×é¡¢¶ş¼¶º¯ÊıÖ¸Õë\n");
@@ -136,7 +136,7 @@ namespace CALLBACK_FUNC
 }
 
 
-void function_function_pointer_module::test1(void)
+void function_function_pointer_module::test1()
 {
 	using namespace CALLBACK_FUNC;
 
@@ -151,19 +151,19 @@ void function_function_pointer_module::test1(void)
 }
 
 
-void function_function_pointer_module::test2(void) {}
+void function_function_pointer_module::test2() {}
 
 
-void function_function_pointer_module::test3(void) {}
+void function_function_pointer_module::test3() {}
 
 
-void function_function_pointer_module::test4(void) {}
+void function_function_pointer_module::test4() {}
 
 
-void function_function_pointer_module::test5(void) {}
+void function_function_pointer_module::test5() {}
 
 
-void function_function_pointer_module::test6(void){}
+void function_function_pointer_module::test6(){}
 
 
 

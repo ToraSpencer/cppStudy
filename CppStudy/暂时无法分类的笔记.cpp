@@ -227,7 +227,7 @@ namespace RECURSION
 }
 
 // test0: 简单的递归调用：
-static void test0(void)
+static void test0()
 {
 	using namespace RECURSION;
 	unsigned long num = 99;

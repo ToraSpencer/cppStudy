@@ -35,25 +35,25 @@ virtualModule* function_inline_function_module::getInstance()		// 线程不安全的单
 }
 
 
-void function_inline_function_module::test0(void) {}
+void function_inline_function_module::test0() {}
 
 
-void function_inline_function_module::test1(void) {}
+void function_inline_function_module::test1() {}
 
 
-void function_inline_function_module::test2(void) {}
+void function_inline_function_module::test2() {}
 
 
-void function_inline_function_module::test3(void) {}
+void function_inline_function_module::test3() {}
 
 
-void function_inline_function_module::test4(void) {}
+void function_inline_function_module::test4() {}
 
 
-void function_inline_function_module::test5(void) {}
+void function_inline_function_module::test5() {}
 
 
-void function_inline_function_module::test6(void) {}
+void function_inline_function_module::test6() {}
 
 
 

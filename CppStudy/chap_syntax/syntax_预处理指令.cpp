@@ -5,7 +5,7 @@
 
 #include <cstdio>
 
-#include "syntax_预处理指令.h"
+#include "chap_syntax.h"
 
 #define EPS 1e-10					//定义非常小的一个量EPSilon，当浮点数不大于这个值时，视为0
 #define PI 3.14159
@@ -94,44 +94,43 @@
 
 */
 
+ 
 
-
-
-virtualModule* syntax_preprocessing_instruction_module::getInstance()		// 线程不安全的单例模式
-{
-	if (nullptr != p_moduleIns)
+	virtualModule* syntax_preprocessing_instruction_module::getInstance()		// 线程不安全的单例模式
 	{
-		delete p_moduleIns;
+		if (nullptr != p_moduleIns)
+		{
+			delete p_moduleIns;
+		}
+		p_moduleIns = new syntax_preprocessing_instruction_module;
+		return p_moduleIns;
 	}
-	p_moduleIns = new syntax_preprocessing_instruction_module;
-	return p_moduleIns;
-}
 
 
 
-// test0: 常用预处理符号，及其相关命令。 
-void syntax_preprocessing_instruction_module::test0(void)
-{
-	std::cout << "\n\n\n\n" << std::endl;
-	std::cout << "test0: 常用预处理符号，及其相关命令" << std::endl;
+	// test0: 常用预处理符号，及其相关命令。 
+	void syntax_preprocessing_instruction_module::test0()
+	{
+		std::cout << "\n\n\n\n" << std::endl;
+		std::cout << "test0: 常用预处理符号，及其相关命令" << std::endl;
 
-	std::cout << "\t当前源文件的名称：__FILE__ == " << __FILE__ << "； 是字符串字面量。" << std::endl;
-	std::cout << "\t当前源文件中的代码行号：__LINE__ == " << __LINE__ << "；是十进制整数。" << std::endl;
-	std::cout << "\t当前源文件的处理日期：__DATE__ == " << __DATE__ << "； 是字符串字面量。" << std::endl;
-	std::cout << "\t当前源文件的编译时间：__TIME__ == " << __TIME__ << "； 是字符串字面量。" << std::endl;
-	std::cout << std::endl;
+		std::cout << "\t当前源文件的名称：__FILE__ == " << __FILE__ << "； 是字符串字面量。" << std::endl;
+		std::cout << "\t当前源文件中的代码行号：__LINE__ == " << __LINE__ << "；是十进制整数。" << std::endl;
+		std::cout << "\t当前源文件的处理日期：__DATE__ == " << __DATE__ << "； 是字符串字面量。" << std::endl;
+		std::cout << "\t当前源文件的编译时间：__TIME__ == " << __TIME__ << "； 是字符串字面量。" << std::endl;
+		std::cout << std::endl;
 
 #ifdef __cplusplus
-	std::cout << "\tC/C++混合编程中可以使用#ifdef __cplusplus ... #endif 和 extern \"C\"{}来区分C和C++的代码。" << std::endl;
-	std::cout << "\tC++03：__cplusplus = 199711L" << std::endl;
-	std::cout << "\tC++11：__cplusplus = 201103L" << std::endl;
-	std::cout << "\t可以根据__cplusplus宏的值来判断当前C++编译器的版本。" << std::endl;
-	std::cout << "\t当前项目中：__cplusplus == " << __cplusplus << std::endl;
-	std::cout << std::endl;
+		std::cout << "\tC/C++混合编程中可以使用#ifdef __cplusplus ... #endif 和 extern \"C\"{}来区分C和C++的代码。" << std::endl;
+		std::cout << "\tC++03：__cplusplus = 199711L" << std::endl;
+		std::cout << "\tC++11：__cplusplus = 201103L" << std::endl;
+		std::cout << "\t可以根据__cplusplus宏的值来判断当前C++编译器的版本。" << std::endl;
+		std::cout << "\t当前项目中：__cplusplus == " << __cplusplus << std::endl;
+		std::cout << std::endl;
 #endif
 
 
-	// #error #warning 编译错误、编译警告
+		// #error #warning 编译错误、编译警告
 #ifndef __cplusplus
 #error this project should be processed with c++ compiler
 #endif
@@ -139,76 +138,82 @@ void syntax_preprocessing_instruction_module::test0(void)
 
 
 #line 1000								// 当前行号重置为1000 
-	std::cout << "\t当前行号重置为1000 ：#line 1000; __LINE__ == " << __LINE__ << std::endl;
+		std::cout << "\t当前行号重置为1000 ：#line 1000; __LINE__ == " << __LINE__ << std::endl;
 #line 10 "temp.c"						 // 当前行号重置为10，当前源文件名重置为temp.c
-	std::cout << "\t当前行号重置为10，当前源文件名重置为temp.c:" << std::endl;
-	std::cout << "\t__LINE__ == " << __LINE__ << std::endl;
-	std::cout << "\t__FILE__ == " << __FILE__ << std::endl;
+		std::cout << "\t当前行号重置为10，当前源文件名重置为temp.c:" << std::endl;
+		std::cout << "\t__LINE__ == " << __LINE__ << std::endl;
+		std::cout << "\t__FILE__ == " << __FILE__ << std::endl;
 
-	// __COUNTER__，每编译一次+1
-	std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
-	std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+		// __COUNTER__，每编译一次+1
+		std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+		std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
 
 #if 0
-	//		#if 0 中的内容不会编译，所以这里不会加1
-	std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+		//		#if 0 中的内容不会编译，所以这里不会加1
+		std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
 #endif
 
-	if (0)  
-		std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl; 
-	else
-	{
-		// 上面的分支虽然不会运行，但是会编译，所以上面会加1.
-		std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
-		std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+		if (0)
+			std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+		else
+		{
+			// 上面的分支虽然不会运行，但是会编译，所以上面会加1.
+			std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+			std::cout << "__COUNTER__  == " << __COUNTER__ << std::endl;
+		}
+
 	}
 
-}
 
 
-
-// test1: 宏函数
-/*
-宏中的参数用括号括起来，替换体即为函数体。
-宏函数没有inline函数安全，因为只是单纯地展开，不会做安全检查
-注意每个参数都最好加括号，如下面如果不加括号的话TIMES(1+2,3+4)会展开为1+2*3+4；
-*/
+	// test1: 宏函数
+	/*
+	宏中的参数用括号括起来，替换体即为函数体。
+	宏函数没有inline函数安全，因为只是单纯地展开，不会做安全检查
+	注意每个参数都最好加括号，如下面如果不加括号的话TIMES(1+2,3+4)会展开为1+2*3+4；
+	*/
 #define TIMES(x,y) (x)*(y)	
 
 
-// 	#可以将宏函数中的参数字符串化——此时若宏函数中的参数x为__FILE__，则其不会被宏展开，而是直接转化为字符串。
+	// 	#可以将宏函数中的参数字符串化——此时若宏函数中的参数x为__FILE__，则其不会被宏展开，而是直接转化为字符串。
 #define _STRING(x) #x
-void syntax_preprocessing_instruction_module::test1(void)
-{
-	std::cout << "\n\n\n\n" << std::endl;
-	std::cout << "test2: 宏函数" << std::endl;
+	void syntax_preprocessing_instruction_module::test1()
+	{
+		std::cout << "\n\n\n\n" << std::endl;
+		std::cout << "test2: 宏函数" << std::endl;
 
-	std::cout << TIMES(1 + 2, 3 + 4) << std::endl;
-	std::cout << _STRING(__FILE__) << std::endl;
+		std::cout << TIMES(1 + 2, 3 + 4) << std::endl;
+		std::cout << _STRING(__FILE__) << std::endl;
 
-}
-
-
-void syntax_preprocessing_instruction_module::test2(void) {}
+	}
 
 
-void syntax_preprocessing_instruction_module::test3(void) {}
+	void syntax_preprocessing_instruction_module::test2() {}
 
 
-void syntax_preprocessing_instruction_module::test4(void) {}
+	void syntax_preprocessing_instruction_module::test3() {}
 
 
-
-void syntax_preprocessing_instruction_module::test5(void)
-{
-
-
-}
+	void syntax_preprocessing_instruction_module::test4() {}
 
 
 
-void syntax_preprocessing_instruction_module::test6(void)
-{
+	void syntax_preprocessing_instruction_module::test5()
+	{
 
 
-}
+	}
+
+
+
+	void syntax_preprocessing_instruction_module::test6()
+	{
+
+
+	}
+
+	void syntax_preprocessing_instruction_module::test7()
+	{
+
+
+	}

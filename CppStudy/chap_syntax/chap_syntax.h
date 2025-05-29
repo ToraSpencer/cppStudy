@@ -1,16 +1,6 @@
 #pragma once
 
-#include "basicTools/basicTools.h"
-#include "syntax_表达式.h"
-#include "syntax_关键字.h"
-#include "syntax_基本语句、新增语句.h"
-#include "syntax_几个特殊运算符.h"
-#include "syntax_类型转换.h"
-#include "syntax_声明、定义、初始化.h"
-#include "syntax_重载运算符.h"
-#include "syntax_内存管理.h"
-#include "syntax_预处理指令.h"
-
+#include "basicTools/basicTools.h" 
 #pragma comment(lib, "basicTools.lib")
 
 
@@ -19,6 +9,12 @@
 #else
 #define DLL_API __declspec(dllimport)
 #endif
+
+
+extern "C"
+{
+	DLL_API void* getChap();
+}
 
 
 enum SYNTAX_MODULE
@@ -36,19 +32,136 @@ enum SYNTAX_MODULE
 
 
 struct chap_syntax : public virtualChap
-{
-protected:
-	chap_syntax() = default;
-
-public:
+{ 
+	chap_syntax() = default; 
 	void showModuleList();
 	static virtualChap* getInstance();
 	bool selectModule(const int molEnum);
 };
 
-
-
-extern "C"
+  
+//
+struct syntax_keyword_module : public virtualModule
 {
-	DLL_API void* getChap();
-}
+	static virtualModule* getInstance();
+	virtual void test0();
+	virtual void test1();
+	virtual void test2();
+	virtual void test3();
+	virtual void test4();
+	virtual void test5();
+	virtual void test6();
+	virtual void test7();
+};
+
+
+struct syntax_expression_module : public virtualModule
+{
+	static virtualModule* getInstance();
+	virtual void test0();
+	virtual void test1();
+	virtual void test2();
+	virtual void test3();
+	virtual void test4();
+	virtual void test5();
+	virtual void test6();
+	virtual void test7();
+};
+
+
+struct syntax_basic_statement_module : public virtualModule
+{
+	static virtualModule* getInstance();
+	virtual void test0();
+	virtual void test1();
+	virtual void test2();
+	virtual void test3();
+	virtual void test4();
+	virtual void test5();
+	virtual void test6();
+	virtual void test7();
+};
+
+
+struct syntax_operator_module : public virtualModule
+{
+	static virtualModule* getInstance();
+	virtual void test0();
+	virtual void test1();
+	virtual void test2();
+	virtual void test3();
+	virtual void test4();
+	virtual void test5();
+	virtual void test6();
+	virtual void test7();
+};
+
+
+struct syntax_type_cast_module : public virtualModule
+{
+	static virtualModule* getInstance();
+	virtual void test0();
+	virtual void test1();
+	virtual void test2();
+	virtual void test3();
+	virtual void test4();
+	virtual void test5();
+	virtual void test6();
+	virtual void test7();
+};
+
+
+struct syntax_memory_management_module : public virtualModule
+{
+	static virtualModule* getInstance();
+	virtual void test0();
+	virtual void test1();
+	virtual void test2();
+	virtual void test3();
+	virtual void test4();
+	virtual void test5();
+	virtual void test6();
+	virtual void test7();
+};
+
+
+struct syntax_declare_define_initialize_module : public virtualModule
+{
+	static virtualModule* getInstance();
+	virtual void test0();
+	virtual void test1();
+	virtual void test2();
+	virtual void test3();
+	virtual void test4();
+	virtual void test5();
+	virtual void test6();
+	virtual void test7();
+};
+
+
+struct syntax_preprocessing_instruction_module : public virtualModule
+{
+	static virtualModule* getInstance();
+	virtual void test0();
+	virtual void test1();
+	virtual void test2();
+	virtual void test3();
+	virtual void test4();
+	virtual void test5();
+	virtual void test6();
+	virtual void test7();
+};
+
+
+struct syntax_overloaded_operator_module : public virtualModule
+{
+	static virtualModule* getInstance();
+	virtual void test0();
+	virtual void test1();
+	virtual void test2();
+	virtual void test3();
+	virtual void test4();
+	virtual void test5();
+	virtual void test6();
+	virtual void test7();
+};

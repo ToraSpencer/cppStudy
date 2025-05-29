@@ -66,32 +66,32 @@ virtualModule* stdlib_thread_support_module::getInstance()		// Ïß³Ì²»°²È«µÄµ¥ÀýÄ
 
 
 
-void stdlib_thread_support_module::test0(void)
+void stdlib_thread_support_module::test0()
 {}
 
 
 // test1£º 
-void stdlib_thread_support_module::test1(void)
+void stdlib_thread_support_module::test1()
 {}
 
 
 // test2:
-void stdlib_thread_support_module::test2(void)
+void stdlib_thread_support_module::test2()
 {}
 
 
-void stdlib_thread_support_module::test3(void)
-{}
-
-
-
-void stdlib_thread_support_module::test4(void)
+void stdlib_thread_support_module::test3()
 {}
 
 
 
-void stdlib_thread_support_module::test5(void)
+void stdlib_thread_support_module::test4()
 {}
 
 
-void stdlib_thread_support_module::test6(void) {}
+
+void stdlib_thread_support_module::test5()
+{}
+
+
+void stdlib_thread_support_module::test6() {}

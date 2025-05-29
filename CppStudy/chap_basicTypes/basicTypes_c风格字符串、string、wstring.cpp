@@ -61,7 +61,7 @@ virtualModule* basicTypes_strings_module::getInstance()		// 线程不安全的单例模式
 
 
 //	test0: C++中的字符串（std::string对象），C中的字符串（char数组），以及C/C++中的字符串字面量。
-void basicTypes_strings_module::test0(void)
+void basicTypes_strings_module::test0()
 {
 	char Cstr1[] = "this is a C type std::string";				// 使用字符串字面量初始化char数组——即C风格的字符串
 	char Cstr2[] = "hahahahaha";
@@ -106,7 +106,7 @@ void basicTypes_strings_module::test0(void)
 
 
 // test1: std::string常用的API
-void basicTypes_strings_module::test1(void)
+void basicTypes_strings_module::test1()
 {
 	debugDisp("\n\n\n\n");
 	debugDisp("test1: std::string类的接口");
@@ -216,7 +216,7 @@ void basicTypes_strings_module::test1(void)
 
 
 // test2: std::string对象的输入输出
-void basicTypes_strings_module::test2(void)
+void basicTypes_strings_module::test2()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test2: std::string对象的输入输出" << std::endl;
@@ -238,7 +238,7 @@ void basicTypes_strings_module::test2(void)
 
  
 // test3: C语言中的字符串的API
-void basicTypes_strings_module::test3(void)
+void basicTypes_strings_module::test3()
 {
 		// 字符串输入输出——puts, fgets, fputs 
 		// 拷贝——strcpy
@@ -335,7 +335,7 @@ void basicTypes_strings_module::test3(void)
  
 
 // test4: 字符编码
-void basicTypes_strings_module::test4(void)
+void basicTypes_strings_module::test4()
 {
 	printf("\n\n\n\n");
 	printf("test4: 字符编码\n");
@@ -399,7 +399,7 @@ void basicTypes_strings_module::test4(void)
 
 
 // test5: 常用算法C++实现
-void basicTypes_strings_module::test5(void)
+void basicTypes_strings_module::test5()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test5: 常用算法C++实现" << std::endl;
@@ -423,7 +423,7 @@ void basicTypes_strings_module::test5(void)
 
 
 // test6: 宽字符wchar_t，宽字符串wstring
-void basicTypes_strings_module::test6(void)
+void basicTypes_strings_module::test6()
 {
 	// wstring在<std::string>头文件中定义，其对应的字面量前面带有L
 	std::wstring str = L"abcde";
@@ -495,7 +495,7 @@ void basicTypes_strings_module::test6(void)
 
 
 // test7: application: 使用字符串转换接口std::stoi(), std::stof(), std::stod()等来提取字符串中的所有数值；
-void basicTypes_strings_module::test7(void)
+void basicTypes_strings_module::test7()
 {
 	debugDisp("\n\n\n\n");
 	debugDisp("test7: application: 使用字符串转换接口std::stoi(), std::stof(), std::stod()等来提取字符串中的所有数值。");

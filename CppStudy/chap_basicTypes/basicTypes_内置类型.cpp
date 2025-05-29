@@ -50,7 +50,7 @@ virtualModule* basicTypes_builtin_types_module::getInstance()		// 线程不安全的单
 
  
 // test0:  std::numeric_limits<>模板：查询各种算术类型的属性 
-void basicTypes_builtin_types_module::test0(void) 
+void basicTypes_builtin_types_module::test0() 
 {
 	// ！！！注意：使用std::numeric_limits<T>::max()和std::numeric_limits<T>::min()需要在预处理器中定义NOMINMAX;
 	debugDisp("test0: std::numeric_limits<>模板：查询各种算术类型的属性 ");
@@ -78,21 +78,21 @@ void basicTypes_builtin_types_module::test0(void)
 }
 
 
-void basicTypes_builtin_types_module::test1(void) {}
+void basicTypes_builtin_types_module::test1() {}
 
 
-void basicTypes_builtin_types_module::test2(void) {}
+void basicTypes_builtin_types_module::test2() {}
 
 
-void basicTypes_builtin_types_module::test3(void) {}
+void basicTypes_builtin_types_module::test3() {}
 
 
-void basicTypes_builtin_types_module::test4(void) {}
+void basicTypes_builtin_types_module::test4() {}
 
 
-void basicTypes_builtin_types_module::test5(void) {}
+void basicTypes_builtin_types_module::test5() {}
 
 
-void basicTypes_builtin_types_module::test6(void) {}
+void basicTypes_builtin_types_module::test6() {}
 
 

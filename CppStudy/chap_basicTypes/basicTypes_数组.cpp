@@ -65,7 +65,7 @@ virtualModule* basicTypes_array_module::getInstance()		// 线程不安全的单例模式
 
 
 // test0: 数组的声明、初始化、基本用法
-void basicTypes_array_module::test0(void)
+void basicTypes_array_module::test0()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test0: 数组的声明、初始化" << std::endl;
@@ -101,7 +101,7 @@ void basicTypes_array_module::test0(void)
 
 
 // test1:  指针的数组、数组的指针。
-void basicTypes_array_module::test1(void)
+void basicTypes_array_module::test1()
 {
 	int* (arr1)[10];			// arr1是指针的数组, arr1是数组名
 	int (*arr2)[10];			// arr2是数组的指针，这个数组没有数组名
@@ -133,7 +133,7 @@ void basicTypes_array_module::test1(void)
 
 
 // test2: （C++11）标准库函数begin(), end()作用于数组
-void basicTypes_array_module::test2(void)
+void basicTypes_array_module::test2()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test2: （C++11）标准库函数begin(), end()作用于数组" << std::endl;
@@ -168,7 +168,7 @@ namespace ARRAY_ARG
 	}
 }
 
-void basicTypes_array_module::test3(void)
+void basicTypes_array_module::test3()
 {
 	using namespace ARRAY_ARG;
 	std::cout << "\n\n\n\n" << std::endl;
@@ -185,7 +185,7 @@ void basicTypes_array_module::test3(void)
 
 
 // test4: 数组的初始化
-void basicTypes_array_module::test4(void)
+void basicTypes_array_module::test4()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << " test4: 数组的初始化"<< std::endl;

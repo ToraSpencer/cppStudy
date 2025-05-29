@@ -35,25 +35,25 @@ virtualModule* function_functor_module::getInstance()		// 线程不安全的单例模式
 }
 
  
-void function_functor_module::test0(void) {}
+void function_functor_module::test0() {}
 
 
-void function_functor_module::test1(void) {}
+void function_functor_module::test1() {}
 
 
-void function_functor_module::test2(void) {}
+void function_functor_module::test2() {}
 
 
-void function_functor_module::test3(void) {}
+void function_functor_module::test3() {}
 
 
-void function_functor_module::test4(void) {}
+void function_functor_module::test4() {}
 
 
-void function_functor_module::test5(void) {}
+void function_functor_module::test5() {}
 
 
-void function_functor_module::test6(void) {}
+void function_functor_module::test6() {}
 
 
 

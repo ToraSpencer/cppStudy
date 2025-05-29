@@ -117,7 +117,7 @@ virtualModule* basicTypes_pointers_module::getInstance()		// Ïß³Ì²»°²È«µÄµ¥ÀıÄ£Ê
 
 
 // test0: Ê¹ÓÃ¹Ø¼ü×ÖnewºÍdeleteÖ±½Ó¹ÜÀíÄÚ´æ¡£
-void basicTypes_pointers_module::test0(void)
+void basicTypes_pointers_module::test0()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test0: Ê¹ÓÃ¹Ø¼ü×ÖnewºÍdeleteÖ±½Ó¹ÜÀíÄÚ´æ¡£" << std::endl;
@@ -152,7 +152,7 @@ void basicTypes_pointers_module::test0(void)
 
 
 // test1£ºÖÇÄÜÖ¸Õëshared_ptr, unique_ptrµÄ»ù±¾Ê¹ÓÃ
-void basicTypes_pointers_module::test1(void)
+void basicTypes_pointers_module::test1()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	debugDisp("test1£ºÖÇÄÜÖ¸Õëshared_ptr, unique_ptr");
@@ -205,7 +205,7 @@ void basicTypes_pointers_module::test1(void)
 
 
 // test2: ×Ô¶¨ÒåÀàĞÍÊ¹ÓÃÖÇÄÜÖ¸Õëshared_ptr, unique_ptr
-void basicTypes_pointers_module::test2(void)
+void basicTypes_pointers_module::test2()
 { 
 	// ÖÇÄÜÖ¸ÕëÄ¬ÈÏÊ¹ÓÃdeleteÀ´ÊÍ·Å¶ÔÏóÄÚ´æ¡£×Ô¶¨ÒåÀàĞÍµÄ£¬ĞèÒªÓĞÉ¾³ıÆ÷²Å¿ÉÒÔÊ¹ÓÃdelete
 
@@ -213,7 +213,7 @@ void basicTypes_pointers_module::test2(void)
 
 
 // test3: ¿ÕÖ¸Õë
-void basicTypes_pointers_module::test3(void)
+void basicTypes_pointers_module::test3()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test3£º¿ÕÖ¸Õë" << std::endl;
@@ -233,10 +233,10 @@ void basicTypes_pointers_module::test3(void)
 }
 
 
-void basicTypes_pointers_module::test4(void) {}
+void basicTypes_pointers_module::test4() {}
  
  
-void basicTypes_pointers_module::test5(void) {}
+void basicTypes_pointers_module::test5() {}
 
 
-void basicTypes_pointers_module::test6(void) {} 
+void basicTypes_pointers_module::test6() {} 

@@ -202,15 +202,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="chap_syntax.h" />
-    <ClInclude Include="syntax_关键字.h" />
-    <ClInclude Include="syntax_几个特殊运算符.h" />
-    <ClInclude Include="syntax_内存管理.h" />
-    <ClInclude Include="syntax_基本语句、新增语句.h" />
-    <ClInclude Include="syntax_声明、定义、初始化.h" />
-    <ClInclude Include="syntax_类型转换.h" />
-    <ClInclude Include="syntax_表达式.h" />
-    <ClInclude Include="syntax_重载运算符.h" />
-    <ClInclude Include="syntax_预处理指令.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

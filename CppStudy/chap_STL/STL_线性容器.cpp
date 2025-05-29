@@ -60,7 +60,7 @@ virtualModule* STL_linear_container_module::getInstance()		// 线程不安全的单例模
 
 
 // test0():向量构造函数、初始化方法。
-void STL_linear_container_module::test0(void)
+void STL_linear_container_module::test0()
 {
 	debugDisp("\n\n\n\n");
 	debugDisp("test0(): 向量构造函数、初始化方法。");
@@ -100,7 +100,7 @@ void STL_linear_container_module::test0(void)
 
 
 // test1(): 线性容器的增删查改
-void STL_linear_container_module::test1(void)
+void STL_linear_container_module::test1()
 {
 	debugDisp("\n\n\n\n");
 	debugDisp("test0(): 线性容器的增删查改。"); 
@@ -183,7 +183,7 @@ void STL_linear_container_module::test1(void)
 
 
 // test2():vector，list的迭代器
-void STL_linear_container_module::test2(void)
+void STL_linear_container_module::test2()
 {
 	std::cout << "\n\n\ntest3():vector的迭代器" << std::endl << std::endl;
 
@@ -242,7 +242,7 @@ void STL_linear_container_module::test2(void)
 
 
 // test3(): 优先使用容器操作区间的方法，而不是操作单个元素的方法——effective STL
-void STL_linear_container_module::test3(void)
+void STL_linear_container_module::test3()
 {
 	// 1. assign()——范围性地初始化本容器。
 	std::vector<int> vi1, vi2;
@@ -261,7 +261,7 @@ void STL_linear_container_module::test3(void)
 
 
 // test4()——vector迭代器失效问题
-void STL_linear_container_module::test4(void)
+void STL_linear_container_module::test4()
 {
 	// vector的内存重新分配的话，所有迭代器都会失效。
 
@@ -274,7 +274,7 @@ void STL_linear_container_module::test4(void)
 
 
 // test5()——元素放入线性容器中的拷贝过程
-void STL_linear_container_module::test5(void)
+void STL_linear_container_module::test5()
 {
 	// 指针、或行为像指针的类对象被存入vector时，发生的是浅拷贝
 	int num1 = 999;
@@ -309,7 +309,7 @@ void STL_linear_container_module::test5(void)
 
 
 // test6()——应用场景
-void STL_linear_container_module::test6(void)
+void STL_linear_container_module::test6()
 {
 	// 应用场景——处理string对象，然后通过该对象生成相应的文件句柄。
 	

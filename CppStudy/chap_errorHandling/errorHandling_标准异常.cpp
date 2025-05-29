@@ -139,7 +139,7 @@ namespace TEST_STD_EXCEPTION
 }
 
 
-void errorHandling_std_exception_module::test0(void)
+void errorHandling_std_exception_module::test0()
 {
 	using namespace TEST_STD_EXCEPTION;
 	std::cout << "\n\n\n\n" << std::endl;
@@ -175,24 +175,24 @@ void errorHandling_std_exception_module::test0(void)
 }
 
   
-void errorHandling_std_exception_module::test1(void) {}
+void errorHandling_std_exception_module::test1() {}
 
 
-void errorHandling_std_exception_module::test2(void) {}
-
-
-
-void errorHandling_std_exception_module::test3(void) {}
+void errorHandling_std_exception_module::test2() {}
 
 
 
-void errorHandling_std_exception_module::test4(void) {}
+void errorHandling_std_exception_module::test3() {}
 
 
 
-void errorHandling_std_exception_module::test5(void) {}
+void errorHandling_std_exception_module::test4() {}
 
 
 
-void errorHandling_std_exception_module::test6(void) {}
+void errorHandling_std_exception_module::test5() {}
+
+
+
+void errorHandling_std_exception_module::test6() {}
 

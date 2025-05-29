@@ -42,7 +42,7 @@ virtualModule* STL_iterator_module::getInstance()		// 线程不安全的单例模式
 
 
 // test0:  
-void STL_iterator_module::test0(void)
+void STL_iterator_module::test0()
 {
 	
 
@@ -50,7 +50,7 @@ void STL_iterator_module::test0(void)
 }
 
 
-void STL_iterator_module::test1(void)
+void STL_iterator_module::test1()
 {
 
 
@@ -58,7 +58,7 @@ void STL_iterator_module::test1(void)
 }
 
 
-void STL_iterator_module::test2(void)
+void STL_iterator_module::test2()
 {
 
 
@@ -66,7 +66,7 @@ void STL_iterator_module::test2(void)
 }
 
 
-void STL_iterator_module::test3(void)
+void STL_iterator_module::test3()
 {
 
 
@@ -74,7 +74,7 @@ void STL_iterator_module::test3(void)
 }
 
 
-void STL_iterator_module::test4(void)
+void STL_iterator_module::test4()
 {
 
 
@@ -82,7 +82,7 @@ void STL_iterator_module::test4(void)
 }
 
 
-void STL_iterator_module::test5(void)
+void STL_iterator_module::test5()
 {
 
 
@@ -90,7 +90,7 @@ void STL_iterator_module::test5(void)
 }
 
 
-void STL_iterator_module::test6(void)
+void STL_iterator_module::test6()
 {
 
 

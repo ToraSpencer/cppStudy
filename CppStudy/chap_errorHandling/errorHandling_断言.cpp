@@ -41,7 +41,7 @@ virtualModule* errorHandling_assert_module::getInstance()		// 线程不安全的单例模
 
 
 
-void errorHandling_assert_module::test0(void) 
+void errorHandling_assert_module::test0() 
 {
 	int num;
 	std::cout << "please input a positive integer" << std::endl;
@@ -53,21 +53,21 @@ void errorHandling_assert_module::test0(void)
 }
  
 
-void errorHandling_assert_module::test1(void) {}
+void errorHandling_assert_module::test1() {}
 
 
-void errorHandling_assert_module::test2(void) {}
+void errorHandling_assert_module::test2() {}
 
 
-void errorHandling_assert_module::test3(void) {}
+void errorHandling_assert_module::test3() {}
 
 
-void errorHandling_assert_module::test4(void) {}
-
-
-
-void errorHandling_assert_module::test5(void) {}
+void errorHandling_assert_module::test4() {}
 
 
 
-void errorHandling_assert_module::test6(void) {}
+void errorHandling_assert_module::test5() {}
+
+
+
+void errorHandling_assert_module::test6() {}

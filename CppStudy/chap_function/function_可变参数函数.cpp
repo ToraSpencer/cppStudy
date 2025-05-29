@@ -77,7 +77,7 @@ extern "C" {
 }
 
 // test0: C语言中使用va_list实现参数可变的函数。
-void function_variadic_function_module::test0(void)
+void function_variadic_function_module::test0()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << " test0: C语言中使用va_list实现参数可变的函数。" << std::endl;
@@ -104,7 +104,7 @@ namespace VARIADIC_FUNC_IL
 }
 
 
-void function_variadic_function_module::test1(void)
+void function_variadic_function_module::test1()
 {
 	using namespace VARIADIC_FUNC_IL;
 	std::cout << "\n\n\n\n" << std::endl;
@@ -175,7 +175,7 @@ namespace VA_TEMPLATE_FUNC2
 }
 
 
-void function_variadic_function_module::test2(void)
+void function_variadic_function_module::test2()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test2: 测试用变参模板实现的可变参函数模板(C++11)" << std::endl;
@@ -188,28 +188,28 @@ void function_variadic_function_module::test2(void)
 }
 
 
-void function_variadic_function_module::test3(void)
+void function_variadic_function_module::test3()
 {
 
 
 }
 
 
-void function_variadic_function_module::test4(void)
+void function_variadic_function_module::test4()
 {
 
 
 }
 
 
-void function_variadic_function_module::test5(void)
+void function_variadic_function_module::test5()
 {
 
 
 }
 
 
-void function_variadic_function_module::test6(void)
+void function_variadic_function_module::test6()
 {}
 
 

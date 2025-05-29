@@ -21,24 +21,24 @@ virtualModule* DSA_binary_tree_module::getInstance()		// 线程不安全的单例模式
 
 
  
-void DSA_binary_tree_module::test0(void) {}
+void DSA_binary_tree_module::test0() {}
  
 
-void DSA_binary_tree_module::test1(void) {}
+void DSA_binary_tree_module::test1() {}
 
 
-void DSA_binary_tree_module::test2(void) {}
+void DSA_binary_tree_module::test2() {}
 
 
-void DSA_binary_tree_module::test3(void) {}
+void DSA_binary_tree_module::test3() {}
 
 
-void DSA_binary_tree_module::test4(void) {}
-
-
-
-void DSA_binary_tree_module::test5(void) {}
+void DSA_binary_tree_module::test4() {}
 
 
 
-void DSA_binary_tree_module::test6(void) {}
+void DSA_binary_tree_module::test5() {}
+
+
+
+void DSA_binary_tree_module::test6() {}

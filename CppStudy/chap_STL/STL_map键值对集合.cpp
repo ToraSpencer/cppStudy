@@ -84,7 +84,7 @@ using namespace AUXILIARY;
  
  
 // test0: std::map, std::unordered_map常用成员，相关定义
-void STL_map_module::test0(void)
+void STL_map_module::test0()
 { 
 	debugDisp("\n\n\n\n");
 	debugDisp("test0: std::map, std::unordered_map常用成员：\n"); 
@@ -223,7 +223,7 @@ public:
 	}
 };
 
-void STL_map_module::test1(void) 
+void STL_map_module::test1() 
 {
 	debugDisp("\n\n\n\n");
 	debugDisp("默认/自定义比较器：");
@@ -301,7 +301,7 @@ void STL_map_module::test1(void)
 
 
 // test2: multimap的基本使用方法、API
-void STL_map_module::test2(void)
+void STL_map_module::test2()
 {
 	// multimap中可以有键相同的元素，相同键的元素会相邻存储。
 	// multimap没有下标运算，其他api和std::map类似。
@@ -335,7 +335,7 @@ void STL_map_module::test2(void)
 
 
 // test3: 应用场景——vector和multimap实现的便于搜索的有序个人信息表
-void STL_map_module::test3(void)
+void STL_map_module::test3()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test2: std::map/multimap应用场景——便于搜索的有序个人信息表" << std::endl;
@@ -398,13 +398,13 @@ void STL_map_module::test3(void)
 }
 
 
-void STL_map_module::test4(void)
+void STL_map_module::test4()
 {}
 
 
-void STL_map_module::test5(void)
+void STL_map_module::test5()
 {}
 
 
-void STL_map_module::test6(void) 
+void STL_map_module::test6() 
 {}

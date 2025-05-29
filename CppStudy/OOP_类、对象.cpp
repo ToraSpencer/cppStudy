@@ -131,25 +131,25 @@ using namespace std;
 
  
 // extern变量
-extern void(*pfun[100])(void);
+extern void(*pfun[100])();
 extern int inputTag, inputNum, interfaceLevel;
 
  
 // 函数声明
 std::ostream& operator<<(std::ostream&, const Vector2d&);
 
-void set_fun_OOP_class_object(void);
-void start_OOP_class_object(void);
+void set_fun_OOP_class_object();
+void start_OOP_class_object();
 
-static void test0(void);
-static void test1(void);
-static void test2(void);
-static void test3(void);
-static void test4(void);
-static void test5(void);
+static void test0();
+static void test1();
+static void test2();
+static void test3();
+static void test4();
+static void test5();
  
 // extern函数
-extern void traverse_pfun(void);
+extern void traverse_pfun();
  
 
 // 函数定义
@@ -164,7 +164,7 @@ std::ostream& operator<<(std::ostream& os, const Vector2d& v)
 }
 
 
-void set_fun_OOP_class_object(void) 
+void set_fun_OOP_class_object() 
 {
 	pfun[0] = test0;
 	pfun[1] = test1;
@@ -175,7 +175,7 @@ void set_fun_OOP_class_object(void)
 }
 
 
-void start_OOP_class_object(void) 
+void start_OOP_class_object() 
 {
 	// 界面层级符置为3，进入三级界面：
 	interfaceLevel = 3;
@@ -250,7 +250,7 @@ void start_OOP_class_object(void)
 
 
 // test0: 类和对象的基本知识——Person.hpp.
-void test0(void)
+void test0()
 {
 	Person person1;
 	Person person2 = Person();
@@ -288,7 +288,7 @@ void test0(void)
 
 
 // test1: 类的继承——Grandfather.hpp
-void test1(void) 
+void test1() 
 {
 	cout << "\n\n\n\n" << endl;
 	cout << "test1：类的继承——Grandfather.hpp" << endl;
@@ -311,7 +311,7 @@ void test1(void)
 
 
 // test2: 抽象基类Vector的子类Vector2d——Vector.hpp
-void test2(void) 
+void test2() 
 {
 	cout << "\n\n\n\n" << endl;
 	cout << "test2：抽象基类Vector的子类Vector2d——Vector.hpp" << endl;
@@ -334,7 +334,7 @@ void test2(void)
 
 
 // test3: 成员数据带有指针的类，深拷贝，浅拷贝。
-static void test3(void)
+static void test3()
 {
 	cout << "\n\n\n\n" << endl;
 	cout << "test3: 成员数据带有指针的类，深拷贝，浅拷贝。" << endl;
@@ -354,10 +354,10 @@ static void test3(void)
 
 
 
-static void test4(void)
+static void test4()
 {}
 
 
 
-static void test5(void)
+static void test5()
 {}

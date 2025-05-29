@@ -89,6 +89,7 @@ virtualModule* STL_set_module::getInstance()		// 线程不安全的单例模式
 	return p_moduleIns;
 }
 
+
 // 函数子baseTypePrinter——打印基本类型变量
 class baseTypePrinter
 {
@@ -105,7 +106,7 @@ public:
 
 
 // test0: set的基本使用方法、API 
-void STL_set_module::test0(void) 
+void STL_set_module::test0() 
 {
 	debugDisp("\n\n\n\n");
 	debugDisp("test0: set的基本使用方法、API：\n");  
@@ -154,7 +155,7 @@ void STL_set_module::test0(void)
 
 
 // test1: set的查找接口
-void STL_set_module::test1(void)
+void STL_set_module::test1()
 {
 	cout << "\n\n\n\n" << endl;
 	cout << "test1: set的查找接口" << endl;
@@ -211,7 +212,7 @@ void STL_set_module::test1(void)
 // test2: 使用自定义比较器的set:
 namespace COMPARER1
 {
-	// 自定义浮点数比较器。
+	// 自定义浮点数比较器；注意！！比较器中要定义“严格弱序”，只能用大于号或小于号，等于时不可返回true
 	struct floatComparer
 	{
 	public:
@@ -219,7 +220,7 @@ namespace COMPARER1
 		{
 			int i1 = static_cast<int>(num1);
 			int i2 = static_cast<int>(num2);
-			if (i1<i2)
+			if (i1 < i2)
 				return true;	// 返回true表示认为num1小于num2;
 			else
 				return false;
@@ -241,7 +242,7 @@ namespace COMPARER1
 
 }
  
-void STL_set_module::test2(void) 
+void STL_set_module::test2() 
 {
 	using namespace COMPARER1;
 
@@ -259,7 +260,7 @@ void STL_set_module::test2(void)
 	否则使用默认比较器比较的将是指针的值。
 
 */
-void STL_set_module::test3(void) 
+void STL_set_module::test3() 
 {
 	using namespace COMPARER1;
 	using IPTR = int*;
@@ -284,7 +285,7 @@ void STL_set_module::test3(void)
 
 
 // test4: std::unordered_set<>——哈希表
-void STL_set_module::test4(void) 
+void STL_set_module::test4() 
 {
 
 
@@ -293,7 +294,7 @@ void STL_set_module::test4(void)
 }
 
 
-void STL_set_module::test5(void) {}
+void STL_set_module::test5() {}
 
 
-void STL_set_module::test6(void) {}
+void STL_set_module::test6() {}

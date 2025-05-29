@@ -31,30 +31,30 @@ public:
 
 
 	// 其他方法
-	void disp(void);
+	void disp();
 
 
 };
  
 // extern变量
-extern void(*pfun[100])(void);
+extern void(*pfun[100])();
 extern int inputTag, inputNum, interfaceLevel;
 
  
 // 函数声明
 
-void set_fun_OOP_class_template(void);
-void start_OOP_class_template(void);
+void set_fun_OOP_class_template();
+void start_OOP_class_template();
 
-static void test0(void);
-static void test1(void);
-static void test2(void);
-static void test3(void);
-static void test4(void);
+static void test0();
+static void test1();
+static void test2();
+static void test3();
+static void test4();
 
  
 // extern函数
-extern void traverse_pfun(void);
+extern void traverse_pfun();
 
  
 // 自定义类的实现
@@ -108,7 +108,7 @@ Foo<T, N>::~Foo()
 
 
 template <typename T, size_t N>
-void Foo<T, N>::disp(void)
+void Foo<T, N>::disp()
 {
 	for(auto elem:(this->arr))
 	{
@@ -121,14 +121,14 @@ void Foo<T, N>::disp(void)
 
 
 
-void set_fun_OOP_class_template(void) 
+void set_fun_OOP_class_template() 
 {
   pfun[0] = test0;
 }
 
 
 
-void start_OOP_class_template(void) 
+void start_OOP_class_template() 
 {
 	// 界面层级符置为3，进入三级界面：
 	interfaceLevel = 3;

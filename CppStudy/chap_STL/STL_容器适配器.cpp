@@ -114,7 +114,7 @@ virtualModule* STL_adapter_module::getInstance()		// 线程不安全的单例模式
  
 
 // test0:  std::stack的常用成员
-void STL_adapter_module::test0(void)
+void STL_adapter_module::test0()
 {
 
 	std::cout << "\n\n\n\n" << std::endl;
@@ -146,7 +146,7 @@ void STL_adapter_module::test0(void)
 
 
 // test1：std::queue类模板的成员 
-void STL_adapter_module::test1(void)
+void STL_adapter_module::test1()
 {
 	std::queue<int> qi1;
 	std::queue<double, std::list<double>> qd1;
@@ -167,16 +167,16 @@ void STL_adapter_module::test1(void)
 }
 
 
-void STL_adapter_module::test2(void) {}
+void STL_adapter_module::test2() {}
 
 
-void STL_adapter_module::test3(void) {}
+void STL_adapter_module::test3() {}
 
 
-void STL_adapter_module::test4(void) {}
+void STL_adapter_module::test4() {}
 
 
-void STL_adapter_module::test5(void) {}
+void STL_adapter_module::test5() {}
 
 
-void STL_adapter_module::test6(void) {}
+void STL_adapter_module::test6() {}

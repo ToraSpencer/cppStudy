@@ -31,7 +31,7 @@ virtualModule* stdlib_regex_module::getInstance()		// 线程不安全的单例模式
 
 
 //	test0:  应用实例——匹配邮箱格式
-void stdlib_regex_module::test0(void)
+void stdlib_regex_module::test0()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test " << std::endl;
@@ -84,7 +84,7 @@ void stdlib_regex_module::test0(void)
 
 
 // test1:  
-void stdlib_regex_module::test1(void)
+void stdlib_regex_module::test1()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test1:  " << std::endl;
@@ -95,7 +95,7 @@ void stdlib_regex_module::test1(void)
 
 
 // test2: 
-void stdlib_regex_module::test2(void)
+void stdlib_regex_module::test2()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test2:  " << std::endl;
@@ -106,7 +106,7 @@ void stdlib_regex_module::test2(void)
 
 
 // test3: 
-void stdlib_regex_module::test3(void)
+void stdlib_regex_module::test3()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test3:  " << std::endl;
@@ -117,20 +117,20 @@ void stdlib_regex_module::test3(void)
 
 
 // test4:  
-void stdlib_regex_module::test4(void)
+void stdlib_regex_module::test4()
 {
 }
 
 
 
 // test5:  
-void stdlib_regex_module::test5(void)
+void stdlib_regex_module::test5()
 {
 }
 
 
 
-void stdlib_regex_module::test6(void) 
+void stdlib_regex_module::test6() 
 {
 
 }

@@ -37,28 +37,20 @@ virtualModule* basicTypes_pair_tuple_module::getInstance()		// Ïß³Ì²»°²È«µÄµ¥ÀýÄ
 
 
 
-void basicTypes_pair_tuple_module::test0(void)
+void basicTypes_pair_tuple_module::test0()
 {
 
 }
 
 
-void basicTypes_pair_tuple_module::test1(void) 
-{
-
-}
-
-
-
-void basicTypes_pair_tuple_module::test2(void)
+void basicTypes_pair_tuple_module::test1() 
 {
 
 }
 
 
 
-
-void basicTypes_pair_tuple_module::test3(void)
+void basicTypes_pair_tuple_module::test2()
 {
 
 }
@@ -66,7 +58,7 @@ void basicTypes_pair_tuple_module::test3(void)
 
 
 
-void basicTypes_pair_tuple_module::test4(void)
+void basicTypes_pair_tuple_module::test3()
 {
 
 }
@@ -74,7 +66,7 @@ void basicTypes_pair_tuple_module::test4(void)
 
 
 
-void basicTypes_pair_tuple_module::test5(void)
+void basicTypes_pair_tuple_module::test4()
 {
 
 }
@@ -82,7 +74,15 @@ void basicTypes_pair_tuple_module::test5(void)
 
 
 
-void basicTypes_pair_tuple_module::test6(void)
+void basicTypes_pair_tuple_module::test5()
+{
+
+}
+
+
+
+
+void basicTypes_pair_tuple_module::test6()
 {
 
 }

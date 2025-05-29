@@ -108,7 +108,7 @@ namespace TEST_UNION
 
 
 // test0: 结构体的基本使用方法
-void basicTypes_enum_union_struct_module::test0(void)
+void basicTypes_enum_union_struct_module::test0()
 {
 	using namespace TEST_STRUCT;
 
@@ -132,7 +132,7 @@ void basicTypes_enum_union_struct_module::test0(void)
 
 
 // test1：枚举类型的基本使用
-void basicTypes_enum_union_struct_module::test1(void)
+void basicTypes_enum_union_struct_module::test1()
 {
 	// 定义枚举类型的主要目的是：增加程序的可读性。
 	// 枚举类型最常见也最有意义的用处之一就是用来描述状态量
@@ -204,7 +204,7 @@ void basicTypes_enum_union_struct_module::test1(void)
 
 
 // test2: 共用体的基本使用
-void basicTypes_enum_union_struct_module::test2(void)
+void basicTypes_enum_union_struct_module::test2()
 {
 	using namespace TEST_UNION;
 	std::cout << "\n\n\n\n" << std::endl;
@@ -230,7 +230,7 @@ void basicTypes_enum_union_struct_module::test2(void)
 
 
 // test3: 结构体中的内存对齐
-void basicTypes_enum_union_struct_module::test3(void)
+void basicTypes_enum_union_struct_module::test3()
 {
 	using namespace TEST_STRUCT;
 
@@ -270,12 +270,12 @@ void basicTypes_enum_union_struct_module::test3(void)
 
 
 
-void basicTypes_enum_union_struct_module::test4(void)
+void basicTypes_enum_union_struct_module::test4()
 {}
 
 
 
-void basicTypes_enum_union_struct_module::test5(void)
+void basicTypes_enum_union_struct_module::test5()
 {}
 
 

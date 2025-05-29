@@ -23,7 +23,7 @@ virtualModule* DSA_linked_list_module::getInstance()		// 线程不安全的单例模式
 
 
  
-void DSA_linked_list_module::test0(void) 
+void DSA_linked_list_module::test0() 
 {
 	float fnums[6] = {1,2,3,4,5,6};
 	LinkedList<float> list1(fnums, 6);
@@ -40,21 +40,21 @@ void DSA_linked_list_module::test0(void)
 }
  
 
-void DSA_linked_list_module::test1(void) {}
+void DSA_linked_list_module::test1() {}
 
 
-void DSA_linked_list_module::test2(void) {}
+void DSA_linked_list_module::test2() {}
 
 
-void DSA_linked_list_module::test3(void) {}
+void DSA_linked_list_module::test3() {}
 
 
-void DSA_linked_list_module::test4(void) {}
-
-
-
-void DSA_linked_list_module::test5(void) {}
+void DSA_linked_list_module::test4() {}
 
 
 
-void DSA_linked_list_module::test6(void) {}
+void DSA_linked_list_module::test5() {}
+
+
+
+void DSA_linked_list_module::test6() {}

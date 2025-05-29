@@ -83,23 +83,23 @@ using namespace std;
 
  
 // extern变量
-extern void(*pfun[100])(void);
+extern void(*pfun[100])();
 extern int inputTag, inputNum, interfaceLevel;
 
  
 // 函数声明
-void set_fun_OOP_polymorphism(void);
-void start_OOP_polymorphism(void);
+void set_fun_OOP_polymorphism();
+void start_OOP_polymorphism();
 
-static void test0(void);
-static void test1(void);
-static void test2(void);
-static void test3(void);
-static void test4(void);
+static void test0();
+static void test1();
+static void test2();
+static void test3();
+static void test4();
 
  
 // extern函数
-void traverse_pfun(void);
+void traverse_pfun();
  
 // 自定义类的实现
 class Animal
@@ -136,7 +136,7 @@ public:
 /***************************************************************************
 ***************************************************************************/
 // 函数定义
-void set_fun_OOP_polymorphism(void) 
+void set_fun_OOP_polymorphism() 
 {
 	 pfun[0] = test0;
 	 pfun[1] = test1;
@@ -144,7 +144,7 @@ void set_fun_OOP_polymorphism(void)
 
 
 
-void start_OOP_polymorphism(void)
+void start_OOP_polymorphism()
 {
 	// 界面层级符置为3，进入三级界面：
 	interfaceLevel = 3;
@@ -200,7 +200,7 @@ void start_OOP_polymorphism(void)
 
 
 // test0：静态关联、动态关联的多态
-static void test0(void) 
+static void test0() 
 {
     Shape* ps = NULL;
     Point p1(1,2);
@@ -229,7 +229,7 @@ static void test0(void)
 
 
 // test1：虚函数和非虚函数在派生类中重写
-static void test1(void)
+static void test1()
 {
 	  // 可能会被继承的类方法应该声明为虚的，否则在调用的时候回发生问题。
     Animal* animal = new Cat();             // 动物指针指向猫对象，预期调用猫的方法。

@@ -120,7 +120,7 @@
 				用于像string对象输入数据，或者接受string对象输出的数据。
 				重要方法
 							str()
-										重载1				str(void)——返回stringstream对象内封装的string对象
+										重载1				str()——返回stringstream对象内封装的string对象
 										重载2				str(str1)——将字符串str1对象拷贝到当前stringstream对象中。
 										应用				可以应用stringstream对象将任意类型数据转换为string.
 
@@ -196,7 +196,7 @@ virtualModule* stdlib_io_module::getInstance()		// 线程不安全的单例模式
 
 
 // test0: 控制输出格式：
-void stdlib_io_module::test0(void)
+void stdlib_io_module::test0()
 {
 	double d1, d2, d3;
 	d1 = 3.1415926;
@@ -271,7 +271,7 @@ namespace TEST_FILESTREAM
 	};
 }
 
-void stdlib_io_module::test1(void)
+void stdlib_io_module::test1()
 {
 	// 输入、输出文件流对象。 
 	/*
@@ -362,7 +362,7 @@ void stdlib_io_module::test1(void)
 
 
 // test2: 使用cin对象来接收输入：
-void stdlib_io_module::test2(void)
+void stdlib_io_module::test2()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test2: 使用cin对象来接收输入" << std::endl;
@@ -414,7 +414,7 @@ namespace TEST_STRINGSTREAM
 	}
 }
 
-void stdlib_io_module::test3(void)
+void stdlib_io_module::test3()
 {
 	using namespace TEST_STRINGSTREAM;
 	std::cout << "\n\n\n\n" << std::endl;
@@ -486,7 +486,7 @@ void stdlib_io_module::test3(void)
 
 
 // test4: 使用scanf()的返回值进行输入合法检验
-void stdlib_io_module::test4(void)
+void stdlib_io_module::test4()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test4: 使用scanf()的返回值进行输入合法检验" << std::endl;
@@ -510,9 +510,9 @@ void stdlib_io_module::test4(void)
 }
 
 
-void stdlib_io_module::test5(void) 
+void stdlib_io_module::test5() 
 {}
 
 
-void stdlib_io_module::test6(void)
+void stdlib_io_module::test6()
 {}

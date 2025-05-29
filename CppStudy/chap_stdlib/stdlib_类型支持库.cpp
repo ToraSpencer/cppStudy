@@ -52,7 +52,7 @@ virtualModule* stdlib_type_support_module::getInstance()		// Ïß³Ì²»°²È«µÄµ¥ÀıÄ£Ê
 
 
 // test0: is_xxxÏµÁĞÀàÄ£°åÅĞ¶ÏÀàĞÍ¡¢ÊôĞÔ
-void stdlib_type_support_module::test0(void)
+void stdlib_type_support_module::test0()
 {
 	// <type_traits>ÖĞµÄstd::is_xxx<>Ä£°å
 	std::cout << "\n\n\n\n" << std::endl;
@@ -71,7 +71,7 @@ void stdlib_type_support_module::test0(void)
 
 
 // test1: typeid()º¯Êı
-void stdlib_type_support_module::test1(void)
+void stdlib_type_support_module::test1()
 {
 	std::cout << "test1: typeid()º¯Êı :" << std::endl << std::endl;
 
@@ -105,7 +105,7 @@ void stdlib_type_support_module::test1(void)
 
 
 // test2: isxxx()ÏµÁĞº¯Êı
-void stdlib_type_support_module::test2(void)
+void stdlib_type_support_module::test2()
 {
 	int* pi = NULL;
 	typedef double* dptr;
@@ -124,28 +124,28 @@ void stdlib_type_support_module::test2(void)
 }
 
 
-void stdlib_type_support_module::test3(void)
+void stdlib_type_support_module::test3()
 {
  
 
 }
 
 
-void stdlib_type_support_module::test4(void)
+void stdlib_type_support_module::test4()
 {
  
 
 }
 
 
-void stdlib_type_support_module::test5(void)
+void stdlib_type_support_module::test5()
 {
  
 
 }
 
 
-void stdlib_type_support_module::test6(void)
+void stdlib_type_support_module::test6()
 {
 
 

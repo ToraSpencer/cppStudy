@@ -37,14 +37,14 @@ Person::Person(const Person& p)
 }
 
 
-Person::~Person(void)
+Person::~Person()
 {
 	std::cout << "A Person object has been eliminated." << std::endl;
 	Person::objCount--;
 }
 
 
-int Person::getObjCount(void)
+int Person::getObjCount()
 {
 	return Person::objCount;
 }
@@ -52,25 +52,25 @@ int Person::getObjCount(void)
 
 // 	 2. Person类成员数据的get/set函数
 
-std::string Person::getName(void) const
+std::string Person::getName() const
 {
 	return this->name;
 }
 
 
-unsigned int Person::getAge(void) const
+unsigned int Person::getAge() const
 {
 	return this->age;
 }
 
 
-std::string Person::getAddress(void) const
+std::string Person::getAddress() const
 {
 	return this->address;
 }
 
 
-std::string Person::getCareer(void) const
+std::string Person::getCareer() const
 {
 	return this->career;
 }
@@ -103,7 +103,7 @@ void Person::setCareer(std::string career)
 // 	 3. Person类的重载运算符函数
 
 // 	 4. Person类的其他函数：
-void Person::say(void)
+void Person::say()
 {
 	std::cout << "Hello, my name is " << this->name << ". I'm " << this->age  \
 		<< " years old. I live in " << this->address << ". I'm a " << this->career \
@@ -111,7 +111,7 @@ void Person::say(void)
 }
 
 
-Grandfather::Grandfather(void) :Person(), gender("male")			 // 派生类构造函数的初始化列表
+Grandfather::Grandfather() :Person(), gender("male")			 // 派生类构造函数的初始化列表
 {
 	Grandfather::objCount++;
 
@@ -141,7 +141,7 @@ Grandfather::Grandfather(const Grandfather& gf)
 }
 
 
-Grandfather::~Grandfather(void)
+Grandfather::~Grandfather()
 {
 	std::cout << "A Grandfather object has been eliminated." << std::endl;
 }
@@ -153,13 +153,13 @@ void Grandfather::setGender(std::string gender)
 }
 
 
-std::string Grandfather::getGender(void)	 const
+std::string Grandfather::getGender()	 const
 {
 	return this->gender;
 }
 
 
-void Grandfather::say(void)
+void Grandfather::say()
 {
 	std::cout << "Hello, my name is " << this->name << ". My gender is " << this->gender \
 		<< ". I'm " << this->age << " years old. I live in " << this->address << ". I'm a " \
@@ -167,14 +167,14 @@ void Grandfather::say(void)
 }
 
 
-void Dog::bark(void)
+void Dog::bark()
 {
 	std::cout << "KKP." << std::endl;
 }
 
 
 
-void HuskieDog::bark(void)
+void HuskieDog::bark()
 {
 	std::cout << "I'm a Huskie dog, KKP!" << std::endl;
 }
@@ -182,7 +182,7 @@ void HuskieDog::bark(void)
 
 int Vector::objCount = 0;
 
-Vector::Vector(void) :x(0), y(0)
+Vector::Vector() :x(0), y(0)
 {
 	Vector::objCount++;
 }
@@ -194,18 +194,18 @@ Vector::Vector(float x, float y) : x(x), y(y)
 }
 
 
-Vector::~Vector(void)
+Vector::~Vector()
 {}
 
 
 
-float Vector::getX(void)	 const
+float Vector::getX()	 const
 {
 	return this->x;
 }
 
 
-float Vector::getY(void)	 const
+float Vector::getY()	 const
 {
 	return this->y;
 }
@@ -224,7 +224,7 @@ void Vector::setY(float y)
 
 
 
-Vector2d::Vector2d(void) :Vector()
+Vector2d::Vector2d() :Vector()
 {
 	std::cout << "the empty-argument constructor of class Vector2d has been called." << std::endl;
 	std::cout << "Vector2d objects remained: " << Vector2d::getObjCount() << std::endl;
@@ -250,7 +250,7 @@ Vector2d::Vector2d(const Vector2d& v)
 }
 
 
-Vector2d::~Vector2d(void)
+Vector2d::~Vector2d()
 {
 	Vector2d::objCount--;
 
@@ -279,7 +279,7 @@ float Vector2d::dot(const Vector2d& v)  const
 }
 
 
-void Vector2d::say(void)
+void Vector2d::say()
 {
 	std::cout << "I'm a Vector2d object!" << std::endl;
 }
@@ -385,7 +385,7 @@ void FooPrinter::operator()(const classFoo& f)
 	(this->count)++;
 }
 
-unsigned int FooPrinter::getCount(void)
+unsigned int FooPrinter::getCount()
 {
 	return this->count;
 }

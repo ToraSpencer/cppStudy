@@ -41,29 +41,29 @@ using namespace std;
 
   
 // extern变量
-extern void(*pfun[100])(void);
+extern void(*pfun[100])();
 extern int inputTag, inputNum, interfaceLevel;
  
 // 函数声明
-void set_fun_OOP_function_object(void);
-void start_OOP_function_object(void);
+void set_fun_OOP_function_object();
+void start_OOP_function_object();
 
-static void test0(void);
-static void test1(void);
-static void test2(void);
-static void test3(void);
-static void test4(void);
+static void test0();
+static void test1();
+static void test2();
+static void test3();
+static void test4();
 
  
 // extern函数
-void traverse_pfun(void);
+void traverse_pfun();
  
 
 // 自定义类的实现
  
  
 // 函数定义
-void set_fun_OOP_function_object(void) 
+void set_fun_OOP_function_object() 
 {
 	 pfun[0] = test0;
 	 pfun[1] = test1;
@@ -71,7 +71,7 @@ void set_fun_OOP_function_object(void)
 
 
 
-void start_OOP_function_object(void)
+void start_OOP_function_object()
 {
 	// 界面层级符置为3，进入三级界面：
 	interfaceLevel = 3;
@@ -138,7 +138,7 @@ void start_OOP_function_object(void)
 
 
 // test0: 函数对象的基本功能、特点。
-static void test0(void) 
+static void test0() 
 {
 	cout << "\n\n\n\n" << endl;
 	cout << "test0: 函数对象的基本功能、特点" << endl;
@@ -175,7 +175,7 @@ static void test0(void)
 
 
 // test1：<functional>中的常用函数类模板：
-static void test1(void)
+static void test1()
 {
 	cout << "\n\n\n\n" << endl;
 	cout << "test1：<functional>中的常用函数对象类模板" << endl;
@@ -190,7 +190,7 @@ static void test1(void)
 
 
 // test2: 简单的lambda表达式
-static void test2(void)
+static void test2()
 {
 	cout << "\n\n\n\n" << endl;
 	cout << "test2: 简单的lambda表达式" << endl;
@@ -231,7 +231,7 @@ static void test2(void)
 
 
 
-static void test3(void)
+static void test3()
 {
 
 

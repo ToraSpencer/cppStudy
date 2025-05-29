@@ -48,17 +48,17 @@ public:
 
 	// 1. 构造函数、析构函数
 	//			注意：没有返回类型标识符
-	Person(void);
+	Person();
 	Person(std::string name, unsigned int age, std::string address, std::string career);
 	Person(const Person& p);				// 拷贝构造函数		
 											//			规范的做法：传入的对象的引用设置为const，可以保护其不会被更改。			
-	virtual ~Person(void);
+	virtual ~Person();
 
 
 	//	2. 类的static函数
 	//			只能访问类的static数据
 	//			作用也主要是用于管理类的static数据。
-	static int getObjCount(void);
+	static int getObjCount();
 
 
 
@@ -67,10 +67,10 @@ public:
 	//			注意：
 	//				为了保证封装性，不能直接修改或者读取对象的私有成员。而是通过public函数来实现。
 	//				为了使得const对象的成员数据也可以被读取，get函数都要设置为const
-	std::string getName(void)	const;
-	unsigned int getAge(void)	const;
-	std::string getAddress(void)	const;
-	std::string getCareer(void)	const;
+	std::string getName()	const;
+	unsigned int getAge()	const;
+	std::string getAddress()	const;
+	std::string getCareer()	const;
 	void setName(std::string name);
 	void setAge(unsigned int age);
 	void setAdress(std::string address);
@@ -81,7 +81,7 @@ public:
 
 
 	//	5. 其他函数
-	virtual void say(void);
+	virtual void say();
 
 
 
@@ -119,15 +119,15 @@ public:
 //				创建一个派生类对象时，会自动调用其基类的构造函数，以初始化继承来的基类的成员数据。
 //				派生类中若新增的成员数据，则需要构造新的构造函数来初始化。
 //				若派生类中没有新增的成员数据，则不需要声明新的构造函数。
-	Grandfather(void);
+	Grandfather();
 	Grandfather(std::string name, unsigned int age, std::string address, std::string career, std::string gender);
 	Grandfather(const Grandfather& gf);
-	~Grandfather(void);
+	~Grandfather();
 
 	void setGender(std::string);
-	std::string getGender(void)	const;
+	std::string getGender()	const;
 
-	void say(void);		// 覆盖基类中的函数say
+	void say();		// 覆盖基类中的函数say
 
 
 protected:
@@ -141,7 +141,7 @@ class Dog
 public:
 //		如果没有构造函数，系统会自动分配一个无参的构造函数。
 	
-	void bark(void);
+	void bark();
 
 };
 
@@ -152,7 +152,7 @@ class HuskieDog : public Dog
 public:
 //		派生类中没有新增的成员数据，所以不需要声明新的构造函数。
 
-	void bark(void);		// 覆盖基类中的函数bark;
+	void bark();		// 覆盖基类中的函数bark;
 
 };
 
@@ -169,20 +169,20 @@ public:
 
 
 //		1. 构造、析构函数。
-	Vector(void);
+	Vector();
 	Vector(float x, float y);
-	~Vector(void);						
+	~Vector();						
 
 
 //		2. static成员函数
-	static int getObjCount(void)
+	static int getObjCount()
 	{
 		return Vector::objCount;
 	}
 
 //		3. 对成员数据get / set的函数
-	float getX(void)	const;
-	float getY(void)	const;
+	float getX()	const;
+	float getY()	const;
 	void setX(float x);
 	void setY(float y);
 
@@ -190,7 +190,7 @@ public:
 
 
 //		5. 其他函数
-	virtual void say(void) = 0;				// "= 0;"表示纯虚函数						
+	virtual void say() = 0;				// "= 0;"表示纯虚函数						
 
 
 protected:
@@ -210,10 +210,10 @@ class Vector2d :public Vector
 public:
 //		0. static成员数据。
 //		1. 构造、析构函数。
-	Vector2d(void);
+	Vector2d();
 	Vector2d(float x, float y);
 	Vector2d(const Vector2d& v);
-	~Vector2d(void);
+	~Vector2d();
 
 //		2. static成员函数
 //		3. 对成员数据get / set的函数
@@ -223,7 +223,7 @@ public:
 
 //		5. 其他函数.
 	float dot(const Vector2d& v)	const;					// 向量点乘。
-	void say(void)  override;										// 关键字override——标志着覆盖继承而来的函数					 
+	void say()  override;										// 关键字override——标志着覆盖继承而来的函数					 
 
 
 };
@@ -275,7 +275,7 @@ public:
 
 	void operator()(const classFoo& f);
     
-	unsigned int getCount(void);
+	unsigned int getCount();
 
 };
 

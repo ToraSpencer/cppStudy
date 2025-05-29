@@ -23,24 +23,24 @@ virtualModule* DSA_sequence_list_module::getInstance()		// 线程不安全的单例模式
 
 
  
-void DSA_sequence_list_module::test0(void) {}
+void DSA_sequence_list_module::test0() {}
  
 
-void DSA_sequence_list_module::test1(void) {}
+void DSA_sequence_list_module::test1() {}
 
 
-void DSA_sequence_list_module::test2(void) {}
+void DSA_sequence_list_module::test2() {}
 
 
-void DSA_sequence_list_module::test3(void) {}
+void DSA_sequence_list_module::test3() {}
 
 
-void DSA_sequence_list_module::test4(void) {}
-
-
-
-void DSA_sequence_list_module::test5(void) {}
+void DSA_sequence_list_module::test4() {}
 
 
 
-void DSA_sequence_list_module::test6(void) {}
+void DSA_sequence_list_module::test5() {}
+
+
+
+void DSA_sequence_list_module::test6() {}
