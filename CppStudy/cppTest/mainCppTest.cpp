@@ -3127,35 +3127,62 @@ namespace TEST_STL
 			}
 
 
-			// 2. lambda形式的哈希函数和等价比较器；貌似c++14还不支持
-#if 0
-
-			//		lambda——
-			auto edgeHashLamb = [](const myEdge& edge)->std::size_t
-				{
-					return (std::hash<int>()(edge.first) + std::hash<int>()(edge.second));
-				};
-
-			//		lambda——
-			auto edgeComLamb = [](const myEdge& edge1, const myEdge& edge2)->bool
-				{
-					return (edge1.first == edge2.first && edge1.second == edge2.second);
-				};
-
-			std::unordered_set < myEdge, decltype(edgeHashLamb), decltype(edgeComLamb)> edgeSet2;			// 模板参数是类型名；
-			auto retPair2 = edgeSet2.insert({ 1,  2 });
+			// 2. lambda形式的哈希函数和等价比较器；  
 			{
-				retPair2 = edgeSet2.insert({ 2, 3 });
-				retPair2 = edgeSet2.insert({ -1, 0 });
-				retPair2 = edgeSet2.insert({ -2, -1 });
-				retPair2 = edgeSet2.insert({ 1, 3 });
-				retPair2 = edgeSet2.insert({ 1, 2 });
-				std::cout << "retPair1.second == " << retPair2.second << std::endl;
-				for (const auto& pair : edgeSet2)
-					std::cout << pair.first << ", " << pair.second << std::endl;
-				std::cout << std::endl;
+				//		lambda——自定义myEdge哈希函数
+				auto myEdgeHash = [](const myEdge& edge)->std::size_t
+					{
+						return (std::hash<int>()(edge.first) ^ std::hash<int>()(edge.second));
+					};
+
+				//		lambda——自定义myEdge相等比较器
+				auto myEdgeComp = [](const myEdge& edge1, const myEdge& edge2)->bool
+					{
+						return (edge1.first == edge2.first && edge1.second == edge2.second);
+					};
+
+				// 2.1 传入作为哈希函数子、相等比较器函数子的lambda对象构造std::unordered_set
+				std::unordered_set < myEdge, decltype(myEdgeHash), \
+					decltype(myEdgeComp)> edgeSet21{ 10, myEdgeHash, myEdgeComp };			// 模板参数是类型名；10是初始桶数量
+				{
+					auto retPair2 = edgeSet21.insert({ 1,  2 });
+					retPair2 = edgeSet21.insert({ 2, 3 });
+					retPair2 = edgeSet21.insert({ -1, 0 });
+					retPair2 = edgeSet21.insert({ -2, -1 });
+					retPair2 = edgeSet21.insert({ 1, 3 });
+					retPair2 = edgeSet21.insert({ 1, 2 });
+					debugDisp("retPair1.second ==", retPair2.second);
+					for (const auto& pair : edgeSet21)
+						debugDisp(pair.first, ',', pair.second);
+
+					debugDisp();
+				}
+
+				// 2.2 若lambda带有捕获，则必须明确指定哈希函数子的类型，不能借助decltype
+				constexpr size_t thresh = 0xFFFF;
+				auto myEdgeHash2 = [thresh](const myEdge& edge)->std::size_t
+					{						
+						const size_t value = std::hash<int>()(edge.first) ^ std::hash<int>()(edge.second);
+						if (value < thresh)
+							return value;
+						return std::hash<int>()(edge.first) + std::hash<int>()(edge.second);
+					};
+				std::unordered_set < myEdge, std::function<std::size_t(const myEdge&)>, \
+					decltype(myEdgeComp)> edgeSet22{ 10, myEdgeHash2, myEdgeComp };		// 使用std::function作为哈希函数子类型；
+				{
+					auto retPair2 = edgeSet22.insert({ 1,  2 });
+					retPair2 = edgeSet21.insert({ 2, 3 });
+					retPair2 = edgeSet21.insert({ -1, 0 });
+					retPair2 = edgeSet21.insert({ -2, -1 });
+					retPair2 = edgeSet21.insert({ 1, 3 });
+					retPair2 = edgeSet21.insert({ 1, 2 });
+					debugDisp("retPair1.second ==", retPair2.second);
+					for (const auto& pair : edgeSet22)
+						debugDisp(pair.first, ',', pair.second);
+
+					debugDisp();
+				}
 			}
-#endif
 
 			// 3. 
 			std::unordered_set<myVert, vertHash, vertEqual> myVertSet;
@@ -3201,9 +3228,7 @@ namespace TEST_STL
 				debugDisp();
 				vertEqualTolr::reset();
 			}
-
-
-
+			 
 			debugDisp("test5() finished.");
 		}
 
@@ -4863,7 +4888,11 @@ int main()
 {        
 	//STD_ARRAY::test1();
 
-	TEST_CONSTEXPR::test1();
+	//TEST_CONSTEXPR::test1();
+
+	//STD_NUMERIC::test0();
+
+	STL_SET_MAP::test5();
 
 	debugDisp("main() finished."); 
 

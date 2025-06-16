@@ -135,23 +135,29 @@ void stdlib_numerical_module::test2()
 // test3: C++中生成随机数——<random>随机数生成器的使用
 void stdlib_numerical_module::test3()
 {
+	debugDisp("\n\n\n\n");
+	debugDisp("test3: C++中生成随机数——<random>随机数生成器的使用\n");
+
 	std::default_random_engine e;								// 随机数生成器的引擎对象
 	std::uniform_int_distribution<unsigned int>	UID_ui(1, 10);
 	std::uniform_int_distribution<int>	UID_i(-100, 100);
 	std::uniform_real_distribution<float> URD_f(-10, 10);
-
-	std::cout << "\n\n\n\n" << std::endl;
-	std::cout << "test3: C++中生成随机数——<random>随机数生成器的使用" << std::endl;
-
-	// 均匀分布的int, unsigned int, float
-	std::cout << UID_i(e) << std::endl;
-	std::cout << UID_ui(e) << std::endl;
-	std::cout << URD_f(e) << std::endl << std::endl;
-
-
-	//			每次重新调用随机数产生器会产生新的随机数：
-	std::cout << URD_f(e) << std::endl;
 	 
+
+	// 1. 
+	{
+		// 均匀分布的int, unsigned int, float 
+		debugDisp("UID_i(e) ==", UID_i(e));
+		debugDisp("UID_ui(e) ==", UID_ui(e));
+		debugDisp("UID_f(e) ==", URD_f(e));
+
+		// 每次重新调用随机数产生器会产生新的随机数：
+		debugDisp("每次重新调用随机数产生器会产生新的随机数：UID_f(e) ==", URD_f(e));
+
+		debugDisp();
+	} 
+	 
+	debugDisp("test3() finished.");
 }
 
 

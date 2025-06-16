@@ -51,23 +51,7 @@ namespace MY_DEBUG
 	{
 		std::cout << firstArg << " ";
 		debugDisp(args...);
-	}
-
-
-	// 传入函数子或函数指针遍历stl容器
-	template<typename T, typename F>
-	void traverseSTL(T& con, F f)
-	{
-		std::for_each(con.begin(), con.end(), f); 
-	}
-
-
-	// 反向遍历
-	template<typename T, typename F>
-	void revTraverseSTL(T& con, F f)
-	{
-		std::for_each(con.rbegin(), con.rend(), f); 
-	}
+	} 
 }
 using namespace MY_DEBUG;
 
