@@ -222,12 +222,12 @@ void basicTypes_pointers_module::test3()
 	int *pi1 = nullptr;
 	int *pi2 = nullptr;
 
-	// 可以使用p==NULL表达式返回的bool值来判断是否是空指针
-	if (pi1 == NULL && pi1 == nullptr && pi2 == NULL && pi2 == nullptr)
-		debugDisp("pi1和pi2都是空指针。写成NULL或nullptr都可以。"); 
+	// 可以使用p==nullptr表达式返回的bool值来判断是否是空指针； 不推荐NULL，通常是0或(void*)0，类型不安全
+	if (pi1 == nullptr && pi2 == nullptr)
+		debugDisp("pi1和pi2都是空指针。"); 
 
-	std::cout << "(int)(pi1 == NULL) == " << (int)(pi1 == NULL) << std::endl;
-	std::cout << "(int)(pi1 == NULL)" << (int)(pi2 == NULL) << std::endl;
+	std::cout << "(int)(pi1 == nullptr) == " << (int)(pi1 == nullptr) << std::endl;
+	std::cout << "(int)(pi1 == nullptr)" << (int)(pi2 == nullptr) << std::endl;
 
 	debugDisp("test3() finished.");
 }

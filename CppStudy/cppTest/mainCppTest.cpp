@@ -2954,7 +2954,7 @@ namespace TEST_STL
 			debugDisp("set1.count(1) == ", set1.count(1));
 			debugDisp("map1.count('a') == ", map1.count('a'));
 			auto iter = map1.find('a');
-			for (unsigned i = 0; i < map1.count('a'); ++i)			// 遍历某个键对应的所有值：
+			for (size_t i = 0; i < map1.count('a'); ++i)			// 遍历某个键对应的所有值：
 				disp<int>{}((iter++)->second);							// 同一个键的值对象按插入顺序排列
 			debugDisp("\n");
 
@@ -4879,9 +4879,7 @@ namespace TO_DO
 
 
 }
-  
-
-
+   
 
 
 int main()
