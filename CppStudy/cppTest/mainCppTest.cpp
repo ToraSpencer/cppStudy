@@ -4882,15 +4882,67 @@ namespace TO_DO
    
 
 
+// 将输入对象的二进制表示转换为格式化的字符串然后输出——to be optimized：去除前导0的部分目前有点问题
+template<typename T>
+std::string getBinaryStr(const T& data, const bool blCompleteForm = true) 
+{
+	const size_t num_bits = sizeof(T) * CHAR_BIT;
+	std::bitset<sizeof(T)* CHAR_BIT> bits(*reinterpret_cast<const unsigned long long*>(&data));
+	std::string binaryStr = bits.to_string();
+
+	// 1. 插入空格分隔每字节
+	for (int i = binaryStr.length() - 8; i > 0; i -= 8)  
+		binaryStr.insert(i, " "); 
+
+	// 2. 如果不需要完整格式，则移除前导零
+	if (!blCompleteForm)
+	{
+		binaryStr.erase(0, binaryStr.find_first_not_of('0'));
+		if (binaryStr.empty())
+			binaryStr = "0";
+	} 
+
+	return binaryStr;
+}
+
+
+
 int main()
-{        
-	//STD_ARRAY::test1();
+{   
+	// 研究一下大小端问题
+	{
+		{
+			debugDisp("is_little_endian() == ", is_little_endian());
+			debugDisp("std::uint16_t{ 0xFA } binary str == ", getBinaryStr(std::uint16_t{ 0xFA }));
+			debugDisp("std::uint16_t{ 0xFA } binary str == ", getBinaryStr(std::uint16_t{ 0xFA }, false));
+			debugDisp("std::uint16_t{ 0xABCD } binary str == ", getBinaryStr(std::uint16_t{ 0xABCD }));
+			debugDisp();
+		} 
 
-	//TEST_CONSTEXPR::test1();
+		std::uint32_t num;
+		auto printInfo = [](const std::uint32_t num)
+			{
+				std::array<unsigned char, 4> chArr;
+				std::memcpy(&chArr, &num, 4);
+				std::cout << "num == 0x" << std::hex << num << std::endl;
+				debugDisp("num binary str == ", getBinaryStr(num));
+				debugDisp("chArr: ");
+				for (size_t i = 0; i < 4; ++i)
+					debugDisp("\t", getBinaryStr(chArr[i]));
 
-	//STD_NUMERIC::test0();
+				debugDisp();
+			};
+		{
+			num = 0x1F;
+			printInfo(num);
 
-	STL_SET_MAP::test5();
+			num = 0xFAB;		
+			printInfo(num);
+
+			num = num << 4;
+			printInfo(num);
+		}
+	} 
 
 	debugDisp("main() finished."); 
 

@@ -203,44 +203,57 @@ void stdlib_io_module::test0()
 	d2 = 232.2345;
 	d3 = 90989.111;
 
-	std::cout << "\n\n\n\n" << std::endl;
-	std::cout << "test0: <iomanip>中的操纵符(manipulator)来控制输出格式：" << std::endl;
-
+	debugDisp("\n\n\n\n");
+	debugDisp("test0: <iomanip>中的操纵符(manipulator)来控制输出格式：\n");  
 
 	// setw()或std::cout.width()————指定输出浮点数的宽度，超出部分自动补空格，默认右对齐。
-	std::cout << std::setw(10) << d1 << std::endl;
-	std::cout.width(10);								// 输出一次后该设定便失效
-	std::cout << d2 << std::endl;
-	std::cout.width(10);
-	std::cout << d3 << std::endl;
-	std::cout << std::endl << std::endl;
+	{
+		debugDisp("setw()或std::cout.width()————指定输出浮点数的宽度，超出部分自动补空格，默认右对齐");
+		std::cout << std::setw(10) << d1 << std::endl;
+		std::cout.width(10);								// 输出一次后该设定便失效
+		std::cout << d2 << std::endl;
+		std::cout.width(10);
+		std::cout << d3 << std::endl;
+
+		debugDisp();
+	} 
 
 	// 使用std::oct, std::dec, std::hex指定不同进制输出整型数：
-	std::cout << std::oct << 1024 << std::endl;
-	std::cout << std::dec << 1024 << std::endl;
-	std::cout << std::hex << 1024 << std::endl;
+	{
+		debugDisp("使用std::oct, std::dec, std::hex指定不同进制输出整型数：");
+		std::cout << std::oct << 1024 << std::endl;
+		std::cout << std::dec << 1024 << std::endl;
+		std::cout << std::hex << 1024 << std::endl;
 
+		debugDisp();
+	}
 
 	// setiosflags()————使用多种枚举常量来设定输出格式：
-	std::cout << "左对齐格式——std::ios_base::left" << std::endl;
-	std::cout << std::setiosflags(std::ios_base::left) << std::setw(20) << d1 << std::endl;			// 设置左对齐
-	std::cout << std::setw(20)<< d2 << std::endl;
-	std::cout << std::resetiosflags(std::ios_base::left) << std::setw(20) << d3 << std::endl;			// 设置一次后一直有效，需要手动撤销
-	std::cout << "正数前加正号——std::ios_base::showpos" << std::endl;
-	std::cout << std::setiosflags(std::ios_base::showpos) << 1234 << std::endl;
-	std::cout << std::resetiosflags(std::ios_base::showpos);							// 手动撤销格式
-	std::cout << std::endl << std::endl;
+	{
+		debugDisp("左对齐格式——std::ios_base::left："); 
+		std::cout << std::setiosflags(std::ios_base::left) << std::setw(20) << d1 << std::endl;			// 设置左对齐
+		std::cout << std::setw(20) << d2 << std::endl;
+		std::cout << std::resetiosflags(std::ios_base::left) << std::setw(20) << d3 << std::endl;			// 设置一次后一直有效，需要手动撤销
+		
+		debugDisp("正数前加正号——std::ios_base::showpos"); 
+		std::cout << std::setiosflags(std::ios_base::showpos) << 1234 << std::endl;
+		std::cout << std::resetiosflags(std::ios_base::showpos);							// 手动撤销格式
+	
+		debugDisp();
+	}
+
 
 	// setprecision()————设置浮点数精度：
-	std::cout << "setprecision()————设置浮点数精度：" << std::endl;
-	std::cout << std::setprecision(1) << d2 << std::endl;					// 此时setprecision()设置的是有效数字位数；位数不够用时默认使用科学计数法std::ios_base::scientific
-	std::cout << std::setiosflags(std::ios_base::fixed) << std::setprecision(1) << d2 << std::endl;
-																					// 指定定点标记输出std::ios_base::fixed输出时，setprecision设置的是小数点后保留位数。
-	std::cout << std::endl << std::endl;
+	{
+		debugDisp("setprecision()————设置浮点数精度："); 
+		std::cout << std::setprecision(1) << d2 << std::endl;					// 此时setprecision()设置的是有效数字位数；位数不够用时默认使用科学计数法std::ios_base::scientific
+		std::cout << std::setiosflags(std::ios_base::fixed) << std::setprecision(1) << d2 << std::endl;
 
+		// 指定定点标记输出std::ios_base::fixed输出时，setprecision设置的是小数点后保留位数。
+		debugDisp();
+	} 
 
-	// C语言中的格式控制：
-
+	// C语言中的格式控制： 
 	/*
 		%c	字符输出到缓冲区，不转换。
 		%d	整数转成十进位。
@@ -254,10 +267,17 @@ void stdlib_io_module::test0()
 		%x	整数转成小写十六进位。
 		%X	整数转成大写十六进位。
 	*/
-	char str[100] = {0};
-	sprintf(str, "d1 == %.9f;", d1);
-	std::cout << str << std::endl;
+	{
+		debugDisp("C语言中的格式控制： ");
 
+		char str[100] = { 0 };
+		sprintf(str, "d1 == %.9f;", d1);
+		std::cout << str << std::endl;
+
+		debugDisp();
+	} 
+
+	debugDisp("test0() finished.");
 }
 
 
