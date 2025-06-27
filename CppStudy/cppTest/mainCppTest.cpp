@@ -512,147 +512,6 @@ namespace TEST_UNKNOWN
 			std::cout << "类型个数为：" << t2.size() << std::endl;
 		}
 
-
-		// 仿照项目中TVBuilderArgTuple类模板写的一个可变参数类模板。
-#if 0
-		//		除了使用vector代替序列化数据对象，和resume()方法读取的是vector对象以外，其他都一样。
-		template <typename... Types> class vecSet;
-
-		template <>
-		class vecSet<>
-		{
-		public:
-			vecSet() {}
-			~vecSet() {}
-
-			template<typename TA>
-			void resume(const std::vector<TA>& v)
-			{
-			}
-
-
-			template <typename F>
-			void travel(F f)
-			{
-				f();
-			}
-
-			void disp() {}
-
-		};
-
-		template <typename T, typename... Types>
-		class vecSet<T, Types...> : protected vecSet<Types...>
-		{
-		private:
-			std::vector<T> m_vec;
-			vecSet<Types...> m_sub;
-
-
-		public:
-			vecSet() {}
-
-
-			vecSet(const std::initializer_list<T>& list)
-			{
-				auto iter = list.begin();
-				for (const T& elem : list)
-				{
-					m_vec.push_back(elem);
-				}
-			}
-
-
-			~vecSet() {}
-
-
-			template<typename TA>
-			void resume(const std::vector<TA>& v)
-			{
-				TA elem;
-				void* ptr1 = NULL;
-				T* ptr2 = NULL;
-
-				if (typeid(T).name() == typeid(TA).name())		// 若参数和成员数据m_vec是同一类型，则拷贝元素。		
-				{
-					for (auto iter = v.begin(); iter != v.end(); iter++)
-					{
-						elem = *iter;
-						ptr1 = reinterpret_cast<void*>(&elem);
-						ptr2 = reinterpret_cast<T*>(ptr1);
-						this->m_vec.push_back(*ptr2);
-					}
-				}
-
-				this->m_sub.resume(v);			// 子集合递归调用。
-			}
-
-
-			template <typename F>
-			void travel(F f)				// f为函数子	
-			{
-				// 若vecSet对象只含一种类型，则可以传入普通的lambda表达式；
-				// 若不止含一种类型，则传入的函数子应该定义为可变参数类。
-				m_sub.travel([this, f](const Types& ... args)
-					{
-						f(m_vec, args ...);
-					});
-
-			}
-
-
-			void disp()
-			{
-				for (auto elem : this->m_vec)
-				{
-					std::cout << elem << "  ";
-				}
-				std::cout << std::endl;
-
-				this->m_sub.disp();				// 子集合递归调用。
-			}
-
-
-		};
-
-
-		void testVecSet()
-		{
-			vecSet<int, double, std::string > vvv;
-			std::vector<int> vi = { 1,2,3,4,5 };
-			std::vector<double> vf = { 1.1, 2.2, 3.3, 4.4 };
-			std::vector<std::string> vs = { "haha","hello","world" };
-
-			vvv.resume(vi);
-			vvv.resume(vf);
-			vvv.resume(vs);
-
-			vvv.disp();
-
-
-			vecSet<int> vseti = vecSet<int>({ 11,22,33,44,55 });
-			vseti.disp();
-
-
-			vecSet<std::string> v;
-			v.resume(vs);
-			v.travel([](const std::vector<std::string>& vec_input)			// 此时v的成员数据m_vec类型是std::vector<std::string>，lambda表达式的形参类型要与之匹配。
-				{
-					std::cout << "遍历向量中的元素：" << std::endl;
-					for (const std::string& elem : vec_input)
-					{
-						std::cout << elem << std::endl;
-					}
-
-				});
-
-
-			// 自定义一个函数子类，使用可变参数类模板，生成函数子传入travel()函数看看是否能正常工作。
-
-		}
-#endif
-
-
 		// a. 模板特化举例： 
 		template <typename T>				// a.1 函数模板特化
 		bool isEqual(T arg1, T arg2)
@@ -677,7 +536,6 @@ namespace TEST_UNKNOWN
 
 
 	}
-
 
 
 	// tuple
@@ -1132,53 +990,6 @@ namespace TEST_UNKNOWN
 		}
 
 	}
-
-
-	namespace TEST_NAN_INFINITY
-	{
-		// nan INFINITY
-		void test1()
-		{
-			float num1 = INFINITY;			// C风格的无穷大
-			float num2 = -INFINITY;
-			float num3 = NAN;					// C风格的not a number;
-			float num4 = -num3;
-
-			float num11 = std::numeric_limits<float>::infinity();			// C++风格的无穷大；
-			float num22 = -std::numeric_limits<float>::infinity();
-			float num33 = std::numeric_limits<float>::quiet_NaN();			// C++风格的not a number;
-
-			// 大小比较：常数和C风格的NAN比较，始终返回false; 但是C++风格的NAN貌似本质上还是个无穷大值； 
-			debugDisp("(3 > num1) == ", 3 > num1);
-			debugDisp("(3 > num11) == ", 3 > num11);
-			debugDisp("(3 > num2) == ", 3 > num2);
-			debugDisp("(3 > num22) == ", 3 > num22);
-			debugDisp("(3 > num3) == ", 3 > num3);
-			debugDisp("(3 < num3) == ", 3 < num3);
-			debugDisp("(3 > num4) == ", 3 > num4);
-			debugDisp("(3 < num4) == ", 3 < num4);
-			debugDisp("(3 > num33) == ", 3 > num33);
-			debugDisp("(3 < num33) == ", 3 < num33);
-
-			// identity: 
-			debugDisp("std::inf(num1) == ", std::isinf(num1));
-			debugDisp("std::inf(num2) == ", std::isinf(num2));
-			debugDisp("std::isnan(num3) == ", std::isnan(num3));
-			debugDisp("std::isnan(num4) == ", std::isnan(num4));
-
-			debugDisp("std::numeric_limits<decltype(3)>::has_infinity(num11) == ", \
-				std::numeric_limits<decltype(num11)>::infinity() > num11);
-			debugDisp("std::numeric_limits<decltype(3)>::has_infinity(num11) == ", \
-				std::numeric_limits<decltype(num22)>::infinity() > num22);
-			debugDisp("std::numeric_limits<decltype(3)>::has_infinity(num11) == ", \
-				std::numeric_limits<decltype(num33)>::quiet_NaN() == num33);
-
-			debugDisp("finished.");
-
-		}
-
-	}
-
 	 
 
 	// 异常
@@ -1217,68 +1028,6 @@ namespace TEST_UNKNOWN
 	}
 
 
-	// 位运算：
-	namespace TEST_BIT
-	{
-		// std::bitset
-		void test0()
-		{
-			constexpr unsigned NBIT = 32;
-			constexpr std::bitset<NBIT> bit0 = 0x0;
-			constexpr std::bitset<NBIT> bit1 = 0x2;
-			constexpr std::bitset<NBIT> bit2 = 0x4;
-			constexpr std::bitset<NBIT> bit3 = 0x8;
-			constexpr std::bitset<NBIT> bit4 = 0x10;
-
-			std::bitset<NBIT> tmpBit;
-			std::cout << "tmpBit == " << tmpBit << std::endl;
-
-			tmpBit.flip(2);
-			std::cout << "tmpBit == " << tmpBit << std::endl;
-			std::cout << "(tmpBit & bit2)  == " << (tmpBit & bit2) << std::endl;
-			std::cout << "bit4.to_ulong() == " << bit4.to_ulong() << std::endl;
-			std::cout << "operator == : (bit4 == 0x10) ? " << (bit4 == 0x10) << std::endl;
-			std::cout << "operator == : (tmpBit == 0x10) ? " << (tmpBit == 0x10) << std::endl;
-
-			std::cout << "finished." << std::endl;
-		}
-
-
-		// 左移、右移运算符；
-		void test1()
-		{
-			// 左移(<<)运算，a << b表示把a的二进制位向左移动b位，低位用0补上。等价于做运算a *= std::pow(2, b);
-			debugDisp("(1 << 3) == ", 1 << 3);					// B1左移3位得到B100 == 8 
-			debugDisp("(2 << 3) == ", 2 << 3);
-
-
-			std::cout << "test1 finished." << std::endl;
-		}
-
-
-		// 计算二进制数中1的位数：Brian Kernighan's Algorithm； 时间复杂度O(log n)
-		void test2()
-		{
-			auto count1Bits = [](const std::int64_t num)->int
-				{
-					int onesCount = 0;
-					std::int64_t num0 = num;
-					while (num0 > 0)
-					{
-						num0 = num0 & (num0 - 1);
-						onesCount++;
-					}
-					return onesCount;
-				};
-
-			debugDisp("count1Bits(0xC) == ", count1Bits(0xC));						// 1100B
-			debugDisp("count1Bits(0xF) == ", count1Bits(0xF));						// 1111B
-			debugDisp("count1Bits(0xAF) == ", count1Bits(0xAF));					// 10101111B
-
-			debugDisp("test2 finished.");
-		}
-
-	}
 
 
 	//  指针和智能指针
@@ -4882,67 +4631,210 @@ namespace TO_DO
    
 
 
-// 将输入对象的二进制表示转换为格式化的字符串然后输出——to be optimized：去除前导0的部分目前有点问题
-template<typename T>
-std::string getBinaryStr(const T& data, const bool blCompleteForm = true) 
+
+
+// 位运算：
+namespace TEST_BIT
 {
-	const size_t num_bits = sizeof(T) * CHAR_BIT;
-	std::bitset<sizeof(T)* CHAR_BIT> bits(*reinterpret_cast<const unsigned long long*>(&data));
-	std::string binaryStr = bits.to_string();
-
-	// 1. 插入空格分隔每字节
-	for (int i = binaryStr.length() - 8; i > 0; i -= 8)  
-		binaryStr.insert(i, " "); 
-
-	// 2. 如果不需要完整格式，则移除前导零
-	if (!blCompleteForm)
+	// 将输入对象的二进制表示转换为格式化的字符串然后输出——to be optimized：去除前导0的部分目前有点问题
+	template<typename T>
+	std::string getBinaryStr(const T& data, const bool blCompleteForm = true)
 	{
-		binaryStr.erase(0, binaryStr.find_first_not_of('0'));
-		if (binaryStr.empty())
-			binaryStr = "0";
-	} 
+		const size_t num_bits = sizeof(T) * CHAR_BIT;
+		std::bitset<sizeof(T)* CHAR_BIT> bits(*reinterpret_cast<const unsigned long long*>(&data));
+		std::string binaryStr = bits.to_string();
 
-	return binaryStr;
-}
+		// 1. 插入空格分隔每字节
+		for (int i = binaryStr.length() - 8; i > 0; i -= 8)
+			binaryStr.insert(i, " ");
+
+		// 2. 如果不需要完整格式，则移除前导零
+		if (!blCompleteForm)
+		{
+			binaryStr.erase(0, binaryStr.find_first_not_of('0'));
+			if (binaryStr.empty())
+				binaryStr = "0";
+		}
+
+		return binaryStr;
+	}
+ 
+
+	// 打印数据的二进制表示：
+	template<typename T>
+	void printBitInfo(const T& data) 
+	{
+		const size_t byteCount = sizeof(typename std::decay_t<T>);
+		std::vector<unsigned char> chVec(byteCount); 
+		std::memcpy(&chVec[0], &data, byteCount);
+		std::cout << "data == 0x" << std::hex << data << std::endl;
+		debugDisp("data binary str == ", getBinaryStr(data));
+		debugDisp("chVec: ");
+		for (size_t i = 0; i < byteCount; ++i)
+			debugDisp("\t", getBinaryStr(chVec[i]));
+
+		debugDisp();
+	}
 
 
+	// std::bitset
+	void test0()
+	{
+		constexpr unsigned NBIT = 32;
+		constexpr std::bitset<NBIT> bit0 = 0x0;
+		constexpr std::bitset<NBIT> bit1 = 0x2;
+		constexpr std::bitset<NBIT> bit2 = 0x4;
+		constexpr std::bitset<NBIT> bit3 = 0x8;
+		constexpr std::bitset<NBIT> bit4 = 0x10;
 
-int main()
-{   
+		std::bitset<NBIT> tmpBit;
+		std::cout << "tmpBit == " << tmpBit << std::endl;
+
+		tmpBit.flip(2);
+		std::cout << "tmpBit == " << tmpBit << std::endl;
+		std::cout << "(tmpBit & bit2)  == " << (tmpBit & bit2) << std::endl;
+		std::cout << "bit4.to_ulong() == " << bit4.to_ulong() << std::endl;
+		std::cout << "operator == : (bit4 == 0x10) ? " << (bit4 == 0x10) << std::endl;
+		std::cout << "operator == : (tmpBit == 0x10) ? " << (tmpBit == 0x10) << std::endl;
+
+		std::cout << "finished." << std::endl;
+	}
+
+
+	// 左移、右移运算符；
+	void test1()
+	{
+		// 左移(<<)运算，a << b表示把a的二进制位向左移动b位，低位用0补上。等价于做运算a *= std::pow(2, b);
+		int num1, num2, num3, num4;
+		num1 = 1;
+		num2 = 2;
+		num3 = 1 << 3; 
+		num4 = 2 << 3;
+		debugDisp("(1 << 3) == ", num3);					// B1左移3位得到B100 == 8 
+		debugDisp("(2 << 3) == ", num4);
+
+		printBitInfo(num1);
+		printBitInfo(num2);
+		printBitInfo(num3);
+		printBitInfo(num4);
+
+		debugDisp("TEST_BIT::test1() finished.");
+	}
+
+
+	// 计算二进制数中1的位数：Brian Kernighan's Algorithm； 时间复杂度O(log n)
+	void test2()
+	{
+		auto count1Bits = [](const std::int64_t num)->int
+			{
+				int onesCount = 0;
+				std::int64_t num0 = num;
+				while (num0 > 0)
+				{
+					num0 = num0 & (num0 - 1);
+					onesCount++;
+				}
+				return onesCount;
+			};
+
+		debugDisp("count1Bits(0xC) == ", count1Bits(0xC));						// 1100B
+		debugDisp("count1Bits(0xF) == ", count1Bits(0xF));						// 1111B
+		debugDisp("count1Bits(0xAF) == ", count1Bits(0xAF));					// 10101111B
+
+		debugDisp("test2 finished.");
+	}
+
+
 	// 研究一下大小端问题
-	{
+	void test3()
+	{ 
 		{
 			debugDisp("is_little_endian() == ", is_little_endian());
 			debugDisp("std::uint16_t{ 0xFA } binary str == ", getBinaryStr(std::uint16_t{ 0xFA }));
 			debugDisp("std::uint16_t{ 0xFA } binary str == ", getBinaryStr(std::uint16_t{ 0xFA }, false));
 			debugDisp("std::uint16_t{ 0xABCD } binary str == ", getBinaryStr(std::uint16_t{ 0xABCD }));
 			debugDisp();
-		} 
+		}
 
-		std::uint32_t num;
-		auto printInfo = [](const std::uint32_t num)
-			{
-				std::array<unsigned char, 4> chArr;
-				std::memcpy(&chArr, &num, 4);
-				std::cout << "num == 0x" << std::hex << num << std::endl;
-				debugDisp("num binary str == ", getBinaryStr(num));
-				debugDisp("chArr: ");
-				for (size_t i = 0; i < 4; ++i)
-					debugDisp("\t", getBinaryStr(chArr[i]));
-
-				debugDisp();
-			};
+		std::uint32_t num{ 0 };
 		{
 			num = 0x1F;
-			printInfo(num);
+			printBitInfo(num);
 
-			num = 0xFAB;		
-			printInfo(num);
+			num = 0xFAB;
+			printBitInfo(num);
 
 			num = num << 4;
-			printInfo(num);
+			printBitInfo(num);
 		}
-	} 
+		 
+		debugDisp("TEST_BIT::test3() finished.");
+	}
+}
+
+
+namespace TEST_NAN_INFINITY
+{
+	// nan INFINITY
+	void test1()
+	{
+		float num1 = INFINITY;			// C风格的无穷大
+		float num2 = -INFINITY;
+		float num3 = NAN;					// C风格的not a number;
+		float num4 = -num3;
+
+		float num11 = std::numeric_limits<float>::infinity();			// C++风格的无穷大；
+		float num22 = -std::numeric_limits<float>::infinity();
+		float num33 = std::numeric_limits<float>::quiet_NaN();			// C++风格的not a number;
+
+		// 大小比较：常数和C风格的NAN比较，始终返回false; 但是C++风格的NAN貌似本质上还是个无穷大值； 
+		debugDisp("(3 > num1) == ", 3 > num1);
+		debugDisp("(3 > num11) == ", 3 > num11);
+		debugDisp("(3 > num2) == ", 3 > num2);
+		debugDisp("(3 > num22) == ", 3 > num22);
+		debugDisp("(3 > num3) == ", 3 > num3);
+		debugDisp("(3 < num3) == ", 3 < num3);
+		debugDisp("(3 > num4) == ", 3 > num4);
+		debugDisp("(3 < num4) == ", 3 < num4);
+		debugDisp("(3 > num33) == ", 3 > num33);
+		debugDisp("(3 < num33) == ", 3 < num33);
+
+		// identity: 
+		debugDisp("std::inf(num1) == ", std::isinf(num1));
+		debugDisp("std::inf(num2) == ", std::isinf(num2));
+		debugDisp("std::isnan(num3) == ", std::isnan(num3));
+		debugDisp("std::isnan(num4) == ", std::isnan(num4));
+
+		debugDisp("std::numeric_limits<decltype(num11)>::has_infinity(num11) == ", \
+			std::numeric_limits<decltype(num11)>::infinity() > num11);
+		debugDisp("std::numeric_limits<decltype(num22)>::has_infinity(num11) == ", \
+			std::numeric_limits<decltype(num22)>::infinity() > num22);
+		debugDisp("std::numeric_limits<decltype(num33)>::has_infinity(num11) == ", \
+			std::numeric_limits<decltype(num33)>::quiet_NaN() == num33);
+
+
+		constexpr std::uint64_t num1 = std::numeric_limits<std::uint64_t>::quiet_NaN();
+		constexpr int num2 = std::numeric_limits<int>::quiet_NaN();
+		constexpr float num3 = std::numeric_limits<float>::quiet_NaN();
+		debugDisp(num1);
+		debugDisp(num2);
+		debugDisp(num3);
+		debugDisp();
+		debugDisp(std::numeric_limits<decltype(num1)>::has_quiet_NaN);
+		debugDisp(std::numeric_limits<decltype(num2)>::has_quiet_NaN);
+		debugDisp(std::numeric_limits<decltype(num3)>::has_quiet_NaN);
+
+		debugDisp("finished.");
+
+	}
+
+}
+
+
+int main()
+{   
+	TEST_BIT::test1();
+	//TEST_BIT::test3();
 
 	debugDisp("main() finished."); 
 
