@@ -103,6 +103,31 @@ namespace TEST_UNION
 		float numf;
 		char ch;
 	} unionData;
+
+
+	template <typename T>
+	class Foo
+	{
+	public:
+		union
+		{
+			T arr[3];
+			struct
+			{
+				T X;
+				T Y;
+				T Z;
+			};
+		};
+
+	public:
+		Foo(const T x0, const T y0, const T z0) : X(x0), Y(y0), Z(z0) {}
+		T& at(const size_t index)
+		{
+			return this->arr[index];
+		}
+	};
+
 }
 
 

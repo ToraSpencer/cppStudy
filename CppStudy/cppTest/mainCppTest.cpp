@@ -1756,7 +1756,101 @@ namespace TEST_NEW_FEATURES
 
 	// 常量表达式constexpr ( c++11)
 	namespace TEST_CONSTEXPR
-	{
+	{ 
+
+		// 按索引遍历：
+		template <std::size_t N>
+		struct for_each_index_impl2
+		{
+			static const std::size_t N1 = N / 2;
+			static const std::size_t N2 = N - N1;
+
+			template <std::size_t Offset, typename UnaryFunction>
+			static inline void apply(UnaryFunction& function)
+			{
+				for_each_index_impl2<N1>::template apply<Offset>(function);
+				for_each_index_impl2<N2>::template apply<Offset + N1>(function);
+			}
+		};
+
+		template <>
+		struct for_each_index_impl2<3>
+		{
+			template <std::size_t Offset, typename UnaryFunction>
+			static inline void apply(UnaryFunction& function)
+			{
+				function(Offset);
+				function(Offset + 1);
+				function(Offset + 2);
+			}
+		};
+
+		template <>
+		struct for_each_index_impl2<2>
+		{
+			template <std::size_t Offset, typename UnaryFunction>
+			static inline void apply(UnaryFunction& function)
+			{
+				function(Offset);
+				function(Offset + 1);
+			}
+		};
+
+		template <>
+		struct for_each_index_impl2<1>
+		{
+			template <std::size_t Offset, typename UnaryFunction>
+			static inline void apply(UnaryFunction& function)
+			{
+				function(Offset);
+			}
+		};
+
+		template <>
+		struct for_each_index_impl2<0>
+		{
+			template <std::size_t Offset, typename UnaryFunction>
+			static inline void apply(UnaryFunction&)
+			{
+			}
+		}; 
+
+
+		template <std::size_t N, typename UnaryFunction>
+		inline UnaryFunction for_each_index(UnaryFunction function)
+		{
+			for_each_index_impl2<N>::template apply<0>(function);				// N是容量，0是起始索引；
+
+			return function;
+		}
+
+
+		// test0——constexpr函数、函数模板：
+		template <std::size_t Index, typename T>
+		constexpr T getVecElem(const std::vector<T>& vec) 
+		{
+			return vec.at(Index);
+		}
+
+
+
+
+		void test0()
+		{
+			std::vector<int> numVec{ 0, 1, 2, 3, 4, 5};
+
+			//int num0 = getVecElem<3>(numVec);
+			//debugDisp("num0 == ", num0);
+
+			for_each_index< std::size_t{ 6 } > ([&](auto index)
+				{
+					debugDisp(numVec[index]);
+				});
+			
+			debugDisp("TEST_CONSTEXPR::test0() finished.");
+		}
+
+
 		// 自定义类构造函数声明为constexpr
 		class Foo 
 		{
@@ -1789,8 +1883,7 @@ namespace TEST_NEW_FEATURES
 			int runtime = 42;
 			constexpr Foo compileTimeFoo{11};
 			Foo runTimeFoo = compileTimeFoo;
-
-
+			 
 			// 使用编译时值实例化模板
 			auto result1 = ConstantHolder<decltype(compile_time), compile_time>::value;
 			//auto result2 = ConstantHolder<decltype(runtime), runtime>::value;			// 编译会失败；
@@ -1994,8 +2087,7 @@ namespace TEST_NEW_FEATURES
 
 	}
 
-
-
+	 
 }using namespace TEST_NEW_FEATURES;
 
 
@@ -3984,182 +4076,7 @@ namespace TEST_STD
 		debugDisp("test2() finished.");
 	}
 };
-
-  
-
-///////////////////////////////////////////////////////////////////////////////////////////// 模板 & 模板元编程
-namespace TEST_TEMPLATE
-{
-	// test0——模板特化
-	template <typename T>
-	void dispTypeName() 
-	{
-		return;
-	}
-
-	template<>
-	void dispTypeName<char>() 
-	{
-		std::cout << "type name : char" << std::endl;
-	}
-
-	template<>
-	void dispTypeName<double>()
-	{
-		std::cout << "type name : double" << std::endl;
-	}
-
-	template <typename T>
-	void dispVecElems(const std::vector<T>& vec) 
-	{
-		std::cout << "Input vector elements ";
-		dispTypeName<T>();
-		traverseSTL(vec, disp<T>{});
-	}
-
-
-	void test0() 
-	{
-		std::vector<char> vecChar{'a', 'b', 'c'};
-		std::vector<double> vecNum{1.2, 3.14, -0.8};
-		dispVecElems(vecChar);
-		dispVecElems(vecNum);  
-
-		debugDisp("test0() finished.");
-	}
-
-
-	// test1()——编译期计算多重数组的重数	
-	template<typename T>
-	struct VecDepthHelper									// 基础模板：非vector类型，深度为0
-	{
-		static const int value = 0;
-	};
-		
-	template<typename T>
-	struct VecDepthHelper<std::vector<T>>		// 特化模板：vector类型，深度=1+内部元素类型的深度
-	{
-		static const int value = 1 + VecDepthHelper<T>::value;
-	};
-
-	// 对外接口函数模板
-	template<typename VecType>
-	int VecDepth()
-	{
-		return VecDepthHelper<VecType>::value;
-	}
-
-
-	void test1() 
-	{
-		debugDisp("VecDepth<std::vector<std::vector<int>>>() == ", VecDepth<std::vector<std::vector<int>>>());
-		debugDisp("VecDepth<std::vector<double>>() == ", VecDepth < std::vector < double >> ());
-		debugDisp("VecDepth<float>() == ", VecDepth<float>());
-
-		debugDisp("TEST_TEMPLATE::test1() finished.");
-	}
-
-
-	namespace TEMPLATE1				// 模板作为元函数的输入：
-	{
-		template <template <typename> class T1, typename T2>
-		struct Fun_
-		{
-			using type = typename T1<T2>::type;
-		};
-
-		// 元函数Fun<>——将输入的模板作用于输入的类型之上，返回得到的结果类型；
-		/*
-			参数1是一个模板；
-			参数2是一个类型；
-			返回值是一个类型；
-			从函数式程序设计的角度来说，Fun<>是一个高阶函数；Fun(T1, t2) == T1(t2);
-		*/
-		template <template <typename> class T1, typename T2>
-		using Fun = typename Fun_<T1, T2>::type;
-
-		Fun<std::remove_reference, int&> value0 = 1;					// 元函数Fun<>返回的类型是int；
-	}
-
-	namespace TEMPLATE3				// 容器模板：
-	{
-		template <int... Vals> struct IntContainer;
-
-
-	}
-
-	namespace TEMPLATE4
-	{
-		template <typename T>
-		struct RemoveReferenceConst_
-		{
-		private:
-			using inter_type = typename std::remove_reference<T>::type;			// 输入的类型，如果是引用的话则去除引用属性；
-
-		public:
-			using type = typename std::remove_const<inter_type>::type;			// 输出的类型，去除原有的const属性；
-		};
-
-		// 元函数RemoveReferenceConst<>——去除输入类型的引用属性和const属性；
-		template <typename T>
-		using RemoveReferenceConst = typename RemoveReferenceConst_<T>::type;
-
-		RemoveReferenceConst<const float&> value0 = 4;
-	}
-
-	namespace TEMPLATE5			// 分支结构
-	{
-		struct A; struct B; struct C;
-
-		template<typename T>
-		struct Fun_
-		{
-			constexpr static size_t  value = 0;
-		};
-
-		template <typename T>
-		constexpr size_t Goo = 0;
-
-		// 特化1：
-		template <>
-		struct Fun_<A>
-		{
-			constexpr static size_t value = 1;
-		};
-
-		template <>
-		constexpr size_t Goo<A> = 1;
-
-		// 特化2：
-		template <>
-		struct Fun_<B>
-		{
-			constexpr static size_t value = 2;
-		};
-
-		template <>
-		constexpr size_t Goo<B> = 2;
-
-		constexpr size_t value0 = Fun_<B>::value;
-
-	}
-
-
-	// 测试TEMPLATE1——模板作为元函数的输入
-	void test2()
-	{
-		debugDisp("TEMPLATE1::value0 == ", TEMPLATE1::value0);
-		debugDisp("typeid(TEMPLATE1::value0).name()== ", typeid(TEMPLATE1::value0).name());
-
-		debugDisp("TEMPLATE4::value0 == ", TEMPLATE4::value0);
-		debugDisp("typeid(TEMPLATE4::value0).name()== ", typeid(TEMPLATE4::value0).name());
-
-		debugDisp("test2 finished.");
-	}
-
-} 
  
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////// 第三方库
 namespace TEST_THIRD_LIBS 
@@ -4735,6 +4652,7 @@ namespace TEST_BIT
 }
 
 
+
 namespace TEST_NAN_INFINITY
 {
 	// nan INFINITY
@@ -4795,34 +4713,212 @@ namespace TEST_NAN_INFINITY
 }
 
 
-template <typename T>
-class Foo 
-{
-public:
-	union 
-	{
-		T arr[3];
-		struct 
-		{
-			T X;
-			T Y;
-			T Z;
-		};
-	}; 
 
-public:
-	Foo(const T x0, const T y0, const T z0) : X(x0), Y(y0), Z(z0) {}
-	T& at(const size_t index) 
+///////////////////////////////////////////////////////////////////////////////////////////// 模板 & 模板元编程
+namespace TEST_TEMPLATE
+{
+	// test0——模板特化
+	template <typename T>
+	void dispTypeName()
 	{
-		return this->arr[index];
+		return;
 	}
-};
+
+	template<>
+	void dispTypeName<char>()
+	{
+		std::cout << "type name : char" << std::endl;
+	}
+
+	template<>
+	void dispTypeName<double>()
+	{
+		std::cout << "type name : double" << std::endl;
+	}
+
+	template <typename T>
+	void dispVecElems(const std::vector<T>& vec)
+	{
+		std::cout << "Input vector elements ";
+		dispTypeName<T>();
+		traverseSTL(vec, disp<T>{});
+	}
+
+
+	void test0()
+	{
+		std::vector<char> vecChar{ 'a', 'b', 'c' };
+		std::vector<double> vecNum{ 1.2, 3.14, -0.8 };
+		dispVecElems(vecChar);
+		dispVecElems(vecNum);
+
+		debugDisp("test0() finished.");
+	}
+
+
+	// test1()——编译期计算多重数组的重数	
+	template<typename T>
+	struct VecDepthHelper									// 基础模板：非vector类型，深度为0
+	{
+		static const int value = 0;
+	};
+
+	template<typename T>
+	struct VecDepthHelper<std::vector<T>>		// 特化模板：vector类型，深度=1+内部元素类型的深度
+	{
+		static const int value = 1 + VecDepthHelper<T>::value;
+	};
+
+
+	// 对外接口函数模板
+	template<typename VecType>
+	int VecDepth()
+	{
+		return VecDepthHelper<VecType>::value;
+	}
+
+
+	void test1()
+	{
+		debugDisp("VecDepth<std::vector<std::vector<int>>>() == ", VecDepth<std::vector<std::vector<int>>>());
+		debugDisp("VecDepth<std::vector<double>>() == ", VecDepth < std::vector < double >>());
+		debugDisp("VecDepth<float>() == ", VecDepth<float>());
+
+		debugDisp("TEST_TEMPLATE::test1() finished.");
+	}
+
+
+	// test2——模板作为元函数的输入
+	namespace TEMPLATE1				// 模板作为元函数的输入：
+	{
+		template <template <typename> class T1, typename T2>
+		struct Fun_
+		{
+			using type = typename T1<T2>::type;
+		};
+
+		// 元函数Fun<>——将输入的模板作用于输入的类型之上，返回得到的结果类型；
+		/*
+			参数1是一个模板；
+			参数2是一个类型；
+			返回值是一个类型；
+			从函数式程序设计的角度来说，Fun<>是一个高阶函数；Fun(T1, t2) == T1(t2);
+		*/
+		template <template <typename> class T1, typename T2>
+		using Fun = typename Fun_<T1, T2>::type;
+
+		Fun<std::remove_reference, int&> value0 = 1;					// 元函数Fun<>返回的类型是int；
+	}
+
+	namespace TEMPLATE3				// 容器模板：
+	{
+		template <int... Vals> struct IntContainer;
+
+
+	}
+
+	namespace TEMPLATE4
+	{
+		template <typename T>
+		struct RemoveReferenceConst_
+		{
+		private:
+			using inter_type = typename std::remove_reference<T>::type;			// 输入的类型，如果是引用的话则去除引用属性；
+
+		public:
+			using type = typename std::remove_const<inter_type>::type;			// 输出的类型，去除原有的const属性；
+		};
+
+		// 元函数RemoveReferenceConst<>——去除输入类型的引用属性和const属性；
+		template <typename T>
+		using RemoveReferenceConst = typename RemoveReferenceConst_<T>::type;
+
+		RemoveReferenceConst<const float&> value0 = 4;
+	}
+
+	namespace TEMPLATE5			// 分支结构
+	{
+		struct A; struct B; struct C;
+
+		template<typename T>
+		struct Fun_
+		{
+			constexpr static size_t  value = 0;
+		};
+
+		template <typename T>
+		constexpr size_t Goo = 0;
+
+		// 特化1：
+		template <>
+		struct Fun_<A>
+		{
+			constexpr static size_t value = 1;
+		};
+
+		template <>
+		constexpr size_t Goo<A> = 1;
+
+		// 特化2：
+		template <>
+		struct Fun_<B>
+		{
+			constexpr static size_t value = 2;
+		};
+
+		template <>
+		constexpr size_t Goo<B> = 2;
+
+		constexpr size_t value0 = Fun_<B>::value;
+
+	}
+
+	void test2()
+	{
+		debugDisp("TEMPLATE1::value0 == ", TEMPLATE1::value0);
+		debugDisp("typeid(TEMPLATE1::value0).name()== ", typeid(TEMPLATE1::value0).name());
+
+		debugDisp("TEMPLATE4::value0 == ", TEMPLATE4::value0);
+		debugDisp("typeid(TEMPLATE4::value0).name()== ", typeid(TEMPLATE4::value0).name());
+
+		debugDisp("test2 finished.");
+	}
+
+
+	// test3()——类似模板函数的lambda
+	void test3() 
+	{
+		// c++14中可以定义参数为auto的lambda，可以当做函数模板使用；VS2015只支持部分的C++14的特性，包括这一项；
+		{
+			// lambda——泛型加法；
+			auto plus = [](auto a, auto b)
+				{
+					return a + b;
+				};
+			{
+				auto result0 = plus(1, 2);
+				auto result1 = plus(1.2, 3.4);
+				auto result2 = plus(3, 3.14);				// a和b不需要是同一类型；
+
+				debugDisp("result0 ==", result0);
+				debugDisp("result1 ==", result1);
+				debugDisp("result2 ==", result2);
+			}
+		}
+		 		 
+		debugDisp("test3() finished.");
+	}
+
+
+}
 
 
 
 int main()
 {   
-	TEST_AUXILIARY::test0();
+	//TEST_TEMPLATE::test3();
+
+	TEST_CONSTEXPR::test0();
 
 	debugDisp("main() finished."); 
 
