@@ -157,11 +157,11 @@ void basicTypes_pointers_module::test1()
 	std::cout << "\n\n\n\n" << std::endl;
 	debugDisp("test1：智能指针shared_ptr, unique_ptr");
 
-	float f1 = 1.10;
+	float f1 = 1.10f;
 
 	// 1. constructor——！！！智能指针不能指向栈对象，否则析构的时候（如reset()时或进程结束的时候等）会抛出异常；
 	std::shared_ptr<float> pf1;									// 默认构造函数，构造一个空的shared_ptr指针  
-	std::shared_ptr<float> pf3(new float(1.11));		// 传递普通指针构造，配合关键字new
+	std::shared_ptr<float> pf3(new float(1.11f));		// 传递普通指针构造，配合关键字new
 
 	// 2. make_shared<T>()————创建一个shared_ptr指针
 	/*

@@ -136,7 +136,6 @@
 #endif
 
 
-
 #line 1000								// 当前行号重置为1000 
 		std::cout << "\t当前行号重置为1000 ：#line 1000; __LINE__ == " << __LINE__ << std::endl;
 #line 10 "temp.c"						 // 当前行号重置为10，当前源文件名重置为temp.c

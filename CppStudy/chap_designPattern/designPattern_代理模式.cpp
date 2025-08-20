@@ -198,7 +198,7 @@ namespace PROXY_FACTORY
 
 
 		// 返回一个射线检测功能类的实力，工厂调用。
-		IVObject* GetGenerator(const unsigned nGuid)
+		IVObject* GetGenerator(const size_t nGuid)
 		{
 			return static_cast<IVMeshSimplify*>(new VCMeshSimplify(nGuid));
 		}
@@ -333,7 +333,7 @@ namespace PROXY_FACTORY
 		private:
 			void* OBJ_GetMeshSimplify()
 			{
-				unsigned nIdx = m_vObj.size();
+				size_t nIdx = m_vObj.size();
 				m_vObj.push_back(NMALG_MESHSIMPLIFY::GetGenerator(nIdx + GUID_BASE));
 				return m_vObj[nIdx];
 			}
@@ -341,7 +341,7 @@ namespace PROXY_FACTORY
 
 			void* OBJ_GetMeshrayintersection()
 			{
-				unsigned nIdx = m_vObj.size();
+				size_t nIdx = m_vObj.size();
 				m_vObj.push_back(NMALG_MESHRAYINTERSECTION::GetGenerator(nIdx + GUID_BASE));
 				return m_vObj[nIdx];
 			}
@@ -349,7 +349,7 @@ namespace PROXY_FACTORY
 
 			void* OBJ_GetCutpathhpgen()
 			{
-				unsigned nIdx = m_vObj.size();
+				size_t nIdx = m_vObj.size();
 				m_vObj.push_back(NMALG_CUTPATHHPGEN::GetGenerator(nIdx + GUID_BASE));
 				return m_vObj[nIdx];
 			}

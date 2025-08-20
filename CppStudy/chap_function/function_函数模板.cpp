@@ -42,7 +42,7 @@ void function_function_template_module::test0()
 {
 	using namespace FUNCTION_TEMPLATE_EXAMPLE1;
 	int arri[10] = {0,1,2,3,4,5,6,7,8,9};
-	float arrf[5] = {1.11, 2.22, 3.33, 4.44, 5.55};
+	float arrf[5] = {1.11f, 2.22f, 3.33f, 4.44f, 5.55f};
 
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test0: 函数模板的基本使用" << std::endl;

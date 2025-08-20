@@ -190,11 +190,13 @@ void stdlib_numerical_module::test5()
 	 
 	// std::iota(begin, end, 首元素值)——生成间隔为1的等差数列：
 	std::vector<int> numVec1;
-	numVec1.resize(10);
-	std::iota(numVec1.begin(), numVec1.end(), 9);
-	debugDisp("numVec1 == ");
-	traverseSTL(numVec1, disp<int>());
-	 
+	{
+		numVec1.resize(10);
+		std::iota(numVec1.begin(), numVec1.end(), 9);
+
+		debugDisp("numVec1 == ");
+		traverseSTL(numVec1, disp<int>());
+	}	 
 
 	debugDisp("test5() finished.");
 }

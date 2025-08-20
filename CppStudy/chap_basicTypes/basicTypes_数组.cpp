@@ -72,12 +72,10 @@ void basicTypes_array_module::test0()
 
 	// 声明数组时，数组维度必须是一个常量表达式：
 	int arri1[5];
-
-	const unsigned int size1 = 4;
-	constexpr unsigned int size2 = 3;
-	float arrf1[size1];
-	float arrf2[size2];				// 上面如果不指明size1是常量，size2是常量表达式的话，编译不通过。
-
+	const size_t size1 = 4;
+	float arrf1[size1]; 
+	constexpr size_t size2 = 3;
+	float arrf2[size2];									// 上面如果不指明size1是常量，size2是常量表达式的话，编译不通过。  
 
 	// 声明时如果赋初始值，则可以不写维度：
 	int arri2[] = {1,2,3};
@@ -85,16 +83,15 @@ void basicTypes_array_module::test0()
 
 	// 列表初始化可以只初始化部分数组。
 	int arri3[5] = { 9 };					// 首元素设为9，其他元素默认初始化，值为0；
-	for (int i: arri3) 
-	{
-		std::cout << "\t" << i;
-	}
+	for (int i: arri3)  
+		std::cout << "\t" << i; 
 	std::cout << std::endl;
 
 
 	// 使用sizeof可以获取数组的容量、元素数
 	std::cout << "\tarri1的容量为：sizeof(arri1) == " << sizeof(arri1) << std::endl;
 	std::cout << "\tarrf1的元素数目为：sizeof(arrf1)/sizeof(float) == " << sizeof(arrf1) / sizeof(float) << std::endl;
+	std::cout << "\tarrf1的元素数目为：sizeof(arrf2)/sizeof(float) == " << sizeof(arrf2) / sizeof(float) << std::endl;
 }
 
 

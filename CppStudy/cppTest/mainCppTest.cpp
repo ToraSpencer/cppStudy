@@ -5,6 +5,7 @@
 #include <list>
 #include <tuple>
 #include <type_traits>
+#include <memory>
  
 
 //  WINDOWS提供的时间相关的接口
@@ -32,7 +33,7 @@ namespace MY_WIN_API
 		{
 			do
 			{
-				bool isSubDir = (fileinfo.attrib & _A_SUBDIR);
+				bool isSubDir = (fileinfo.attrib & _A_SUBDIR) > 0;
 				//如果是目录,递归查找；如果不是,把文件绝对路径存入vector中
 				if (isSubDir && blRecur)
 				{
@@ -129,7 +130,7 @@ namespace MY_WIN_API
 		}
 
 		// We add time_delta / 2 so the result is rounded.  
-		cpu_ratio = (int)((system_time_delta * 100 + time_delta / 2) / time_delta); // the % unit
+		cpu_ratio = static_cast<float>(system_time_delta * 100 + time_delta / 2) / static_cast<float>( time_delta ); // the % unit
 		last_system_time = system_time;
 		last_time = time;
 
@@ -523,7 +524,7 @@ namespace TEST_UNKNOWN
 		template <>				// 函数模板isEqual的全特化
 		bool isEqual(char* arg1, char* arg2)
 		{
-			return strcmp(arg1, arg2);
+			return (0 == strcmp(arg1, arg2));
 		}
 
 
@@ -575,7 +576,7 @@ namespace TEST_UNKNOWN
 		void test0()
 		{
 			// std::make_tuple();
-			std::tuple<int, float, bool> t1(1, 2.0, false);
+			std::tuple<int, float, bool> t1(1, 2.0f, false);
 			std::tuple<double, unsigned, bool> t2 = std::make_tuple(2.0, 3, true);
 			std::tuple<int, double, double, std::string> t3 = std::make_tuple(3, 1.1, 2.2, "hahaha");
 
@@ -1003,7 +1004,7 @@ namespace TEST_UNKNOWN
 			debugDisp("input number ==", num);
 		}
 
-		void goo(const int num) noexcept
+		void goo(const int num) /*noexcept*/
 		{
 			if (num < 0)
 				throw(std::out_of_range("invalid input."));
@@ -1175,10 +1176,11 @@ namespace TEST_UNKNOWN
 			sb2 = std::dynamic_pointer_cast<Base>(sd2);
 			sd1 = std::dynamic_pointer_cast<Derived>(sb1);			// 编译不报错，但是因为并没有指向派生类对象，所以向下造型失败，返回空指针；
 			sd2 = std::dynamic_pointer_cast<Derived>(sb2);			// 向下造型成功；
-
-			//		2.2. 可以使用std::reinterpret_pointer_cast<>()来强行向下造型；
+			 
+#if 0
+			//		( c++17 ) 2.2. 可以使用std::reinterpret_pointer_cast<>()来强行向下造型；
 			std::shared_ptr<Derived> sd11 = std::reinterpret_pointer_cast<Derived>(sb1);			// 强行向下造型补上的成员变量貌似是随机值；
-
+#endif
 			debugDisp("test2() finished.");
 		}
 	}
@@ -1312,8 +1314,8 @@ namespace TEST_UNKNOWN
 		{
 			std::vector<int> intVec;
 			int current_pid = 0;
-			float cpu_usage_ratio = 0;
-			float memory_usage = 0;
+			double cpu_usage_ratio = 0.0;
+			double memory_usage = 0.0;
 			current_pid = GetCurrentPid();												// or you can set a outside program pid
 			std::cout << "current pid: " << current_pid << std::endl;
 
@@ -1373,8 +1375,8 @@ namespace TEST_UNKNOWN
 					}).detach();
 
 			int current_pid = GetCurrentPid();												// or you can set a outside program pid
-			float cpu_usage_ratio = GetCpuUsageRatio(current_pid);
-			float memory_usage = GetMemoryUsage(current_pid);
+			double cpu_usage_ratio = GetCpuUsageRatio(current_pid);
+			double memory_usage = GetMemoryUsage(current_pid);
 
 			while (true)
 			{
@@ -1438,7 +1440,7 @@ namespace TEST_UNKNOWN
 		typedef	struct TDline
 		{
 			std::string name;
-			unsigned long tel;
+			unsigned long long tel;
 			std::string address;
 			void disp()
 			{
@@ -1469,6 +1471,7 @@ namespace TEST_UNKNOWN
 			ExpData.close();					// ！！操作完之后要关闭文件流
 
 			// 1.2 写二进制文件，自定义类型变量——write()方法写入，或使用重载的输出流运算符。
+			
 			// write()方法
 			/*
 			basic_ostream& write( const char_type* s,		待写入的数据的头部指针，强转为char*
@@ -1543,7 +1546,7 @@ namespace TEST_UNKNOWN
 			TDline vlineRead[10];
 			telDirectory.open("telephone_directory.dat", std::ios_base::in | std::ios_base::binary);
 			telDirectory.seekg(0, telDirectory.end);					//追溯到文件流的尾部
-			unsigned int TDsize = telDirectory.tellg();
+			std::streampos TDsize = telDirectory.tellg();
 			telDirectory.seekg(0, telDirectory.beg);					//回到文件流的头部	
 			std::cout << "TDsize == " << TDsize << std::endl;
 			if (telDirectory.is_open())
@@ -1718,53 +1721,7 @@ namespace TEST_UNKNOWN
 
 			debugDisp("test4() finished.");
 		}
-
-
-		// 测试数组序列化/反序列化接口；
-		void test5()
-		{
-			std::vector<std::uint64_t> vec{ 0, 2, 99, 78, 77, 89, 89 };
-			std::vector<float> vecF{ 1.1, 1.2, -9.0, 13.1 };
-			std::vector<double> vecD{ 1.1, 1.2, -9.0, 13.1 };
-			std::vector<std::uint64_t> vecRead;
-			std::vector<float> vecFRead;
-			std::vector<double> vecDRead;
-			if (!serializeVector(g_debugPath + "vec.dat", vec))
-			{
-				debugDisp("Error!!! serializeVector() failed");
-				return;
-			}
-			if (!serializeVector(g_debugPath + "vecF.dat", vecF))
-			{
-				debugDisp("Error!!! serializeVector() failed");
-				return;
-			}
-			if (!serializeVector(g_debugPath + "vecD.dat", vecD))
-			{
-				debugDisp("Error!!! serializeVector() failed");
-				return;
-			}
-			if (!deserializeVector(vecRead, g_debugPath + "vec.dat"))
-			{
-				debugDisp("Error!!! deserializeVector() failed");
-				return;
-			}
-			if (!deserializeVector(vecFRead, g_debugPath + "vecF.dat"))
-			{
-				debugDisp("Error!!! deserializeVector() failed");
-				return;
-			}
-			if (!deserializeVector(vecDRead, g_debugPath + "vecD.dat"))
-			{
-				debugDisp("Error!!! deserializeVector() failed");
-				return;
-			}
-			traverseSTL(vecRead, disp<std::uint64_t>());
-			traverseSTL(vecFRead, disp<float>());
-			traverseSTL(vecDRead, disp<double>());
-
-			debugDisp("test5() finished.");
-		}
+		 
 	}
 
 
@@ -1895,7 +1852,7 @@ namespace TEST_NEW_FEATURES
 
 			myString(const char* str)
 			{
-				unsigned len = strlen(str);
+				size_t len = strlen(str);
 				this->c_str = new char[len + 1];
 				memcpy(c_str, str, len + 1);
 			}
@@ -1904,7 +1861,7 @@ namespace TEST_NEW_FEATURES
 			{
 				std::cout << "拷贝构造函数被调用。" << std::endl;
 				char* pc = str0.getStr();
-				unsigned num = strlen(pc) + 1;
+				size_t num = strlen(pc) + 1;
 				this->c_str = new char[num];
 				memcpy(this->c_str, pc, num);
 
@@ -2297,19 +2254,19 @@ namespace TEST_STL
 			// 生成一个大容量的向量，存放随机数：
 			std::vector<float> numVec(10000, 0);
 			std::vector<float> randVec(10000);
-			numVec[0] = 0.1;
-			unsigned elemCount = numVec.size();
+			numVec[0] = 0.1f;
+			size_t elemCount = numVec.size();
 			std::default_random_engine e;								// 随机数生成器的引擎对象
-			std::uniform_real_distribution<float> URD_f(0, 1);
+			std::uniform_real_distribution<float> URD_f(0.0f, 1.0f);
 			tiktok& tt = tiktok::getInstance();
 
 			std::cout << "多线程测试开始：" << std::endl;	// 生成一组随机数，求和，赋值给numVec中的元素；
 			tt.start();
-			PARALLEL_FOR(0, elemCount, [&](const unsigned index)
+			PARALLEL_FOR(0, elemCount, [&](const size_t index)
 				{
 					for (auto& num : randVec)
 						num = URD_f(e);
-					numVec[index] = std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0));
+					numVec[index] = static_cast<float>(std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0.0f)));
 				});
 			tt.endCout("多线程耗时：");
 
@@ -2321,7 +2278,7 @@ namespace TEST_STL
 			{
 				for (auto& num : randVec)
 					num = URD_f(e);
-				numVec[i] = std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0));
+				numVec[i] = static_cast<float>(std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0.0)));
 			}
 			tt.endCout("单线程耗时：");
 #endif 
@@ -2330,7 +2287,7 @@ namespace TEST_STL
 			float accumBase = 1.5;
 			std::vector<float>* vecPtr = &randVec;
 			std::tuple<float, std::vector<float>*> ptt = std::make_tuple(accumBase, vecPtr);
-			PARALLEL_FOR(0, elemCount, [&](const unsigned index, const std::tuple<float, std::vector<float>*>& paramTuple)
+			PARALLEL_FOR(0, elemCount, [&](const size_t index, const std::tuple<float, std::vector<float>*>& paramTuple)
 				{
 					std::vector<float>& randVec0 = *std::get<1>(paramTuple);
 					float accumBase0 = std::get<0>(paramTuple);
@@ -2368,7 +2325,7 @@ namespace TEST_STL
 			{
 				for (auto& num : randVec)
 					num = URD_f(e);
-				numVec[i] = std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0));
+				numVec[i] = static_cast<float>(std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0.0f)));
 			}
 			tt.endCout("omp多线程耗时：");
 
@@ -2380,7 +2337,7 @@ namespace TEST_STL
 				{
 					for (auto& num : randVec)
 						num = URD_f(e);
-					numVec[i] = std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0));
+					numVec[i] = static_cast<float>(std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0.0f)));
 				}
 				tt.endCout("单线程耗时：");
 			}
@@ -2578,7 +2535,7 @@ namespace TEST_STL
 				const size_t num4 = UID_size(e);
 				std::array<int, 5> arr1 = { 1, 2, 3, 4, 5 };
 				//std::array<int, num2> arr2;			// num2非常量
-				std::array<int, num3> arr3;
+				//std::array<int, num3> arr3;
 				//std::array<int, num4> arr4;			// num3运行时常量，编译期无法确定；
 			}
 
@@ -2746,7 +2703,7 @@ namespace TEST_STL
 			std::cout << "numMap.bucket_count() == " << numMap.bucket_count() << std::endl;			// 桶的数目；
 
 			// bucket()方法，返回桶的下标。不过貌似没什么意义，因为不能通过下标来访问桶对应的元素；
-			unsigned bukIdx0 = numMap.bucket(2);
+			size_t bukIdx0 = numMap.bucket(2);
 			std::cout << "numMap.bucket(2) == " << numMap.bucket(2) << std::endl;
 			std::cout << "numMap.bucket_size(bukIdx0) == " << numMap.bucket_size(bukIdx0) << std::endl;
 
@@ -3279,7 +3236,7 @@ namespace TEST_STL
 		void test9()
 		{
 			std::vector<int> vec{ 1,2,3,4,5,6,7,8,9,1,2,3,4,4,3,1,2 };
-			int result = std::count(vec.begin(), vec.end(), 2);
+			std::ptrdiff_t result = std::count(vec.begin(), vec.end(), 2);
 			std::cout << "2在迭代器范围内出现的次数：" << result << std::endl;
 		}
 
@@ -3294,7 +3251,7 @@ namespace TEST_STL
 			// 1. numVec1中的元素被重排，numVec1.begin()~ret之间的元素为unique元素；ret之后的元素是随机的
 			auto retIter = std::unique(numVec1.begin(), numVec1.end());
 			numVec2.insert(numVec2.end(), numVec1.begin(), retIter);
-			int uniqueCount = std::distance(numVec1.begin(), retIter);
+			std::ptrdiff_t uniqueCount = std::distance(numVec1.begin(), retIter);
 			debugDisp("uniqueCount == ", uniqueCount);
 			debugDisp("numVec2 == ");
 			traverseSTL(numVec2, disp<int>());
@@ -3311,7 +3268,7 @@ namespace TEST_STL
 			std::default_random_engine e;												// 随机数生成器的引擎对象
 			std::uniform_int_distribution<int> URD_I(0, 100);
 			std::unordered_set<int> tmpSet;
-			const int numCount = 1e6;
+			const int numCount = 1000000;
 			numVec1.resize(numCount);
 			for (auto& num : numVec1)
 				num = URD_I(e);
@@ -3433,7 +3390,7 @@ namespace TEST_STL
 			std::cout << std::endl << std::endl;
 
 			// std::numeric_limits<>::denorm_min()——最小非正规值；
-			double eps = std::numeric_limits<double>::denorm_min();
+			constexpr double eps = std::numeric_limits<double>::denorm_min();
 			std::cout << (0 < eps) << std::endl;
 			std::cout << (0 < eps / 2) << std::endl;
 
@@ -3683,15 +3640,15 @@ namespace TEST_OOP
 			parser3->setPointer(&str[0]);
 
 			// 解析：
-			const unsigned stringLen = str.size();
-			for (unsigned i = 0; i < stringLen; ++i)
+			const size_t stringLen = str.size();
+			for (size_t i = 0; i < stringLen; ++i)
 			{
 				parser1->parse(ch);
 				std::cout << ch << ", ";
 			}
 			debugDisp("\n");
 
-			for (unsigned i = 0; i < stringLen / sizeof(unsigned short); ++i)
+			for (size_t i = 0; i < stringLen / sizeof(unsigned short); ++i)
 			{
 				parser2->parse(num);
 				std::cout << num << ", ";
@@ -3700,7 +3657,7 @@ namespace TEST_OOP
 
 			auto elem = vec[0];
 			elem = 0;
-			for (unsigned i = 0; i < stringLen / sizeof(decltype(vec[0])); ++i)
+			for (size_t i = 0; i < stringLen / sizeof(decltype(vec[0])); ++i)
 			{
 				parser3->parse(elem);
 				std::cout << elem << ", ";
@@ -3730,13 +3687,13 @@ namespace TEST_OOP
 			// 
 			parser1 = new dataParser<char>();
 			parser2 = new dataParser<unsigned short>();
-			parser3 = new dataParser<unsigned>();
+			parser3 = new dataParser<size_t>();
 			parser1->setPointer(&str[0]);
 			parser2->setPointer(&str[0]);
 			parser3->setPointer(&str[0]);
 
 			// 解析：
-			const unsigned stringLen = str.size();
+			const size_t stringLen = str.size();
 			ch = *(reinterpret_cast<char*>(parser1->parse()));
 			debugDisp("ch == ", ch);
 			num = *(reinterpret_cast<unsigned short*>(parser2->parse()));
@@ -4319,7 +4276,7 @@ namespace PERMUTATION_COMBINATION
 			// 计算二进制数中1的个数，即组合中的元素个数
 			int count = count1Bits(i);
 			if (count == m) 
-				printCombination(i, n);			
+				printCombination(static_cast<int>( i ), n);			
 		}
 	}
 
@@ -4413,7 +4370,7 @@ namespace TEST_TYPE_TRAITS
 
 		{
 			int num1 = 1;
-			float num2 = 1.2;
+			float num2 = 1.2f;
 			double num3 = 11.2;
 			std::vector<int> vec1;
 			std::vector<float> vec2;
@@ -4443,8 +4400,8 @@ namespace TEST_TYPE_TRAITS
 
 	void test1() 
 	{
-		NumType num;
-		bool isInt = true; 
+		//NumType num;
+		//bool isInt = true; 
 
 		debugDisp("test1() finished.");
 	}
@@ -4601,11 +4558,16 @@ namespace TEST_ENV
 /////////////////////////////////////////////////////////////////////////////////////////////  测试辅助工具接口
 namespace TEST_AUXILIARY 
 {
+	// 测试文件系统相关辅助接口：
 	void test0() 
 	{
+
 		debugDisp("retFlag1 == ", CreateFolder(CorrectDirPath(g_debugPath) + "folder_a"));
 		debugDisp("retFlag1 == ", CreateFolder(CorrectDirPath(g_debugPath) + "文件夹_a"));
-		debugDisp("test0() finished.");
+
+
+
+		debugDisp("TEST_AUXILIARY::test0() finished.");
 	}
 
 }
@@ -4645,7 +4607,7 @@ namespace TEST_BIT
 		std::string binaryStr = bits.to_string();
 
 		// 1. 插入空格分隔每字节
-		for (int i = binaryStr.length() - 8; i > 0; i -= 8)
+		for (int i = static_cast<int>(binaryStr.length()) - 8; i > 0; i -= 8)
 			binaryStr.insert(i, " ");
 
 		// 2. 如果不需要完整格式，则移除前导零
@@ -4778,63 +4740,89 @@ namespace TEST_NAN_INFINITY
 	// nan INFINITY
 	void test1()
 	{
-		float num1 = INFINITY;			// C风格的无穷大
-		float num2 = -INFINITY;
-		float num3 = NAN;					// C风格的not a number;
-		float num4 = -num3;
+		{
+			float num1 = INFINITY;			// C风格的无穷大
+			float num2 = -INFINITY;
+			float num3 = NAN;					// C风格的not a number;
+			float num4 = -num3;
 
-		float num11 = std::numeric_limits<float>::infinity();			// C++风格的无穷大；
-		float num22 = -std::numeric_limits<float>::infinity();
-		float num33 = std::numeric_limits<float>::quiet_NaN();			// C++风格的not a number;
+			float num11 = std::numeric_limits<float>::infinity();			// C++风格的无穷大；
+			float num22 = -std::numeric_limits<float>::infinity();
+			float num33 = std::numeric_limits<float>::quiet_NaN();			// C++风格的not a number;
 
-		// 大小比较：常数和C风格的NAN比较，始终返回false; 但是C++风格的NAN貌似本质上还是个无穷大值； 
-		debugDisp("(3 > num1) == ", 3 > num1);
-		debugDisp("(3 > num11) == ", 3 > num11);
-		debugDisp("(3 > num2) == ", 3 > num2);
-		debugDisp("(3 > num22) == ", 3 > num22);
-		debugDisp("(3 > num3) == ", 3 > num3);
-		debugDisp("(3 < num3) == ", 3 < num3);
-		debugDisp("(3 > num4) == ", 3 > num4);
-		debugDisp("(3 < num4) == ", 3 < num4);
-		debugDisp("(3 > num33) == ", 3 > num33);
-		debugDisp("(3 < num33) == ", 3 < num33);
+			// 大小比较：常数和C风格的NAN比较，始终返回false; 但是C++风格的NAN貌似本质上还是个无穷大值； 
+			debugDisp("(3 > num1) == ", 3 > num1);
+			debugDisp("(3 > num11) == ", 3 > num11);
+			debugDisp("(3 > num2) == ", 3 > num2);
+			debugDisp("(3 > num22) == ", 3 > num22);
+			debugDisp("(3 > num3) == ", 3 > num3);
+			debugDisp("(3 < num3) == ", 3 < num3);
+			debugDisp("(3 > num4) == ", 3 > num4);
+			debugDisp("(3 < num4) == ", 3 < num4);
+			debugDisp("(3 > num33) == ", 3 > num33);
+			debugDisp("(3 < num33) == ", 3 < num33);
+			 
+			// identity: 
+			debugDisp("std::inf(num1) == ", std::isinf(num1));
+			debugDisp("std::inf(num2) == ", std::isinf(num2));
+			debugDisp("std::isnan(num3) == ", std::isnan(num3));
+			debugDisp("std::isnan(num4) == ", std::isnan(num4));
 
-		// identity: 
-		debugDisp("std::inf(num1) == ", std::isinf(num1));
-		debugDisp("std::inf(num2) == ", std::isinf(num2));
-		debugDisp("std::isnan(num3) == ", std::isnan(num3));
-		debugDisp("std::isnan(num4) == ", std::isnan(num4));
+			debugDisp("std::numeric_limits<decltype(num11)>::has_infinity(num11) == ", \
+				std::numeric_limits<decltype(num11)>::infinity() > num11);
+			debugDisp("std::numeric_limits<decltype(num22)>::has_infinity(num11) == ", \
+				std::numeric_limits<decltype(num22)>::infinity() > num22);
+			debugDisp("std::numeric_limits<decltype(num33)>::has_infinity(num11) == ", \
+				std::numeric_limits<decltype(num33)>::quiet_NaN() == num33);
+		} 
 
-		debugDisp("std::numeric_limits<decltype(num11)>::has_infinity(num11) == ", \
-			std::numeric_limits<decltype(num11)>::infinity() > num11);
-		debugDisp("std::numeric_limits<decltype(num22)>::has_infinity(num11) == ", \
-			std::numeric_limits<decltype(num22)>::infinity() > num22);
-		debugDisp("std::numeric_limits<decltype(num33)>::has_infinity(num11) == ", \
-			std::numeric_limits<decltype(num33)>::quiet_NaN() == num33);
-
-
-		constexpr std::uint64_t num1 = std::numeric_limits<std::uint64_t>::quiet_NaN();
-		constexpr int num2 = std::numeric_limits<int>::quiet_NaN();
-		constexpr float num3 = std::numeric_limits<float>::quiet_NaN();
-		debugDisp(num1);
-		debugDisp(num2);
-		debugDisp(num3);
-		debugDisp();
-		debugDisp(std::numeric_limits<decltype(num1)>::has_quiet_NaN);
-		debugDisp(std::numeric_limits<decltype(num2)>::has_quiet_NaN);
-		debugDisp(std::numeric_limits<decltype(num3)>::has_quiet_NaN);
-
-		debugDisp("finished.");
-
+		{
+			constexpr std::uint64_t num1 = std::numeric_limits<std::uint64_t>::quiet_NaN();
+			constexpr int num2 = std::numeric_limits<int>::quiet_NaN();
+			constexpr float num3 = std::numeric_limits<float>::quiet_NaN();
+			debugDisp(num1);
+			debugDisp(num2);
+			debugDisp(num3);
+			debugDisp();
+			debugDisp(std::numeric_limits<decltype(num1)>::has_quiet_NaN);
+			debugDisp(std::numeric_limits<decltype(num2)>::has_quiet_NaN);
+			debugDisp(std::numeric_limits<decltype(num3)>::has_quiet_NaN);
+		}
+		 
+		debugDisp("finished."); 
 	}
 
 }
 
 
+template <typename T>
+class Foo 
+{
+public:
+	union 
+	{
+		T arr[3];
+		struct 
+		{
+			T X;
+			T Y;
+			T Z;
+		};
+	}; 
+
+public:
+	Foo(const T x0, const T y0, const T z0) : X(x0), Y(y0), Z(z0) {}
+	T& at(const size_t index) 
+	{
+		return this->arr[index];
+	}
+};
+
+
+
 int main()
 {   
-	TEST_BIT::test1();
-	//TEST_BIT::test3();
+	TEST_AUXILIARY::test0();
 
 	debugDisp("main() finished."); 
 
