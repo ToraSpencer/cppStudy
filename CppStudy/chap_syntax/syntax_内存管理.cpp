@@ -111,9 +111,9 @@ namespace TEST_STRUCT
 		std::cout << "\n\n\n\n" << std::endl;
 		std::cout << "test0：C++中的内存分区" << std::endl;
 
-		int i1;											// 栈区
+		//int i1;											// 栈区
 		char str1[] = "abc";					// 栈区
-		char* pc;										// 栈区
+		//char* pc;										// 栈区
 		char str2[] = "123";				// "123"是字符串字面量，在文字常量区；str2在栈区
 		const char* str3 = "123";				// str3是指向字符串字面量"123"的指针。
 		static int i2 = 2;							// 全局区（静态区）
@@ -187,7 +187,7 @@ namespace TEST_STRUCT
 		// 使用new分配动态内存给堆对象。
 		int* pi1 = new int;											// 若开辟内存失败则抛出std::bad_alloc类型的异常。
 		int* pi2 = new (std::nothrow) int; 					// 若开辟内存失败则返回一个空指针，不抛出异常。
-		float* pf1 = new float(3.14159);				// 分配动态内存，并进行初始化。
+		float* pf1 = new float(3.14159f);				// 分配动态内存，并进行初始化。
 		int* parri1 = new int[5];							// 分配动态数组对象，要指明元素个数
 		// 动态数组并不是一个真正的数组对象，不能使用begin(), end(), 范围for循环
 		TEST_STRUCT::stru* pclass1 = new TEST_STRUCT::stru();		// 分配类对象，要调用构造函数。

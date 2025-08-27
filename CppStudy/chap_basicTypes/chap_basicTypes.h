@@ -10,7 +10,7 @@
  
 
 
-#ifdef DLL_EXPORTS
+#ifdef CHAP_BASICTYPES_EXPORTS
 #define DLL_API __declspec(dllexport) 
 #else
 #define DLL_API __declspec(dllimport)

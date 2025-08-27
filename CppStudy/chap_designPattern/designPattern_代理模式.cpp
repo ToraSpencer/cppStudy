@@ -125,7 +125,7 @@ namespace PROXY_PATTERN_AS1
 // 代理模式和工厂模式的结合——工作项目中的应用
 namespace PROXY_FACTORY 
 {
-	using FUNCPTRCreateOBJ = void*(*)(const unsigned);
+	using FUNCPTRCreateOBJ = void*(*)(const size_t);
 	using FUNCPTRReleaseOBJ = void(*)(void*);
 	FUNCPTRCreateOBJ g_FuncCreateObj= nullptr;		// 全局函数指针
 	FUNCPTRReleaseOBJ g_FuncReleaseObj = nullptr;
@@ -145,7 +145,7 @@ namespace PROXY_FACTORY
 		// ？？？
 		struct IVObjRef
 		{
-			virtual unsigned GetGuid() = 0;
+			virtual size_t GetGuid() = 0;
 		};
 
 
@@ -153,15 +153,15 @@ namespace PROXY_FACTORY
 		class VObjRef : public IVObjRef
 		{
 		public:
-			VObjRef(const unsigned nGuid) :m_nGuid(nGuid) {}
+			VObjRef(const size_t nGuid) :m_nGuid(nGuid) {}
 			virtual ~VObjRef() {}
-			virtual unsigned GetGuid()
+			virtual size_t GetGuid()
 			{
 				return m_nGuid;
 			}
 
 		private:
-			unsigned m_nGuid;
+			size_t m_nGuid;
 		};
 	}
 
@@ -182,7 +182,7 @@ namespace PROXY_FACTORY
 		class VCMeshSimplify : public IVMeshSimplify, public NM_COMMON::VObjRef 
 		{
 		public:
-			VCMeshSimplify(const unsigned nGuid) : NM_COMMON::VObjRef(nGuid)
+			VCMeshSimplify(const size_t nGuid) : NM_COMMON::VObjRef(nGuid)
 			{
 				std::cout << "实例化了一个网格精简功能类对象" << std::endl;
 			};
@@ -217,7 +217,7 @@ namespace PROXY_FACTORY
 		class VSMeshRayIntersection :public NM_COMMON::VObjRef, public IVMeshRayIntersection
 		{
 		public:
-			VSMeshRayIntersection(const unsigned nGuid) : NM_COMMON::VObjRef(nGuid)
+			VSMeshRayIntersection(const size_t nGuid) : NM_COMMON::VObjRef(nGuid)
 			{
 				std::cout << "实例化了一个射线检测功能类对象" << std::endl;
 			}
@@ -231,7 +231,7 @@ namespace PROXY_FACTORY
 			}
 		};
 
-		IVObject* GetGenerator(const unsigned nGuid)
+		IVObject* GetGenerator(const size_t nGuid)
 		{
 			return static_cast<IVMeshRayIntersection*>(new VSMeshRayIntersection(nGuid));
 		}
@@ -251,7 +251,7 @@ namespace PROXY_FACTORY
 		class VSCutpathhpgen :public NM_COMMON::VObjRef, public IVCutpathhpgen
 		{
 		public:
-			VSCutpathhpgen(const unsigned nGuid) : NM_COMMON::VObjRef(nGuid)
+			VSCutpathhpgen(const size_t nGuid) : NM_COMMON::VObjRef(nGuid)
 			{
 				std::cout << "实例化了一个生成带腭网格切割路径功能类对象" << std::endl;
 
@@ -266,7 +266,7 @@ namespace PROXY_FACTORY
 		};
 
 
-		IVObject* GetGenerator(const unsigned nGuid)
+		IVObject* GetGenerator(const size_t nGuid)
 		{
 			return static_cast<IVCutpathhpgen*>(new VSCutpathhpgen(nGuid));
 		}
@@ -290,7 +290,7 @@ namespace PROXY_FACTORY
 			VObjManager() = default;
 			virtual ~VObjManager()
 			{
-				for (unsigned i = 0; i < m_vObj.size(); i++)
+				for (size_t i = 0; i < m_vObj.size(); i++)
 				{
 					if (NULL != m_vObj[i])
 						delete m_vObj[i];
@@ -299,7 +299,7 @@ namespace PROXY_FACTORY
 
 			}
 
-			void* CreateObj(const unsigned nObjEnum)		// 创建功能类对象
+			void* CreateObj(const size_t nObjEnum)		// 创建功能类对象
 			{
 				switch (nObjEnum)
 				{
@@ -361,7 +361,7 @@ namespace PROXY_FACTORY
 		static VObjManager g_objManager;			// 全局的功能类管理者对象
 
 
-		void* CreateObject(const unsigned nObjEnum) 
+		void* CreateObject(const size_t nObjEnum) 
 		{
 			return g_objManager.CreateObj(nObjEnum);
 		}
@@ -386,7 +386,7 @@ namespace PROXY_FACTORY
 			VCProxy() = default;
 			~VCProxy() = default;
 
-			void* CreateObj(const unsigned nObjEnum)		// 回调函数的一个caller
+			void* CreateObj(const size_t nObjEnum)		// 回调函数的一个caller
 			{
 				if (NULL != g_FuncCreateObj)		// 初始化后，回调函数被绑定为container库中的管理对象的createObj方法
 				{

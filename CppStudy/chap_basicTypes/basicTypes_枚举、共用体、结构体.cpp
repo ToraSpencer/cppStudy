@@ -237,14 +237,14 @@ void basicTypes_enum_union_struct_module::test2()
 
 	unionData a;
 	a.numi = 99;
-	printf("sizeof(unionData) == %u\n", sizeof(unionData));
+	debugDisp("sizeof(unionData) == ", sizeof(unionData)); 
 	printf("%d, %f, %c\n", a.numi, a.numf, a.ch);
 
 	// union中一个成员的更改，会影响到其他成员
 	a.numi = 1;
 	printf("%d, %f, %c\n", a.numi, a.numf, a.ch);
 
-	a.numf = 3.14;
+	a.numf = 3.14f;
 	printf("%d, %f, %c\n", a.numi, a.numf, a.ch);
 
 	a.ch = 'a';

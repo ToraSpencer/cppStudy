@@ -1234,15 +1234,14 @@ namespace TEST_UNKNOWN
 	}
 
 
-
 	// 函数返回引用
-/*
-	最大的好处——在内存中不产生返回值的副本
-	返回的引用所绑定的变量一定是全局变量，不能是函数中定义的局部变量
-*/
+	/*
+		最大的好处——在内存中不产生返回值的副本
+		返回的引用所绑定的变量一定是全局变量，不能是函数中定义的局部变量
+	*/
 
 
-// sizeof()运算符
+	// sizeof()运算符
 	namespace SIZEOF
 	{
 		// 一个value-like类
@@ -1757,100 +1756,6 @@ namespace TEST_NEW_FEATURES
 	// 常量表达式constexpr ( c++11)
 	namespace TEST_CONSTEXPR
 	{ 
-
-		// 按索引遍历：
-		template <std::size_t N>
-		struct for_each_index_impl2
-		{
-			static const std::size_t N1 = N / 2;
-			static const std::size_t N2 = N - N1;
-
-			template <std::size_t Offset, typename UnaryFunction>
-			static inline void apply(UnaryFunction& function)
-			{
-				for_each_index_impl2<N1>::template apply<Offset>(function);
-				for_each_index_impl2<N2>::template apply<Offset + N1>(function);
-			}
-		};
-
-		template <>
-		struct for_each_index_impl2<3>
-		{
-			template <std::size_t Offset, typename UnaryFunction>
-			static inline void apply(UnaryFunction& function)
-			{
-				function(Offset);
-				function(Offset + 1);
-				function(Offset + 2);
-			}
-		};
-
-		template <>
-		struct for_each_index_impl2<2>
-		{
-			template <std::size_t Offset, typename UnaryFunction>
-			static inline void apply(UnaryFunction& function)
-			{
-				function(Offset);
-				function(Offset + 1);
-			}
-		};
-
-		template <>
-		struct for_each_index_impl2<1>
-		{
-			template <std::size_t Offset, typename UnaryFunction>
-			static inline void apply(UnaryFunction& function)
-			{
-				function(Offset);
-			}
-		};
-
-		template <>
-		struct for_each_index_impl2<0>
-		{
-			template <std::size_t Offset, typename UnaryFunction>
-			static inline void apply(UnaryFunction&)
-			{
-			}
-		}; 
-
-
-		template <std::size_t N, typename UnaryFunction>
-		inline UnaryFunction for_each_index(UnaryFunction function)
-		{
-			for_each_index_impl2<N>::template apply<0>(function);				// N是容量，0是起始索引；
-
-			return function;
-		}
-
-
-		// test0——constexpr函数、函数模板：
-		template <std::size_t Index, typename T>
-		constexpr T getVecElem(const std::vector<T>& vec) 
-		{
-			return vec.at(Index);
-		}
-
-
-
-
-		void test0()
-		{
-			std::vector<int> numVec{ 0, 1, 2, 3, 4, 5};
-
-			//int num0 = getVecElem<3>(numVec);
-			//debugDisp("num0 == ", num0);
-
-			for_each_index< std::size_t{ 6 } > ([&](auto index)
-				{
-					debugDisp(numVec[index]);
-				});
-			
-			debugDisp("TEST_CONSTEXPR::test0() finished.");
-		}
-
-
 		// 自定义类构造函数声明为constexpr
 		class Foo 
 		{
@@ -1877,7 +1782,7 @@ namespace TEST_NEW_FEATURES
 		};
 
 
-		void test1()
+		void test0()
 		{  
 			constexpr int compile_time = 42; 
 			int runtime = 42;
@@ -1890,7 +1795,151 @@ namespace TEST_NEW_FEATURES
 			//auto result3 = ConstantHolder<Foo, compileTimeFoo>::value;					// 对自定义类型使用会失败；
 			//auto result4 = ConstantHolder<decltype(runTimeFoo), runTimeFoo>::value;
 
+			debugDisp("TEST_CONSTEXPR::test0() finished.");
+		}
+
+
+		// test1——constexpr函数、函数模板：
+		template <std::size_t Index, typename T>
+		constexpr T getIndexElem(const T* arr)
+		{
+			return arr[Index];														// c++11中的constexpr函数最多只能有一个return语句；
+		}
+
+
+		// 递归终止：当N == 0时：
+		template <typename T, size_t N, typename Func>
+		constexpr typename std::enable_if<N == 0>::type
+			for_each_elem_impl(const T*, Func) {}
+
+
+		// 递归终止：当N == 1时：
+		template <typename T, size_t N, typename Func>
+		constexpr typename std::enable_if<N == 1>::type
+			for_each_elem_impl(const T* arr, Func func) 
+		{
+			func(*arr);
+		}
+
+
+		// 递归递推：处理当前元素并继续处理剩余元素
+		template <typename T, size_t N, typename Func>
+		constexpr typename std::enable_if<(N > 1)>::type
+			for_each_elem_impl(const T* arr, Func func)
+		{
+			func(*arr);
+			for_each_elem_impl<T, N - 1, Func>(arr + 1, func);
+		}
+
+
+		// 主函数模板
+		template <typename T, size_t N, typename Func>
+		constexpr void for_each_elem(const T* arr, Func func) 
+		{
+			for_each_elem_impl<T, N, Func>(arr, func);
+		}
+		 
+
+		// 递归终止：当Index == N - 1时：
+		template <typename T, size_t N, size_t Index, typename Func>
+		constexpr typename std::enable_if<Index == (N - 1)>::type
+			for_each_index_impl(std::vector<T>& vec, Func func)
+		{
+			func(Index);
+		}
+
+
+		// 递归终止：当Index > N - 1时：
+		template <typename T, size_t N, size_t Index, typename Func>
+		constexpr typename std::enable_if<(Index > N - 1)>::type
+			for_each_index_impl(std::vector<T>& vec, Func func)
+		{}
+
+
+		// 递归递推：当Index < N - 1时：
+		template <typename T, size_t N, size_t Index, typename Func>
+		constexpr typename std::enable_if<(Index < N - 1)>::type
+			for_each_index_impl(std::vector<T>& vec, Func func)
+		{
+			func(Index);
+			for_each_index_impl<T, N, Index+1>(vec, func);
+		}
+
+
+		// 外部接口：
+		template <typename T, size_t N, typename Func>
+		constexpr void for_each_index(std::vector<T>& vec, Func func)
+		{
+			for_each_index_impl<T, N, 0>(vec, func);
+		}
+
+
+		void test1()
+		{
+			std::vector<int> numVec{ 0, 1, 2, 3, 4 };					// c++11中STL容器无法被声明为编译期常量；
+			constexpr int numArr[5] = { 0, 1, 2, 3, 4 };
+
+			//const int* intPtr = &numVec[0];
+			//constexpr int num3 = getIndexElem<3, int>(intPtr);
+			constexpr int num3 = getIndexElem<3, int>(numArr);
+			for_each_elem<int, 5>(numArr, [](const int& x)
+				{
+					std::cout << x << ", ";
+					return x;
+				});
+			debugDisp();
+
+			std::vector<int> numVec2{15, 16, 17, 18};
+			for_each_index_impl<int, 1, 0>(numVec2, [&](const size_t& idx) 
+				{
+					debugDisp("at idx == ", idx, ", value == ", numVec2[idx]); 
+				});
+			debugDisp("test for_each_index() : ");
+			for_each_index<int, 4>(numVec2, [&](auto idx)
+				{
+					debugDisp("at idx == ", idx, ", value == ", numVec2[idx]);
+				});
+
 			debugDisp("TEST_CONSTEXPR::test1() finished.");
+		}
+
+
+		template <size_t N, size_t Index, typename T>
+		constexpr typename std::enable_if<(Index > N - 1)>::type vecAdd_impl(\
+			std::vector<T>& vecOut, const std::vector<T>& vec1, const std::vector<T>& vec2)
+		{}
+
+		template <size_t N, size_t Index, typename T>
+		constexpr typename std::enable_if<(Index == N - 1)>::type vecAdd_impl(\
+			std::vector<T>& vecOut, const std::vector<T>& vec1, const std::vector<T>& vec2)
+		{
+			vecOut[Index] = vec1[Index] + vec2[Index];
+		}
+
+		template <size_t N, size_t Index, typename T>
+		constexpr typename std::enable_if<(Index < N - 1)>::type vecAdd_impl(\
+			std::vector<T>& vecOut, const std::vector<T>& vec1, const std::vector<T>& vec2)
+		{
+			vecOut[Index] = vec1[Index] + vec2[Index];
+			vecAdd_impl<N, Index + 1, T>(vecOut, vec1, vec2);
+		}
+
+		template <size_t N, typename T>
+		constexpr void vecAdd(std::vector<T>& vecOut, const std::vector<T>& vec1, const std::vector<T>& vec2) 
+		{
+			vecOut.resize(N);
+			vecAdd_impl<N, 0, T>(vecOut, vec1, vec2);
+		}
+
+
+		void test2() 
+		{ 
+			std::vector<int> vec1{ 1,2,3,4,5 }, vec2{ 5,6,7,8,9 }, vecOut;
+			vecOut.resize(5);
+			vecAdd<5, int>(vecOut, vec1, vec2);
+			traverseSTL(vecOut, disp<int>{});
+
+			debugDisp("TEST_CONSTEXPR::test2() finished.");
 		}
 
 	}
@@ -2086,7 +2135,6 @@ namespace TEST_NEW_FEATURES
 		}
 
 	}
-
 	 
 }using namespace TEST_NEW_FEATURES;
 
@@ -2666,6 +2714,7 @@ namespace TEST_STL
 			}
 			std::cout << std::endl;
 		}
+
 
 		// 多维std::array数组
 		void test1() 
@@ -4505,7 +4554,6 @@ namespace TO_DO
 	void getDataRecur(std::vector<T>& vecOut, const Container& con)
 	{}
 
-
 }
    
 
@@ -4873,6 +4921,7 @@ namespace TEST_TEMPLATE
 
 	}
 
+
 	void test2()
 	{
 		debugDisp("TEMPLATE1::value0 == ", TEMPLATE1::value0);
@@ -4910,15 +4959,114 @@ namespace TEST_TEMPLATE
 	}
 
 
+	// 按索引遍历：
+	template <std::size_t N>
+	struct for_each_index_impl2
+	{
+		static const std::size_t N1 = N / 2;
+		static const std::size_t N2 = N - N1;
+
+		template <std::size_t Offset, typename UnaryFunction>
+		static inline void apply(UnaryFunction& function)
+		{
+			for_each_index_impl2<N1>::template apply<Offset>(function);
+			for_each_index_impl2<N2>::template apply<Offset + N1>(function);
+		}
+	};
+
+	template <>
+	struct for_each_index_impl2<3>
+	{
+		template <std::size_t Offset, typename UnaryFunction>
+		static inline void apply(UnaryFunction& function)
+		{
+			function(Offset);
+			function(Offset + 1);
+			function(Offset + 2);
+		}
+	};
+
+	template <>
+	struct for_each_index_impl2<2>
+	{
+		template <std::size_t Offset, typename UnaryFunction>
+		static inline void apply(UnaryFunction& function)
+		{
+			function(Offset);
+			function(Offset + 1);
+		}
+	};
+
+	template <>
+	struct for_each_index_impl2<1>
+	{
+		template <std::size_t Offset, typename UnaryFunction>
+		static inline void apply(UnaryFunction& function)
+		{
+			function(Offset);
+		}
+	};
+
+	template <>
+	struct for_each_index_impl2<0>
+	{
+		template <std::size_t Offset, typename UnaryFunction>
+		static inline void apply(UnaryFunction&)
+		{
+		}
+	};
+
+
+	template <std::size_t N, typename UnaryFunction>
+	inline UnaryFunction for_each_index(UnaryFunction function)
+	{
+		for_each_index_impl2<N>::template apply<0>(function);				// N是容量，0是起始索引；
+
+		return function;
+	}
+
+	 
+	void test4()
+	{
+		std::vector<int> numVec{ 0, 1, 2, 3, 4, 5 };
+
+		{
+			debugDisp("N == ", 3);
+			for_each_index < std::size_t{ 3 } > ([&](auto index)
+				{
+					debugDisp(numVec[index]);
+				});
+
+			debugDisp("N == ", 6);
+			for_each_index < std::size_t{ 6 } > ([&](auto index)
+				{
+					debugDisp(numVec[index]);
+				});
+
+			// 模板参数N必须是编译器常量，否则会编译报错；
+#if 0
+			size_t N0 = numVec.size();
+			for_each_index < std::size_t{ N0 } > ([&](auto index)
+				{
+					debugDisp(numVec[index]);
+				});
+#endif
+		}
+
+		debugDisp("TEST_TEMPLATE::test4() finished.");
+	}
+
 }
 
 
 
 int main()
 {   
-	//TEST_TEMPLATE::test3();
+	TEST_CONSTEXPR::test2();
 
-	TEST_CONSTEXPR::test0();
+	//TEST_TEMPLATE::test4();
+
+	 
 
 	debugDisp("main() finished."); 
 

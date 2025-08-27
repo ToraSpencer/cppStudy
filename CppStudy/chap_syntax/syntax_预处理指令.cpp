@@ -20,9 +20,9 @@
 		注意
 				宏替换的本质是完全的文本替换，将记号替换为字符串
 				宏是一个记号(token)型字符串，而不是字符型字符串
-				比如若定义了#define PI 3.14159
-				双引号中的PI不会被替换，因为是字符型字符串
-				其他地方的PI会被替换成文本3.14159
+						比如若定义了#define PI 3.14159
+						双引号中的PI不会被替换，因为是字符型字符串
+						其他地方的PI会被替换成文本3.14159
 		分类————1. 类对象宏(object-like macro)，	2. 类函数宏(function-like macro)
 
 	宏函数（类函数宏）
@@ -98,10 +98,8 @@
 
 	virtualModule* syntax_preprocessing_instruction_module::getInstance()		// 线程不安全的单例模式
 	{
-		if (nullptr != p_moduleIns)
-		{
-			delete p_moduleIns;
-		}
+		if (nullptr != p_moduleIns) 
+			delete p_moduleIns; 
 		p_moduleIns = new syntax_preprocessing_instruction_module;
 		return p_moduleIns;
 	}
@@ -164,12 +162,11 @@
 	}
 
 
-
 	// test1: 宏函数
 	/*
-	宏中的参数用括号括起来，替换体即为函数体。
-	宏函数没有inline函数安全，因为只是单纯地展开，不会做安全检查
-	注意每个参数都最好加括号，如下面如果不加括号的话TIMES(1+2,3+4)会展开为1+2*3+4；
+		宏中的参数用括号括起来，替换体即为函数体。
+		宏函数没有inline函数安全，因为只是单纯地展开，不会做安全检查
+		注意每个参数都最好加括号，如下面如果不加括号的话TIMES(1+2,3+4)会展开为1+2*3+4；
 	*/
 #define TIMES(x,y) (x)*(y)	
 
@@ -196,23 +193,10 @@
 	void syntax_preprocessing_instruction_module::test4() {}
 
 
-
-	void syntax_preprocessing_instruction_module::test5()
-	{
+	void syntax_preprocessing_instruction_module::test5() {}
 
 
-	}
+	void syntax_preprocessing_instruction_module::test6() {}
 
 
-
-	void syntax_preprocessing_instruction_module::test6()
-	{
-
-
-	}
-
-	void syntax_preprocessing_instruction_module::test7()
-	{
-
-
-	}
+	void syntax_preprocessing_instruction_module::test7() {}

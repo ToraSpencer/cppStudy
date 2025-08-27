@@ -166,13 +166,13 @@ void stdlib_numerical_module::test4()
 {
 	std::cout << "\n\n\n\n" << std::endl;
 	std::cout << "test4: C语言中生成随机数" << std::endl;
-	
-
-	srand(time(NULL));				// 以当前时间为种子初始化随机数生成器
+	 
+	srand(static_cast<unsigned int>(time(NULL)));				// 以当前时间为种子初始化随机数生成器
 	int a = 50;
 	int b = 100;
 
 	//	均匀分布的随机整数
+	
 	//			[a, b)区间的随机整数：
 	std::cout << rand() % (b - a) + a << std::endl;
 	//			[a, b]区间的随机整数：

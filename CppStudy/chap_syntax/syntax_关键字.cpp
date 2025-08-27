@@ -164,6 +164,7 @@
 
 
 	// test3()——constexpr关键字：常量表达式
+#if 0
 	namespace KEYWORD_CONSTEXPR
 	{
 		// 常量表达式 ==  编译期常量
@@ -233,7 +234,9 @@
 
 		debugDisp("syntax_keyword_module::test3() finished.");
 	}
-
+#else
+	void syntax_keyword_module::test3() {}
+#endif
 
 	void syntax_keyword_module::test4()
 	{

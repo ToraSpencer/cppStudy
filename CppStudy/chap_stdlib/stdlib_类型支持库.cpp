@@ -92,14 +92,12 @@ void stdlib_type_support_module::test1()
 	int b[2][3] = { {1,2,3},{4,5,6} };
 	std::cout << "int b[2][3] = {{1,2,3},{4,5,6}}; typeid(b).name() = " << typeid(b).name() << std::endl;
 
+#if 0
 	class testClass {};
 	testClass t;
 	std::cout << "class testClass{}; testClass t; typeid(t).name() = " << typeid(t).name() << std::endl;
-
-	std::cout << std::endl;
-
- 
-
+#endif
+	std::cout << std::endl; 
 }
 
 

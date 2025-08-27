@@ -246,8 +246,5 @@ bool reader::isNullModule() const
 	if (isNullChap()) 
 		return true; 
 
-	if (this->pc->isNullModule()) 
-		return true; 
-	else  
-		false;  
+	return this->pc->isNullModule();
 }

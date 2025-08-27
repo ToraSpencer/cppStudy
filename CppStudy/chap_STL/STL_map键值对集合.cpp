@@ -189,12 +189,12 @@ void STL_map_module::test0()
 	debugDisp("字典中的别名：");
 	{
 		using AsciiMap = std::map<char, int>;
-		AsciiMap::key_type c1;							// 字典键类型：char
-		AsciiMap::mapped_type num1;				// 字典映射的类型：int
+		AsciiMap::key_type c1{ 0 };							// 字典键类型：char
+		AsciiMap::mapped_type num1{ 0 };				// 字典映射的类型：int
 		AsciiMap::value_type pair1;						// 字典中的键值对类型：std::pair<const char, int>，注意前一项是const，字典中的键是不可更改的；
-		debugDisp("AsciiMap::key_type的类型为：", typeid(c1).name());
-		debugDisp("AsciiMap::mapped_type的类型为：", typeid(num1).name());
-		debugDisp("AsciiMap::value_type的类型为：", typeid(pair1).name());
+		debugDisp("AsciiMap::key_type的类型为：", typeid(c1).name(), ", c1 == ", c1);
+		debugDisp("AsciiMap::mapped_type的类型为：", typeid(num1).name(), ", num1 == ", num1);
+		debugDisp("AsciiMap::value_type的类型为：", typeid(pair1).name(), ", pair1.first == ", pair1.first);
 
 		debugDisp("\n");
 	}
@@ -237,11 +237,11 @@ void STL_map_module::test1()
 	set1.insert(5);
 	set1.insert(99);
 	set1.insert(-1);								// std::set默认情形下按元素从小到大排列
-	map1.insert({ 3, -1.5 });
-	map1.insert({ 1, 3.5 });
-	map1.insert({ -1, 1.6 });
-	map1.insert({ 88, 9.1 });
-	map1.insert({ 6, -7.5 });				// std::map默认情形下按键从小到大排列； 
+	map1.insert({ 3, -1.5f });
+	map1.insert({ 1, 3.5f });
+	map1.insert({ -1, 1.6f });
+	map1.insert({ 88, 9.1f });
+	map1.insert({ 6, -7.5f });				// std::map默认情形下按键从小到大排列； 
 	mmap1.insert({ 3, 'b' });
 	mmap1.insert({ 1, 'z' });
 	mmap1.insert({ -1, 'y' });
@@ -322,7 +322,7 @@ void STL_map_module::test2()
 
 	// 查找并打印出某一键的全部元素：
 	std::cout << "\t查找出multimap中某键的所有元素" << std::endl;
-	int num = mmss.count("xiaohong");							// multimap::count()————返回某键元素的个数。
+	int num = static_cast<int>(mmss.count("xiaohong"));							// multimap::count()————返回某键元素的个数。
 	std::multimap<std::string, int>::iterator iter1 = mmss.find("xiaohong");	// 返回第一个键为xiaohong的元素的迭代器
 	for(int i = 1; i<=num; i++)
 	{
@@ -359,23 +359,23 @@ void STL_map_module::test3()
 	vp.push_back(p7);
 
 	// 建立便于数据搜索的multimap:
-	std::multimap<std::string, int> m_name;			// 姓名搜索表，元素键是该人姓名，值是该人在vp向量中的下标。
-	std::multimap<int, int> m_age;					// 年龄搜索表
-	for(int i=0; i<=6; i++)
+	std::multimap<std::string, size_t> m_name;			// 姓名搜索表，元素键是该人姓名，值是该人在vp向量中的下标。
+	std::multimap<size_t, size_t> m_age;					// 年龄搜索表
+	for(size_t i=0; i<=6; i++)
 	{
 		m_name.insert(std::make_pair(vp[i].name, i));
 		m_age.insert(std::make_pair(vp[i].age, i));
 	}
 
 	// 搜索并打印数据：
-	std::multimap<std::string, int>::iterator iter1;
-	std::multimap<int, int>::iterator iter2;
-	int num;
+	std::multimap<std::string, size_t>::iterator iter1;
+	std::multimap<size_t, size_t>::iterator iter2;
+	size_t num;
 	
 	//		搜索名字“xiaoming”
 	num = m_name.count("xiaoming");
 	iter1 = m_name.find("xiaoming");
-	for(int i = 1; i<= num; i++)
+	for(size_t i = 1; i<= num; i++)
 	{
 		std::cout << "\t";
 		dispPerson(vp[(*iter1).second]);
@@ -386,7 +386,7 @@ void STL_map_module::test3()
 	//		搜索年龄10
 	num = m_age.count(10);
 	iter2 = m_age.find(10);
-	for(int i = 1; i<= num; i++)
+	for(size_t i = 1; i<= num; i++)
 	{
 		std::cout << "\t";
 		dispPerson(vp[(*iter2).second]);

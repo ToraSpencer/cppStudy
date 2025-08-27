@@ -313,7 +313,7 @@ void stdlib_io_module::test1()
 	std::string str1 = "hello world";
 	std::string str11;
 	int inum1 = 2019;
-	float fnum1 = 2019.4;
+	float fnum1 = 2019.4f;
 	char str2[512];
 
 	debugDisp("\n\n\n\n"); 

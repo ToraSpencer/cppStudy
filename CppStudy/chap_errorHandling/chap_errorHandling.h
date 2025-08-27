@@ -8,7 +8,7 @@
 #pragma comment(lib, "basicTools.lib")
 
 
-#ifdef DLL_EXPORTS
+#ifdef CHAP_ERRORHANDLING_EXPORTS
 #define DLL_API __declspec(dllexport) 
 #else
 #define DLL_API __declspec(dllimport)

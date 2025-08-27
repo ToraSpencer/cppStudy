@@ -283,16 +283,15 @@ virtualModule* STL_algorithm_module::getInstance()		// 线程不安全的单例模式
 // test0：algorithm中一些常用的只读算法——find(), accumulate(), equal(), for_each(), max_element()
 void STL_algorithm_module::test0()
 {
+    debugDisp("\n\n\n\n");
+    debugDisp("test0：algorithm中一些常用的只读算法");
+
 	std::vector<int> vi = {1,2,5,6,1,3,-1,-9};
 	std::vector<std::string> vs = {"dog","cat","panda"};
     int iarr[] = {1,-3,5,4,5,-6,4,-4,6};
     int sum;
-
     const char* sarr[] = {"dog","cat","duck"};
     bool flag;
-
-    debugDisp("\n\n\n\n"); 
-    debugDisp("test0：algorithm中一些常用的只读算法"); 
 
     // find()——容器中查找元素。
     debugDisp("find()——容器中查找元素。");
@@ -316,7 +315,6 @@ void STL_algorithm_module::test0()
 
         debugDisp("\n");
     }
-      
 
     // accumulate()——容器元素求和
     debugDisp("accumulate()——容器元素求和");
@@ -331,7 +329,8 @@ void STL_algorithm_module::test0()
     // equal()——比较容器中的元素
     debugDisp("equal()——比较容器中的元素");
     {
-        flag = equal(vs.begin(), vs.end(), std::begin(sarr));
+        auto vs0 = vs;
+        flag = std::equal(vs.begin(), vs.end(), std::begin(vs0));
         if (flag)
             std::cout << "\telements from two containers are the same. " << std::endl;
         else

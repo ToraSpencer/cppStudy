@@ -52,11 +52,10 @@
 
 			//		2. static成员函数
 			//		3. 对成员数据get / set的函数
-
-
+			 
 
 			//		4. 类内重载运算符的函数
-			Complex& operator+(const Complex& cc)	const;			// 重载加法运算符
+			Complex operator+(const Complex& cc)	const;			// 重载加法运算符
 			Complex& operator=(const Complex& cc);		// 重载赋值运算符
 			operator float();													// 重载C风格的类型转换运算符
 		};
@@ -73,7 +72,7 @@
 		{
 		}
 
-		Complex& Complex::operator+(const Complex& cc)	const
+		Complex Complex::operator+(const Complex& cc)	const
 		{
 			Complex temp;
 
@@ -85,13 +84,11 @@
 
 
 		Complex& Complex::operator=(const Complex& cc)
-		{
-			Complex temp;
+		{ 
+			this->real = cc.real;
+			this->imag = cc.imag;
 
-			temp.real = cc.real;
-			temp.imag = cc.imag;
-
-			return temp;
+			return *this;
 		}
 
 

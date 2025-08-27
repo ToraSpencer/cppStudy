@@ -47,18 +47,20 @@
         std::cout << "\n\n\n\n" << std::endl;
         std::cout << "test0: sizeof()运算符" << std::endl;
 
-        int arri[5];
+        int arri[5] = {};
         std::cout << "\t数组arri占内存：sizeof(arri) == " << sizeof(arri) << std::endl;
         std::cout << "\t数组arri含元素数：sizeof(arri)/sizeof(int) == " << sizeof(arri) / sizeof(int) << std::endl;
+        debugDisp("arri[0] == ", arri[0]);
 
         // 所有指针占内存都是一样的，由操作系统位数决定，64位系统下指针占8字节，即机器字长。
+#if 0
         int* pi;
         double* pd;
         void* pv;
         std::cout << "\t" << sizeof(pi) << std::endl;
         std::cout << "\t" << sizeof(pd) << std::endl;
-        std::cout << "\t" << sizeof(pv) << std::endl;
-
+        std::cout << "\t" << sizeof(pv) << std::endl; 
+#endif
     }
 
 

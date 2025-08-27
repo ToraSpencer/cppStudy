@@ -69,8 +69,10 @@ bool chap_syntax::selectModule(const int molEnum)
 
 }
 
-
-void* getChap()
+extern "C"
 {
-	return reinterpret_cast<void*>(chap_syntax::getInstance());
+	void* getChap()
+	{
+		return reinterpret_cast<void*>(chap_syntax::getInstance());
+	}
 }

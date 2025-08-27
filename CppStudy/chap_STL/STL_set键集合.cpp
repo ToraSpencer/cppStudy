@@ -247,9 +247,9 @@ void STL_set_module::test2()
 	using namespace COMPARER1;
 
 	set<float, floatComparer> fSet;
-	fSet.insert(0.5);
-	fSet.insert(1);
-	fSet.insert(1.1);		// 在自定义比较器下，1和1.1是等价的，set中不允许存在等价的元素，所以此行操作插入不成功。
+	fSet.insert(0.5f);
+	fSet.insert(1.0f);
+	fSet.insert(1.1f);		// 在自定义比较器下，1和1.1是等价的，set中不允许存在等价的元素，所以此行操作插入不成功。
 	traverseSTL(fSet, disp<float>());
 }
 
