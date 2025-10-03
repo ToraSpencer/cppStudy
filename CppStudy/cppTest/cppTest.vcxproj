@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\TTTML\Auxiliary\Auxiliary.cpp" />
+    <ClCompile Include="..\..\..\TTTML\Auxiliary\AuxiliaryWin.cpp" />
     <ClCompile Include="mainCppTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\TTTML\Auxiliary\Auxiliary.h" />
+    <ClInclude Include="..\..\..\TTTML\Auxiliary\AuxiliaryWin.h" />
     <ClInclude Include="..\TemplateTest.h" />
   </ItemGroup>
   <ItemGroup>

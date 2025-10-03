@@ -1,4 +1,5 @@
 ﻿#include "Auxiliary.h"
+#include "AuxiliaryWin.h"
 #include "TemplateTest.h"
  
 #include <array>
@@ -6,342 +7,214 @@
 #include <tuple>
 #include <type_traits>
 #include <memory>
- 
+#include <utility>			//	std::integer_sequence（C++14）
+#include <CString>						// std::memset(), std::memcpy();
+
 
 //  WINDOWS提供的时间相关的接口
 /*
-
 	WINDOWS提供的时间相关的接口——需要头文件<windows.h>
 			GetTickCount()
 			Sleep()
-
 */
 
+ 
+#ifdef _MSC_VER 
 
-////////////////////////////////////////////////////////////////////////////////////////////// 基于windows API写的一些工具接口
-namespace MY_WIN_API
+
+namespace TEST_WINDOWS_API
 {
-	// 读取某个目录下所有文件名、目录名；
-	void getFileNames(std::string path, std::vector<std::string>& files, bool blRecur = true)
+	// 测试监视CPU和内存状态：
+	void test0()
 	{
-		std::string str;
-		struct _finddata_t fileinfo;			// 文件信息
-		intptr_t hFile = _findfirst(str.assign(path).append("/*").c_str(), &fileinfo);							// 文件句柄	
-		bool blFileValid = (hFile != -1);
+		std::vector<int> intVec;
+		int current_pid = 0;
+		double cpu_usage_ratio = 0.0;
+		double memory_usage = 0.0;
+		current_pid = GetCurrentPid();												// or you can set a outside program pid
+		std::cout << "current pid: " << current_pid << std::endl;
 
-		if (blFileValid)
+		cpu_usage_ratio = GetCpuUsageRatio(current_pid);
+		memory_usage = GetMemoryUsage(current_pid);
+		std::cout << "cpu usage ratio: " << cpu_usage_ratio * 100 << "%" << std::endl;
+		std::cout << "memory usage: " << memory_usage << "MB" << std::endl;
+		std::cout << std::endl << std::endl;
+
+		intVec.resize(1000000, 42);
+		cpu_usage_ratio = GetCpuUsageRatio(current_pid);
+		memory_usage = GetMemoryUsage(current_pid);
+		std::cout << "cpu usage ratio: " << cpu_usage_ratio * 100 << "%" << std::endl;
+		std::cout << "memory usage: " << memory_usage << "MB" << std::endl;
+		std::cout << std::endl << std::endl;
+
+		for (int i = 0; i < 10; ++i)
 		{
-			do
-			{
-				bool isSubDir = (fileinfo.attrib & _A_SUBDIR) > 0;
-				//如果是目录,递归查找；如果不是,把文件绝对路径存入vector中
-				if (isSubDir && blRecur)
+			std::vector<int> intVec2;
+			intVec2.resize(1000000, 42);
+			cpu_usage_ratio = GetCpuUsageRatio(current_pid);
+			memory_usage = GetMemoryUsage(current_pid);
+			std::cout << "cpu usage ratio: " << cpu_usage_ratio * 100 << "%" << std::endl;
+			std::cout << "memory usage: " << memory_usage << "MB" << std::endl;
+			std::cout << std::endl << std::endl;
+
+			intVec2.clear();
+			cpu_usage_ratio = GetCpuUsageRatio(current_pid);
+			memory_usage = GetMemoryUsage(current_pid);
+			std::cout << "cpu usage ratio: " << cpu_usage_ratio * 100 << "%" << std::endl;
+			std::cout << "memory usage: " << memory_usage << "MB" << std::endl;
+			std::cout << std::endl << std::endl;
+		}
+
+		std::vector<int> intVec3;
+		for (int i = 0; i < 10; ++i)
+		{
+			intVec3.insert(intVec3.end(), intVec.begin(), intVec.end());
+			cpu_usage_ratio = GetCpuUsageRatio(current_pid);
+			memory_usage = GetMemoryUsage(current_pid);
+			std::cout << "cpu usage ratio: " << cpu_usage_ratio * 100 << "%" << std::endl;
+			std::cout << "memory usage: " << memory_usage << "MB" << std::endl;
+			std::cout << std::endl << std::endl;
+		}
+
+		debugDisp("finished.");
+	}
+
+
+	void test00()
+	{
+		// launch some task to occupy cpu and memory
+		for (int i = 0; i < 5; i++)
+			std::thread([]
 				{
-					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
-						getFileNames(str.assign(path).append("/").append(fileinfo.name), files);
-				}
-				else
-					if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
-						files.push_back(str.assign(path).append("/").append(fileinfo.name));
-			} while (_findnext(hFile, &fileinfo) == 0);
-			_findclose(hFile);
-		}
-	}
+					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				}).detach();
 
+		int current_pid = GetCurrentPid();												// or you can set a outside program pid
+		double cpu_usage_ratio = GetCpuUsageRatio(current_pid);
+		double memory_usage = GetMemoryUsage(current_pid);
 
-	// 获得当前进程的进程ID
-	int GetCurrentPid()
-	{
-		return _getpid();
-	}
-
-
-	// get specific process cpu occupation ratio by pid
-	std::uint64_t convert_time_format(const FILETIME* ftime)
-	{
-		LARGE_INTEGER li;
-
-		li.LowPart = ftime->dwLowDateTime;
-		li.HighPart = ftime->dwHighDateTime;
-		return li.QuadPart;
-	}
-
-
-	float GetCpuUsageRatio(int pid)
-	{
-#ifdef WIN32
-		static int64_t last_time = 0;
-		static int64_t last_system_time = 0;
-
-		FILETIME now;
-		FILETIME creation_time;
-		FILETIME exit_time;
-		FILETIME kernel_time;
-		FILETIME user_time;
-		int64_t system_time;
-		int64_t time;
-		int64_t system_time_delta;
-		int64_t time_delta;
-
-		// get cpu num
-		SYSTEM_INFO info;
-		GetSystemInfo(&info);
-		int cpu_num = info.dwNumberOfProcessors;
-
-		float cpu_ratio = 0.0;
-
-		// get process hanlde by pid
-		HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-		// use GetCurrentProcess() can get current process and no need to close handle
-
-		// get now time
-		GetSystemTimeAsFileTime(&now);
-
-		if (!GetProcessTimes(process, &creation_time, &exit_time, &kernel_time, &user_time))
+		while (true)
 		{
-			// We don't assert here because in some cases (such as in the Task Manager)  
-			// we may call this function on a process that has just exited but we have  
-			// not yet received the notification.  
-			printf("GetCpuUsageRatio GetProcessTimes failed\n");
-			return 0.0;
+			std::cout << "current pid: " << current_pid << std::endl;
+			std::cout << "cpu usage ratio: " << cpu_usage_ratio * 100 << "%" << std::endl;
+			std::cout << "memory usage: " << memory_usage << "MB" << std::endl;
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		}
-
-		// should handle the multiple cpu num
-		system_time = (convert_time_format(&kernel_time) + convert_time_format(&user_time)) / cpu_num;
-		time = convert_time_format(&now);
-
-		if ((last_system_time == 0) || (last_time == 0))
-		{
-			// First call, just set the last values.  
-			last_system_time = system_time;
-			last_time = time;
-			return 0.0;
-		}
-
-		system_time_delta = system_time - last_system_time;
-		time_delta = time - last_time;
-
-		CloseHandle(process);
-
-		if (time_delta == 0)
-		{
-			printf("GetCpuUsageRatio time_delta is 0, error\n");
-			return 0.0;
-		}
-
-		// We add time_delta / 2 so the result is rounded.  
-		cpu_ratio = static_cast<float>(system_time_delta * 100 + time_delta / 2) / static_cast<float>( time_delta ); // the % unit
-		last_system_time = system_time;
-		last_time = time;
-
-		cpu_ratio /= 100.0; // convert to float number
-
-		return cpu_ratio;
-#else
-		unsigned long totalcputime1, totalcputime2;
-		unsigned long procputime1, procputime2;
-
-		totalcputime1 = get_cpu_total_occupy();
-		procputime1 = get_cpu_proc_occupy(pid);
-
-		// FIXME: the 200ms is a magic number, works well
-		usleep(200000); // sleep 200ms to fetch two time point cpu usage snapshots sample for later calculation
-
-		totalcputime2 = get_cpu_total_occupy();
-		procputime2 = get_cpu_proc_occupy(pid);
-
-		float pcpu = 0.0;
-		if (0 != totalcputime2 - totalcputime1)
-			pcpu = (procputime2 - procputime1) / float(totalcputime2 - totalcputime1); // float number
-
-		int cpu_num = get_nprocs();
-		pcpu *= cpu_num; // should multiply cpu num in multiple cpu machine
-
-		return pcpu;
-#endif
 	}
 
 
-	// get specific process physical memeory occupation size by pid (MB)
-	double GetMemoryUsage(int pid)
+	// 
+	void test1()
 	{
-#ifdef WIN32
-		uint64_t mem = 0, vmem = 0;
-		PROCESS_MEMORY_COUNTERS pmc;
+		CString   cPath;
+		std::string path;
 
-		// get process hanlde by pid
-		HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-		if (GetProcessMemoryInfo(process, &pmc, sizeof(pmc)))
-		{
-			mem = pmc.WorkingSetSize;
-			vmem = pmc.PagefileUsage;
-		}
-		CloseHandle(process);
+		// GetModuleFileName()——获取当前进程加载的模块的路径。
+		GetModuleFileName(NULL, cPath.GetBufferSetLength(MAX_PATH + 1), MAX_PATH);
+		path = CT2CA{ cPath };
+		debugDisp("当前运行模块的路径：", path);
 
-		// use GetCurrentProcess() can get current process and no need to close handle
+		// CreateDirectory()——创建文件夹； 
+		if (!CreateDirectory(L"E:/newDir1/", NULL))
+			debugDisp("创建文件夹失败！");
+		if (!CreateDirectory(L"E:/newDir2/", NULL))
+			debugDisp("创建文件夹失败！");
 
-		// convert mem from B to MB
-		return mem / 1024.0 / 1024.0;
+		// RemoveDirectory()—— 删除文件夹；
+		if (!RemoveDirectory(L"E:/newDir2"))
+			debugDisp("删除文件夹失败！");
 
-#else
-		char file_name[64] = { 0 };
-		FILE* fd;
-		char line_buff[512] = { 0 };
-		sprintf(file_name, "/proc/%d/status", pid);
-
-		fd = fopen(file_name, "r");
-		if (nullptr == fd)
-			return 0;
-
-		char name[64];
-		int vmrss = 0;
-		for (int i = 0; i < VMRSS_LINE - 1; i++)
-			fgets(line_buff, sizeof(line_buff), fd);
-
-		fgets(line_buff, sizeof(line_buff), fd);
-		sscanf(line_buff, "%s %d", name, &vmrss);
-		fclose(fd);
-
-		// cnvert VmRSS from KB to MB
-		return vmrss / 1024.0;
-#endif
+		debugDisp("finished.");
 	}
-	 
-
-
-	// 针对编译器版本信息的宏
-	void print_compiler_info()
-	{
-		std::cout << "Compiler Version: ";
-#if defined(_MSC_VER)
-		std::cout << "MSVC, version " << _MSC_VER << "\n";
-#elif defined(__GNUC__)
-		std::cout << "GCC, version " << __GNUC__ << "." << __GNUC_MINOR__ << "\n";
-#elif defined(__clang__)
-		std::cout << "Clang, version " << __clang_major__ << "." << __clang_minor__ << "\n";
-#else
-		std::cout << "Unknown compiler\n";
-#endif
-	}
-
-
-	// 打印操作系统信息
-	void print_os_info()
-	{
-#if defined(_WIN32)
-		std::cout << "Operating System: Windows\n";
-#elif defined(__linux__)
-		std::cout << "Operating System: Linux\n";
-#elif defined(__APPLE__)
-		std::cout << "Operating System: macOS\n";
-#else
-		std::cout << "Operating System: Unknown\n";
-#endif
-	}
-
-	// 打印build mode——是release或debug:
-	void print_build_mode()
-	{
-#if defined(_DEBUG)
-		std::cout << "Build Mode: Debug\n";
-#else
-		std::cout << "Build Mode: Release\n";
-#endif
-	}
-
-	// 打印处理器架构信息
-	void print_architecture_info()
-	{
-		std::cout << "Processor Architecture: ";
-#if defined(__x86_64__) || defined(_M_X64)
-		std::cout << "x64 (AMD or Intel)\n";
-#elif defined(__i386) || defined(_M_IX86)
-		std::cout << "x86\n";
-#elif defined(__arm__) || defined(_M_ARM)
-		std::cout << "ARM\n";
-#elif defined(__aarch64__)
-		std::cout << "ARM64\n";
-#else
-		std::cout << "Unknown architecture\n";
-#endif
-	}
-
-
-	// 打印处理器核心数量
-	void print_cpu_cores()
-	{
-		unsigned int cores = std::thread::hardware_concurrency();
-		std::cout << "Number of Processor Cores: " << cores << "\n";
-	}
-
-
-	// 获取并打印CPU信息
-#if defined(__GNUC__) || defined(__clang__)
-#include <cpuid.h>
-	void print_cpu_info()
-	{
-		unsigned int eax, ebx, ecx, edx;
-		char cpu_brand[49] = { 0 };
-
-		__get_cpuid(0x80000002, &eax, &ebx, &ecx, &edx);
-		std::memcpy(cpu_brand, &eax, sizeof(eax));
-		std::memcpy(cpu_brand + 4, &ebx, sizeof(ebx));
-		std::memcpy(cpu_brand + 8, &ecx, sizeof(ecx));
-		std::memcpy(cpu_brand + 12, &edx, sizeof(edx));
-
-		__get_cpuid(0x80000003, &eax, &ebx, &ecx, &edx);
-		std::memcpy(cpu_brand + 16, &eax, sizeof(eax));
-		std::memcpy(cpu_brand + 20, &ebx, sizeof(ebx));
-		std::memcpy(cpu_brand + 24, &ecx, sizeof(ecx));
-		std::memcpy(cpu_brand + 28, &edx, sizeof(edx));
-
-		__get_cpuid(0x80000004, &eax, &ebx, &ecx, &edx);
-		std::memcpy(cpu_brand + 32, &eax, sizeof(eax));
-		std::memcpy(cpu_brand + 36, &ebx, sizeof(ebx));
-		std::memcpy(cpu_brand + 40, &ecx, sizeof(ecx));
-		std::memcpy(cpu_brand + 44, &edx, sizeof(edx));
-
-		std::cout << "CPU: " << cpu_brand << "\n";
-	}
-#elif defined(_MSC_VER)
-#include <intrin.h>
-	void print_cpu_info()
-	{
-		int cpuInfo[4] = { -1 };
-		char cpuBrand[0x40];
-		__cpuid(cpuInfo, 0x80000002);
-		memcpy(cpuBrand, cpuInfo, sizeof(cpuInfo));
-		__cpuid(cpuInfo, 0x80000003);
-		memcpy(cpuBrand + 16, cpuInfo, sizeof(cpuInfo));
-		__cpuid(cpuInfo, 0x80000004);
-		memcpy(cpuBrand + 32, cpuInfo, sizeof(cpuInfo));
-
-		std::cout << "CPU: " << cpuBrand << "\n";
-	}
-
-#else
-
-	void print_cpu_info()
-	{
-		std::cout << "CPU: Unknown\n";
-	}
-#endif
-
-	void print_env_info()
-	{
-		print_compiler_info();
-		print_os_info();
-		print_architecture_info();
-		print_build_mode();
-		print_cpu_cores();
-		print_cpu_info();
-	}
-
 }
-using namespace MY_WIN_API;
+ 
+
+namespace TEST_WIN_API
+{
+	// 使用WINDOWS API调用.exe可执行程序:
+	void test0()
+	{
+		const WCHAR* exePath = \
+			L"C:\\software_develop\\OpenSceneGraph-3.6.4-VS2022\\bin\\osgconv.exe";		 // 要调用的 .exe 文件的完整路径
+		const wchar_t* arg0 = exePath;
+		const wchar_t* arg1 = L"C:\\myData\\tree1.osgb";
+		const wchar_t* arg2 = L"C:\\myData\\output\\tree1.obj";
+		std::wstring commandLine;				// 命令行界面输入的参数；
+		commandLine.resize(1024);
+		swprintf(&commandLine[0], 1024, L"%s %s %s", arg0, arg1, arg2);
+
+		// 1. 创建进程信息结构体
+		STARTUPINFO si;
+		PROCESS_INFORMATION pi;
+
+		// 2. 初始化STARTUPINFO
+		ZeroMemory(&si, sizeof(si));
+		si.cb = sizeof(si);
+
+		// 3. 初始化PROCESS_INFORMATION
+		ZeroMemory(&pi, sizeof(pi));
+
+		// 4. 调用可执行程序
+		if (CreateProcess(
+			exePath,          // 可执行程序的路径
+			&commandLine[0],             // 命令行参数
+			NULL,             // 进程句柄不继承
+			NULL,             // 线程句柄不继承
+			FALSE,            // 不继承句柄
+			0,						// 创建标志
+			NULL,				// 使用父进程的环境
+			NULL,				// 使用父进程的当前目录
+			&si,					// 启动信息
+			&pi))				// 进程信息
+		{
+			// i1. 成功启动进程
+			std::cout << "程序已启动。" << std::endl;
+
+			// i2. 等待进程结束
+			WaitForSingleObject(pi.hProcess, INFINITE);
+
+			// i3. 关闭进程和线程的句柄
+			CloseHandle(pi.hProcess);
+			CloseHandle(pi.hThread);
+		}
+		else
+		{
+			// 如果创建进程失败，输出错误信息
+			std::cout << "无法启动程序。错误代码: " << GetLastError() << std::endl;
+		}
 
 
+		debugDisp("test0() finished.");
+	}
 
+
+	// 复制文件：
+	void test1()
+	{
+		// 定义源文件和目标文件路径
+		std::string sourceFile, destFile;
+		{
+			std::string sourceFile = "C:/myData/bunny.obj";
+			std::string destFile = "C:/myData/output/bunnyWrited.obj";
+			if (!CopyFileViaWinAPI(destFile, sourceFile))
+				debugDisp("Error!!!");
+		}
+		{
+			// 会自动创建文件夹：
+			std::string sourceFile = "C:/myData/bunny.obj";
+			std::string destFile = "C:/myData/output/newDir1/newDir11/bunnyWrited.obj";
+			if (!CopyFileViaWinAPI(destFile, sourceFile))
+				debugDisp("Error!!!");
+		}
+
+		debugDisp("test1() finished.");
+	}
+}
+ 
+#endif 
+
+ 
 ////////////////////////////////////////////////////////////////////////////////////////////// 辅助类型&接口
 namespace AUXILIARY 
 {
@@ -421,37 +294,6 @@ using namespace AUXILIARY;
 ////////////////////////////////////////////////////////////////////////////////////////////// 暂时不知如何分类：
 namespace TEST_UNKNOWN
 {
-	// const_cast
-	namespace CONSTCAST
-	{
-		void transformConstInt(const int& num)
-		{
-			std::cout << "num == " << num << std::endl;
-			int& newNum = const_cast<int&>(num);
-			newNum++;
-
-			// 改变新的非const引用后，原const引用也随之修改；
-			std::cout << "num == " << num << std::endl;
-		}
-
-
-		void test1()
-		{
-			int num1 = 99;
-			transformConstInt(num1);
-			std::cout << num1 << std::endl;
-
-			// const_cast<>()只能去除指针和引用的const属性，不可以将其他const变量修改成非const的；
-
-			//const int num2 = 99;
-			//transformConstInt(num2);
-			//std:std::cout << num2 << std::endl;
-		}
-
-	}
-
-
-
 	// 变参模板
 	namespace VAR_TEMP
 	{
@@ -593,12 +435,13 @@ namespace TEST_UNKNOWN
 			// std::get<>()——获取std::tuple元素的引用
 			{
 				auto ret1 = std::get<2>(t3);
-				auto ret2 = std::get<int>(t3);
-				auto ret3 = std::get<std::string>(t3);
+				//auto ret2 = std::get<int>(t3);						// (beyond c++11)get()输入类型获取元素
+				//auto ret3 = std::get<std::string>(t3);			// (beyond c++11)get()输入类型获取元素
 				// auto ret4 = std::get<double>(t3);				有二义性，编译不通过；
+
 				debugDisp("ret1 == ", ret1);
-				debugDisp("ret2 == ", ret2);
-				debugDisp("ret3 == ", ret3);
+				//debugDisp("ret2 == ", ret2);
+				//debugDisp("ret3 == ", ret3);
 
 				debugDisp();
 			}
@@ -631,8 +474,7 @@ namespace TEST_UNKNOWN
 			组合：整体和部分有相同的生命周期，整体消亡则部分也不存在；如人体-人体的各种器官；
 			聚合：整体和部分可以有不同的生命周期，整体消亡部分也可以独立存在，如羊群-个体的羊
 		*/
-
-
+		 
 	}
 
 
@@ -971,8 +813,7 @@ namespace TEST_UNKNOWN
 
 			std::cout << "finished." << std::endl;
 		}
-
-
+		 
 	}
 
 
@@ -1027,8 +868,6 @@ namespace TEST_UNKNOWN
 		}
 
 	}
-
-
 
 
 	//  指针和智能指针
@@ -1303,135 +1142,7 @@ namespace TEST_UNKNOWN
 			std::cout << sizeof(std::vector<int>(10000)) << std::endl;			// 不管std::vector容量多大，对象大小都是12个字节。
 		}
 	}
-
-
-	// 测试WINDOWS API:
-	namespace TEST_WINDOWS_API
-	{
-		// 测试监视CPU和内存状态：
-		void test0()
-		{
-			std::vector<int> intVec;
-			int current_pid = 0;
-			double cpu_usage_ratio = 0.0;
-			double memory_usage = 0.0;
-			current_pid = GetCurrentPid();												// or you can set a outside program pid
-			std::cout << "current pid: " << current_pid << std::endl;
-
-			cpu_usage_ratio = GetCpuUsageRatio(current_pid);
-			memory_usage = GetMemoryUsage(current_pid);
-			std::cout << "cpu usage ratio: " << cpu_usage_ratio * 100 << "%" << std::endl;
-			std::cout << "memory usage: " << memory_usage << "MB" << std::endl;
-			std::cout << std::endl << std::endl;
-
-			intVec.resize(1000000, 42);
-			cpu_usage_ratio = GetCpuUsageRatio(current_pid);
-			memory_usage = GetMemoryUsage(current_pid);
-			std::cout << "cpu usage ratio: " << cpu_usage_ratio * 100 << "%" << std::endl;
-			std::cout << "memory usage: " << memory_usage << "MB" << std::endl;
-			std::cout << std::endl << std::endl;
-
-			for (int i = 0; i < 10; ++i)
-			{
-				std::vector<int> intVec2;
-				intVec2.resize(1000000, 42);
-				cpu_usage_ratio = GetCpuUsageRatio(current_pid);
-				memory_usage = GetMemoryUsage(current_pid);
-				std::cout << "cpu usage ratio: " << cpu_usage_ratio * 100 << "%" << std::endl;
-				std::cout << "memory usage: " << memory_usage << "MB" << std::endl;
-				std::cout << std::endl << std::endl;
-
-				intVec2.clear();
-				cpu_usage_ratio = GetCpuUsageRatio(current_pid);
-				memory_usage = GetMemoryUsage(current_pid);
-				std::cout << "cpu usage ratio: " << cpu_usage_ratio * 100 << "%" << std::endl;
-				std::cout << "memory usage: " << memory_usage << "MB" << std::endl;
-				std::cout << std::endl << std::endl;
-			}
-
-			std::vector<int> intVec3;
-			for (int i = 0; i < 10; ++i)
-			{
-				intVec3.insert(intVec3.end(), intVec.begin(), intVec.end());
-				cpu_usage_ratio = GetCpuUsageRatio(current_pid);
-				memory_usage = GetMemoryUsage(current_pid);
-				std::cout << "cpu usage ratio: " << cpu_usage_ratio * 100 << "%" << std::endl;
-				std::cout << "memory usage: " << memory_usage << "MB" << std::endl;
-				std::cout << std::endl << std::endl;
-			}
-
-			debugDisp("finished.");
-		}
-
-
-		void test00()
-		{
-			// launch some task to occupy cpu and memory
-			for (int i = 0; i < 5; i++)
-				std::thread([]
-					{
-						std::this_thread::sleep_for(std::chrono::milliseconds(10));
-					}).detach();
-
-			int current_pid = GetCurrentPid();												// or you can set a outside program pid
-			double cpu_usage_ratio = GetCpuUsageRatio(current_pid);
-			double memory_usage = GetMemoryUsage(current_pid);
-
-			while (true)
-			{
-				std::cout << "current pid: " << current_pid << std::endl;
-				std::cout << "cpu usage ratio: " << cpu_usage_ratio * 100 << "%" << std::endl;
-				std::cout << "memory usage: " << memory_usage << "MB" << std::endl;
-
-				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-			}
-		}
-
-
-		// 
-		void test1()
-		{
-			CString   cPath;
-			std::string path;
-
-			// GetModuleFileName()——获取当前进程加载的模块的路径。
-			GetModuleFileName(NULL, cPath.GetBufferSetLength(MAX_PATH + 1), MAX_PATH);
-			path = CT2CA{ cPath };
-			debugDisp("当前运行模块的路径：", path);
-
-			// CreateDirectory()——创建文件夹； 
-			if (!CreateDirectory(L"E:/newDir1/", NULL))
-				debugDisp("创建文件夹失败！");
-			if (!CreateDirectory(L"E:/newDir2/", NULL))
-				debugDisp("创建文件夹失败！");
-
-			// RemoveDirectory()—— 删除文件夹；
-			if (!RemoveDirectory(L"E:/newDir2"))
-				debugDisp("删除文件夹失败！");
-
-			debugDisp("finished.");
-		}
-	}
-
-
-	// 测试本项目中的工具接口
-	namespace TEST_WHEELS
-	{
-		void test0()
-		{
-			std::vector<int> vi{ 1,2,3,4,5,6 };
-
-			auto valueUp = [](int& num)
-				{
-					num += 1;
-				};
-
-			traverseSTL(vi, valueUp);
-			traverseSTL(vi, disp<int>{});
-			revTraverseSTL(vi, disp<int>{});
-		}
-	}
-
+	 
 
 	// 标准输出输出流类，文件IO
 	namespace TEST_IO
@@ -1560,7 +1271,8 @@ namespace TEST_UNKNOWN
 		}
 
 
-		// 读文本文件getline(); CString和c++字符串的转换；
+		// 读文本文件getline(); CString和c++字符串的转换； 
+#ifdef _MSC_VER
 		void test2()
 		{
 			std::wcout.imbue(std::locale(std::locale(), "", LC_CTYPE));	// 设置wcout的语言环境，缺少这一步打印中文会有错误。
@@ -1590,7 +1302,7 @@ namespace TEST_UNKNOWN
 
 			std::cout << "finished." << std::endl;
 		}
-
+#endif 
 
 		// std::istream和std::ostream的成员数据及方法：
 		void test3()
@@ -1727,418 +1439,7 @@ namespace TEST_UNKNOWN
 }
 using namespace TEST_UNKNOWN;
 
-
-
-////////////////////////////////////////////////////////////////////////////////////////////// C++新特性：
-namespace TEST_NEW_FEATURES
-{
-	// 折叠表达式（C++17）（fold expression）
-#if 0
-	namespace FOLDEXP
-	{
-		// 使用折叠表达式可以更加方便地实现可变参数模板
-		template <typename ... Ts>
-		auto mySum(Ts ... ts)
-		{
-			return (ts + ...);
-		}
-
-		void test0()
-		{
-			std::cout << mySum(1, 2, 3, 4, 5, 6) << std::endl;
-			std::cout << mySum(std::string{ "hello" }, std::string{ " " }, std::string{ "world" }) << std::endl;
-		}
-
-	}
-#endif
-
-
-	// 常量表达式constexpr ( c++11)
-	namespace TEST_CONSTEXPR
-	{ 
-		// 自定义类构造函数声明为constexpr
-		class Foo 
-		{
-		public: 
-			int m_num = 0;
-
-		public:
-			constexpr Foo() {}
-			constexpr Foo(const int num0) :m_num(num0) {}
-			Foo(const Foo& f) :m_num(f.m_num) {}
-			Foo& operator[](const Foo& f) 
-			{
-				this->m_num = f.m_num;
-				return *this;
-			}
-		};
-		 
-
-		// 检测输入变量是否是常量表达式
-		template <typename T, T Value>
-		struct ConstantHolder 
-		{
-			static constexpr T value = Value;
-		};
-
-
-		void test0()
-		{  
-			constexpr int compile_time = 42; 
-			int runtime = 42;
-			constexpr Foo compileTimeFoo{11};
-			Foo runTimeFoo = compileTimeFoo;
-			 
-			// 使用编译时值实例化模板
-			auto result1 = ConstantHolder<decltype(compile_time), compile_time>::value;
-			//auto result2 = ConstantHolder<decltype(runtime), runtime>::value;			// 编译会失败；
-			//auto result3 = ConstantHolder<Foo, compileTimeFoo>::value;					// 对自定义类型使用会失败；
-			//auto result4 = ConstantHolder<decltype(runTimeFoo), runTimeFoo>::value;
-
-			debugDisp("TEST_CONSTEXPR::test0() finished.");
-		}
-
-
-		// test1——constexpr函数、函数模板：
-		template <std::size_t Index, typename T>
-		constexpr T getIndexElem(const T* arr)
-		{
-			return arr[Index];														// c++11中的constexpr函数最多只能有一个return语句；
-		}
-
-
-		// 递归终止：当N == 0时：
-		template <typename T, size_t N, typename Func>
-		constexpr typename std::enable_if<N == 0>::type
-			for_each_elem_impl(const T*, Func) {}
-
-
-		// 递归终止：当N == 1时：
-		template <typename T, size_t N, typename Func>
-		constexpr typename std::enable_if<N == 1>::type
-			for_each_elem_impl(const T* arr, Func func) 
-		{
-			func(*arr);
-		}
-
-
-		// 递归递推：处理当前元素并继续处理剩余元素
-		template <typename T, size_t N, typename Func>
-		constexpr typename std::enable_if<(N > 1)>::type
-			for_each_elem_impl(const T* arr, Func func)
-		{
-			func(*arr);
-			for_each_elem_impl<T, N - 1, Func>(arr + 1, func);
-		}
-
-
-		// 主函数模板
-		template <typename T, size_t N, typename Func>
-		constexpr void for_each_elem(const T* arr, Func func) 
-		{
-			for_each_elem_impl<T, N, Func>(arr, func);
-		}
-		 
-
-		// 递归终止：当Index == N - 1时：
-		template <typename T, size_t N, size_t Index, typename Func>
-		constexpr typename std::enable_if<Index == (N - 1)>::type
-			for_each_index_impl(std::vector<T>& vec, Func func)
-		{
-			func(Index);
-		}
-
-
-		// 递归终止：当Index > N - 1时：
-		template <typename T, size_t N, size_t Index, typename Func>
-		constexpr typename std::enable_if<(Index > N - 1)>::type
-			for_each_index_impl(std::vector<T>& vec, Func func)
-		{}
-
-
-		// 递归递推：当Index < N - 1时：
-		template <typename T, size_t N, size_t Index, typename Func>
-		constexpr typename std::enable_if<(Index < N - 1)>::type
-			for_each_index_impl(std::vector<T>& vec, Func func)
-		{
-			func(Index);
-			for_each_index_impl<T, N, Index+1>(vec, func);
-		}
-
-
-		// 外部接口：
-		template <typename T, size_t N, typename Func>
-		constexpr void for_each_index(std::vector<T>& vec, Func func)
-		{
-			for_each_index_impl<T, N, 0>(vec, func);
-		}
-
-
-		void test1()
-		{
-			std::vector<int> numVec{ 0, 1, 2, 3, 4 };					// c++11中STL容器无法被声明为编译期常量；
-			constexpr int numArr[5] = { 0, 1, 2, 3, 4 };
-
-			//const int* intPtr = &numVec[0];
-			//constexpr int num3 = getIndexElem<3, int>(intPtr);
-			constexpr int num3 = getIndexElem<3, int>(numArr);
-			for_each_elem<int, 5>(numArr, [](const int& x)
-				{
-					std::cout << x << ", ";
-					return x;
-				});
-			debugDisp();
-
-			std::vector<int> numVec2{15, 16, 17, 18};
-			for_each_index_impl<int, 1, 0>(numVec2, [&](const size_t& idx) 
-				{
-					debugDisp("at idx == ", idx, ", value == ", numVec2[idx]); 
-				});
-			debugDisp("test for_each_index() : ");
-			for_each_index<int, 4>(numVec2, [&](auto idx)
-				{
-					debugDisp("at idx == ", idx, ", value == ", numVec2[idx]);
-				});
-
-			debugDisp("TEST_CONSTEXPR::test1() finished.");
-		}
-
-
-		template <size_t N, size_t Index, typename T>
-		constexpr typename std::enable_if<(Index > N - 1)>::type vecAdd_impl(\
-			std::vector<T>& vecOut, const std::vector<T>& vec1, const std::vector<T>& vec2)
-		{}
-
-		template <size_t N, size_t Index, typename T>
-		constexpr typename std::enable_if<(Index == N - 1)>::type vecAdd_impl(\
-			std::vector<T>& vecOut, const std::vector<T>& vec1, const std::vector<T>& vec2)
-		{
-			vecOut[Index] = vec1[Index] + vec2[Index];
-		}
-
-		template <size_t N, size_t Index, typename T>
-		constexpr typename std::enable_if<(Index < N - 1)>::type vecAdd_impl(\
-			std::vector<T>& vecOut, const std::vector<T>& vec1, const std::vector<T>& vec2)
-		{
-			vecOut[Index] = vec1[Index] + vec2[Index];
-			vecAdd_impl<N, Index + 1, T>(vecOut, vec1, vec2);
-		}
-
-		template <size_t N, typename T>
-		constexpr void vecAdd(std::vector<T>& vecOut, const std::vector<T>& vec1, const std::vector<T>& vec2) 
-		{
-			vecOut.resize(N);
-			vecAdd_impl<N, 0, T>(vecOut, vec1, vec2);
-		}
-
-
-		void test2() 
-		{ 
-			std::vector<int> vec1{ 1,2,3,4,5 }, vec2{ 5,6,7,8,9 }, vecOut;
-			vecOut.resize(5);
-			vecAdd<5, int>(vecOut, vec1, vec2);
-			traverseSTL(vecOut, disp<int>{});
-
-			debugDisp("TEST_CONSTEXPR::test2() finished.");
-		}
-
-	}
-
-
-	//  c++11移动语义、右值引用、万能引用
-	namespace TEST_MOVING
-	{
-		// 目的函数
-		template<typename T>
-		void showAttr(T& num)
-		{
-			std::cout << "是一个左值" << std::endl;
-		}
-
-
-		template<typename T>
-		void showAttr(T&& num)
-		{
-			std::cout << "是一个右值" << std::endl;
-		}
-
-
-		// 输入参数为万能引用的转发函数——需要保证传入的引用转发之后性质不变。
-		template <typename T>
-		void passShowAttr(T&& num)
-		{
-			showAttr(std::forward<T>(num));
-		}
-
-
-		// 接收万能引用的函数要实现完美转发，需要用到std::forward()
-		void test2()
-		{
-			int a = 1;
-
-			passShowAttr(1);									// 是一个右值
-			passShowAttr(a);									// 是一个左值
-			passShowAttr(std::move(a));				// 是一个右值
-			passShowAttr(a);	 // 是一个左值；std::move()内部做了强制转换，返回一个左值引用，但是并不改变变量a原先的类型。
-		}
-
-
-		// 自己实现的带有移动构造的类。
-		class myString
-		{
-		private:
-			char* c_str;
-
-		public:
-			myString() = delete;			// 禁用无参构造
-
-			myString(const char* str)
-			{
-				size_t len = strlen(str);
-				this->c_str = new char[len + 1];
-				memcpy(c_str, str, len + 1);
-			}
-
-			myString(const myString& str0)			// 拷贝构造
-			{
-				std::cout << "拷贝构造函数被调用。" << std::endl;
-				char* pc = str0.getStr();
-				size_t num = strlen(pc) + 1;
-				this->c_str = new char[num];
-				memcpy(this->c_str, pc, num);
-
-			}
-
-
-			myString(myString&& str) noexcept		// 移动构造。
-			{
-				std::cout << "移动构造函数被调用" << std::endl;
-				this->c_str = str.getStr();
-				str.setStr(nullptr);
-			}
-
-
-			char* getStr() const
-			{
-				return this->c_str;
-			}
-
-
-			void setStr(char* pc)
-			{
-				this->c_str = pc;
-			}
-
-
-			void disp()
-			{
-				std::cout << this->c_str << std::endl;
-			}
-
-		};
-
-
-		void test3()
-		{
-			myString str1("hahawawawa");
-			myString str2(str1);
-			myString str3(std::move(myString("hello world")));
-
-			str1.disp();
-			str2.disp();
-			str3.disp();
-
-			myString str4(std::move(str1));
-			str4.disp();
-			str1.disp();
-
-
-
-		}
-
-
-		// test4——<utility>中判断左值右值引用的接口。
-		template <typename T>
-		void testRefAttr(T&& arg)
-		{
-			if (std::is_lvalue_reference<decltype(arg)>::value)
-				std::cout << "是左值引用" << std::endl;
-			else if (std::is_rvalue_reference<decltype(arg)>::value)
-				std::cout << "是右值引用或右值" << std::endl;
-			else
-				std::cout << "？？？" << std::endl;
-		}
-
-
-		void test4()
-		{
-			int a = 3;
-			testRefAttr(a);
-			testRefAttr(5);
-			testRefAttr(std::move(a));
-		}
-
-
-		// auto&&一定是万能引用：
-		auto funcContainer = [](auto&& func, auto&& arg)	// 可以调用任意单参数函数的Lambda
-			{
-				return (std::forward<decltype(func)>(func))(std::forward<decltype(arg)>(arg));
-			};
-
-		void disp(const std::string& str)
-		{
-			std::cout << str << std::endl;
-		}
-
-		double Sqrt(double num)
-		{
-			return std::sqrt(num);
-		}
-
-		void test5()
-		{
-			funcContainer(disp, "hahahah");
-			std::cout << funcContainer(Sqrt, 100) << std::endl;
-		}
-
-	}
-
-
-	// 其他C++11及之后的新特性
-	namespace MORDERN_CPP
-	{
-		// 使用using而不是typedef来创建类型别名
-		template <typename T>
-		using myPair = std::pair<T, T>;			// using可以创建模板的别名，typedef不可以
-		void test1()
-		{
-			myPair<int> pi = std::make_pair(5, 6);
-
-		}
-
-
-		using VOIDP = void*;
-		using pVV = VOIDP(*)();			// 这里如果不将void*打包成VOIDP将会编译报错。
-		void* getNum()
-		{
-			int* pi = new int(999);
-			return reinterpret_cast<void*>(pi);
-		}
-
-		void test2()
-		{
-			pVV pfuncV = nullptr;
-			pfuncV = getNum;
-			int* pi = nullptr;
-			pi = reinterpret_cast<int*>((*pfuncV)());
-			std::cout << *pi << std::endl;
-		}
-
-	}
-	 
-}using namespace TEST_NEW_FEATURES;
-
-
+ 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// STL
 namespace TEST_STL
@@ -2158,8 +1459,8 @@ namespace TEST_STL
 		}
 
 
-		// testWin1()——windows中的互斥锁g_hMutex；
-#ifdef _WIN32
+		// testWin1()——windows中的互斥锁g_hMutex； 
+#ifdef _MSC_VER
 
 	// CreateThread()——WINDOWS中创建线程的API;
 	/*
@@ -2251,7 +1552,7 @@ namespace TEST_STL
 				}
 			}
 		}
-#endif
+
 
 
 		// test1()——std::thread线程类
@@ -2270,6 +1571,7 @@ namespace TEST_STL
 
 			return URD_f(e);
 		}
+
 
 		int genRandInt(const unsigned sleepTime)
 		{
@@ -2539,6 +1841,7 @@ namespace TEST_STL
 		}
 
 
+
 		// test4()——测试生产消费模式（互斥锁+条件变量）： 
 		const int g_productSize = 5;			// 生产者数量	
 		const int g_customerSize = 5;			// 消费者数量	
@@ -2651,6 +1954,7 @@ namespace TEST_STL
 
 			debugDisp("finished.");
 		}
+#endif 
 	}
 
 
@@ -3450,6 +2754,40 @@ namespace TEST_STL
 
 			debugDisp("test11 finished.");
 		}
+
+
+		// std::all_of()——用于检查容器（或范围内）的所有元素是否都满足某个指定条件。
+		void test12()
+		{			
+			std::vector<int> numVec0{ 0, 1,2,3,4,5,6,7};
+			bool checkFlag{ false };
+
+			{
+				checkFlag = std::all_of(numVec0.begin(), numVec0.end(), [](const int num)
+					{
+						return (num < 8);					// 当元素被谓词判定为false时，std::all_of()直接返回false；
+					});												// 所有元素都被谓词判定为true时，std::all_of()返回true；
+
+				debugDisp("checkFlag == ", checkFlag);
+			} 
+						 
+			// 使用范围for循环的等价表示，且C++11中可以使用auto指定类型，更方便；
+			{
+				checkFlag = true;
+				for (const auto& num : numVec0)
+				{
+					if (!(num < 8))
+					{
+						checkFlag = false;
+						break;
+					}
+				} 
+
+				debugDisp("checkFlag == ", checkFlag);
+			}
+			 
+			debugDisp("STL_ALGORITHM::test12() finished.");
+		}
 	}
 
 
@@ -3908,92 +3246,7 @@ namespace TEST_OOP
 
 }using namespace TEST_OOP;
 
-
-
-////////////////////////////////////////////////////////////////////////////////////////////// 测试windows API
-namespace TEST_WIN_API
-{
-	// 使用WINDOWS API调用.exe可执行程序:
-	void test0() 
-	{ 
-		const WCHAR* exePath = \
-			L"C:\\software_develop\\OpenSceneGraph-3.6.4-VS2022\\bin\\osgconv.exe";		 // 要调用的 .exe 文件的完整路径
-		const wchar_t* arg0 = exePath;
-		const wchar_t* arg1 = L"C:\\myData\\tree1.osgb";
-		const wchar_t* arg2 = L"C:\\myData\\output\\tree1.obj"; 
-		std::wstring commandLine;				// 命令行界面输入的参数；
-		commandLine.resize(1024); 
-		swprintf(&commandLine[0], 1024, L"%s %s %s", arg0, arg1, arg2);
-
-		// 1. 创建进程信息结构体
-		STARTUPINFO si;
-		PROCESS_INFORMATION pi;
-
-		// 2. 初始化STARTUPINFO
-		ZeroMemory(&si, sizeof(si));
-		si.cb = sizeof(si);
-
-		// 3. 初始化PROCESS_INFORMATION
-		ZeroMemory(&pi, sizeof(pi));
-
-		// 4. 调用可执行程序
-		if (CreateProcess(
-			exePath,          // 可执行程序的路径
-			&commandLine[0],             // 命令行参数
-			NULL,             // 进程句柄不继承
-			NULL,             // 线程句柄不继承
-			FALSE,            // 不继承句柄
-			0,						// 创建标志
-			NULL,				// 使用父进程的环境
-			NULL,				// 使用父进程的当前目录
-			&si,					// 启动信息
-			&pi))				// 进程信息
-		{
-			// i1. 成功启动进程
-			std::cout << "程序已启动。" << std::endl;
-
-			// i2. 等待进程结束
-			WaitForSingleObject(pi.hProcess, INFINITE);
-
-			// i3. 关闭进程和线程的句柄
-			CloseHandle(pi.hProcess);
-			CloseHandle(pi.hThread);
-		}
-		else
-		{
-			// 如果创建进程失败，输出错误信息
-			std::cout << "无法启动程序。错误代码: " << GetLastError() << std::endl;
-		}
-
-
-		debugDisp("test0() finished.");
-	}
-	 
-
-	// 复制文件：
-	void test1() 
-	{
-		// 定义源文件和目标文件路径
-		std::string sourceFile, destFile;
-		{
-			std::string sourceFile = "C:/myData/bunny.obj";
-			std::string destFile = "C:/myData/output/bunnyWrited.obj";
-			if (!CopyFileViaWinAPI(destFile, sourceFile))
-				debugDisp("Error!!!");
-		}
-		{
-			// 会自动创建文件夹：
-			std::string sourceFile = "C:/myData/bunny.obj";
-			std::string destFile = "C:/myData/output/newDir1/newDir11/bunnyWrited.obj";
-			if (!CopyFileViaWinAPI(destFile, sourceFile))
-				debugDisp("Error!!!");
-		}
-		 
-		debugDisp("test1() finished.");
-	}	
-}
-
-
+ 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// C++标准库
 namespace TEST_STD 
@@ -4126,6 +3379,7 @@ namespace TEST_STD
 	}
 };
  
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////// 第三方库
 namespace TEST_THIRD_LIBS 
@@ -4279,160 +3533,6 @@ namespace PERMUTATION_COMBINATION
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////  类型萃取
-namespace TEST_TYPE_TRAITS
-{
-	// test0()——std::is_same<>;
-	template<typename T>
-	void foo(const T& data)
-	{
-		auto typeName = typeid(data).name();
-		const std::type_info& typeInfo = typeid(data);
-
-		if (std::is_same<T, int>::value)
-			debugDisp("输入数据为int类型");
-		else if (std::is_same<T, float>::value)
-			debugDisp("输入数据为int类型");
-		else if (std::is_same<T, double>::value)
-			debugDisp("输入数据为int类型");
-		else
-			debugDisp("输入数据为其他类型；");
-	}
-
-
-	//		打印输入vector的元素类型；std::is_same<T1, T2>::value实现
-	template <typename T>
-	void goo(const std::vector<T>& vec) 
-	{
-		if (std::is_same<T, int>::value)
-			debugDisp("输入数据为int类型");
-		else if (std::is_same<T, float>::value)
-			debugDisp("输入数据为int类型");
-		else if (std::is_same<T, double>::value)
-			debugDisp("输入数据为int类型");
-		else
-			debugDisp("输入数据为其他类型；");
-	}
-
-	 
-	void test0() 
-	{
-		{
-			std::vector<int> numVec1{ 11, 22, 0, 89, -3, 12, 999 };
-			auto iter = numVec1.begin();
-
-			// std::is_same<>()——编译期检测两个类型是否相同
-			int numI1 = 1;
-			double numD1 = 0.9;
-			auto ret11 = std::is_same<decltype(numI1), decltype(numD1)>();
-			auto ret12 = std::is_same<double, decltype(numD1)>();
-			debugDisp("std::is_same<decltype(numI1), decltype(numD1)>() == ", ret11);
-			debugDisp("std::is_same<double, decltype(numD1)>() == ", ret12);
-			debugDisp("return type11 == ", typeid(ret11).name());
-			debugDisp("return type12 == ", typeid(ret12).name());
-			debugDisp("\n\n");
-		}
-
-		{
-			int num1 = 1;
-			float num2 = 1.2f;
-			double num3 = 11.2;
-			std::vector<int> vec1;
-			std::vector<float> vec2;
-			std::vector<double> vec3;
-			//foo(num1);
-			//foo(num2);
-			//foo(num3);
-
-			goo(vec1);
-			goo(vec2);
-			goo(vec3);
-		}		 
-
-		debugDisp("TEST_TYPE_TRAITS::test0() finished.");
-	}
-
-
-	// test1()
-	union NumType
-	{
-		int i;
-		float f; 
-
-		using FloatType = float;
-	};
-	
-
-	void test1() 
-	{
-		//NumType num;
-		//bool isInt = true; 
-
-		debugDisp("test1() finished.");
-	}
-
-
-	// test2()——类型映射type mapping:
-	template <typename T>
-	const char* hoo(const T& elem)
-	{
-		// typeid()——返回
-		const std::type_info& typeInfo = typeid(T);
-		const char* typeName = typeid(T).name();
-
-		// std::type_info支持operator==
-		if (typeInfo == typeid(int))
-			debugDisp("this is a int.");
-
-		debugDisp("pause");
-		return typeName;
-	}
-
-	template <typename TypeOut, typename TypeIn>
-	bool ioo(TypeOut& out, const TypeIn& elem)
-	{ 
-		out = static_cast<TypeOut>(elem);
-		return true;
-	}
-
-
-	void test2() 
-	{
-		int num = 3;
-		debugDisp(hoo(num));
-		debugDisp(hoo("asdf"));
-
-		int numI = 5;
-		double numD = 0;
-		ioo(numD, numI);
-		debugDisp("numD == ", numD);
-
-		debugDisp("test2 finished.");
-	}
-
-
-	// test3()——std::is_xxx<>
-	void test3()
-	{
-		std::vector<int> numVec1{ 11, 22, 0, 89, -3, 12, 999 };
-		auto iter = numVec1.begin(); 
-		int numI1 = 1;
-		double numD1 = 0.9; 
-		int* numPtr1 = nullptr;
-
-		// 编译器检测一个对象是否是指针：
-		auto ret21 = std::is_pointer<decltype(numI1)>::value;
-		auto ret22 = std::is_pointer<decltype(numPtr1)>::value;
-		debugDisp("std::is_pointer<decltype(numI1)>::value == ", ret21);
-		debugDisp("std::is_pointer<decltype(numPtr1)>::value == ", ret22); 
-
-
-		debugDisp("finished.");
-	}
-}
-
-
  
 ///////////////////////////////////////////////////////////////////////////////////////////// std::function, 函数指针，函数子
 namespace TEST_FUNCTION
@@ -4469,7 +3569,8 @@ namespace TEST_FUNCTION
 
 ///////////////////////////////////////////////////////////////////////////////////////////// 测试不同环境：
 namespace TEST_ENV
-{
+{ 
+#ifdef _MSC_VER
 	// 打印当前程序运行环境信息：
 	void test0() 
 	{
@@ -4478,7 +3579,7 @@ namespace TEST_ENV
 	}
 
 
-	// 测试不同环境下基本类型长度：
+	// 测试不同环境下基本类型长度： 
 	void test1() 
 	{
 		print_architecture_info();
@@ -4503,6 +3604,8 @@ namespace TEST_ENV
 
 		debugDisp("test1() finished.");
 	}
+#endif
+ 
 	  
 
 	// 测试读取当前编译器信息：
@@ -4517,25 +3620,6 @@ namespace TEST_ENV
 
 		debugDisp("test2() finished.");
 	}
-}
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////  测试辅助工具接口
-namespace TEST_AUXILIARY 
-{
-	// 测试文件系统相关辅助接口：
-	void test0() 
-	{
-
-		debugDisp("retFlag1 == ", CreateFolder(CorrectDirPath(g_debugPath) + "folder_a"));
-		debugDisp("retFlag1 == ", CreateFolder(CorrectDirPath(g_debugPath) + "文件夹_a"));
-
-
-
-		debugDisp("TEST_AUXILIARY::test0() finished.");
-	}
-
 }
  
 
@@ -4555,10 +3639,8 @@ namespace TO_DO
 	{}
 
 }
-   
-
-
-
+ 
+ 
 
 // 位运算：
 namespace TEST_BIT
@@ -4591,7 +3673,7 @@ namespace TEST_BIT
 	template<typename T>
 	void printBitInfo(const T& data) 
 	{
-		const size_t byteCount = sizeof(typename std::decay_t<T>);
+		const size_t byteCount = sizeof(typename std::decay<T>::type);
 		std::vector<unsigned char> chVec(byteCount); 
 		std::memcpy(&chVec[0], &data, byteCount);
 		std::cout << "data == 0x" << std::hex << data << std::endl;
@@ -4772,17 +3854,20 @@ namespace TEST_TEMPLATE
 		return;
 	}
 
+	
 	template<>
 	void dispTypeName<char>()
 	{
 		std::cout << "type name : char" << std::endl;
 	}
 
+	
 	template<>
 	void dispTypeName<double>()
 	{
 		std::cout << "type name : double" << std::endl;
 	}
+
 
 	template <typename T>
 	void dispVecElems(const std::vector<T>& vec)
@@ -4810,6 +3895,7 @@ namespace TEST_TEMPLATE
 	{
 		static const int value = 0;
 	};
+
 
 	template<typename T>
 	struct VecDepthHelper<std::vector<T>>		// 特化模板：vector类型，深度=1+内部元素类型的深度
@@ -4858,11 +3944,10 @@ namespace TEST_TEMPLATE
 		Fun<std::remove_reference, int&> value0 = 1;					// 元函数Fun<>返回的类型是int；
 	}
 
+
 	namespace TEMPLATE3				// 容器模板：
 	{
-		template <int... Vals> struct IntContainer;
-
-
+		template <int... Vals> struct IntContainer; 
 	}
 
 	namespace TEMPLATE4
@@ -4884,6 +3969,7 @@ namespace TEST_TEMPLATE
 		RemoveReferenceConst<const float&> value0 = 4;
 	}
 
+#if 0
 	namespace TEMPLATE5			// 分支结构
 	{
 		struct A; struct B; struct C;
@@ -4932,12 +4018,14 @@ namespace TEST_TEMPLATE
 
 		debugDisp("test2 finished.");
 	}
+#endif
 
 
 	// test3()——类似模板函数的lambda
 	void test3() 
 	{
 		// c++14中可以定义参数为auto的lambda，可以当做函数模板使用；VS2015只支持部分的C++14的特性，包括这一项；
+#if 0
 		{
 			// lambda——泛型加法；
 			auto plus = [](auto a, auto b)
@@ -4954,6 +4042,7 @@ namespace TEST_TEMPLATE
 				debugDisp("result2 ==", result2);
 			}
 		}
+#endif
 		 		 
 		debugDisp("test3() finished.");
 	}
@@ -4966,8 +4055,8 @@ namespace TEST_TEMPLATE
 		static const std::size_t N1 = N / 2;
 		static const std::size_t N2 = N - N1;
 
-		template <std::size_t Offset, typename UnaryFunction>
-		static inline void apply(UnaryFunction& function)
+		template <std::size_t Offset, typename FuncType>
+		static inline void apply(FuncType& function)
 		{
 			for_each_index_impl2<N1>::template apply<Offset>(function);
 			for_each_index_impl2<N2>::template apply<Offset + N1>(function);
@@ -4977,8 +4066,8 @@ namespace TEST_TEMPLATE
 	template <>
 	struct for_each_index_impl2<3>
 	{
-		template <std::size_t Offset, typename UnaryFunction>
-		static inline void apply(UnaryFunction& function)
+		template <std::size_t Offset, typename FuncType>
+		static inline void apply(FuncType& function)
 		{
 			function(Offset);
 			function(Offset + 1);
@@ -4989,8 +4078,8 @@ namespace TEST_TEMPLATE
 	template <>
 	struct for_each_index_impl2<2>
 	{
-		template <std::size_t Offset, typename UnaryFunction>
-		static inline void apply(UnaryFunction& function)
+		template <std::size_t Offset, typename FuncType>
+		static inline void apply(FuncType& function)
 		{
 			function(Offset);
 			function(Offset + 1);
@@ -5000,8 +4089,8 @@ namespace TEST_TEMPLATE
 	template <>
 	struct for_each_index_impl2<1>
 	{
-		template <std::size_t Offset, typename UnaryFunction>
-		static inline void apply(UnaryFunction& function)
+		template <std::size_t Offset, typename FuncType>
+		static inline void apply(FuncType& function)
 		{
 			function(Offset);
 		}
@@ -5010,48 +4099,52 @@ namespace TEST_TEMPLATE
 	template <>
 	struct for_each_index_impl2<0>
 	{
-		template <std::size_t Offset, typename UnaryFunction>
-		static inline void apply(UnaryFunction&)
+		template <std::size_t Offset, typename FuncType>
+		static inline void apply(FuncType&)
 		{
 		}
 	};
 
 
-	template <std::size_t N, typename UnaryFunction>
-	inline UnaryFunction for_each_index(UnaryFunction function)
+	template <std::size_t N, typename FuncType>
+	inline FuncType for_each_index(FuncType function)
 	{
 		for_each_index_impl2<N>::template apply<0>(function);				// N是容量，0是起始索引；
 
 		return function;
 	}
 
-	 
+	
+	template <typename IndexType>
+	void dispNumVec(const IndexType index, const std::vector<int>& vec)
+	{
+		debugDisp(vec[index]);
+	}
+
 	void test4()
 	{
 		std::vector<int> numVec{ 0, 1, 2, 3, 4, 5 };
+		 
+		debugDisp("N == ", 3);
+		for_each_index < std::size_t{ 3 } > ([&](const size_t index)
+			{
+				debugDisp(numVec[index]);
+			});
 
-		{
-			debugDisp("N == ", 3);
-			for_each_index < std::size_t{ 3 } > ([&](auto index)
-				{
-					debugDisp(numVec[index]);
-				});
-
-			debugDisp("N == ", 6);
-			for_each_index < std::size_t{ 6 } > ([&](auto index)
-				{
-					debugDisp(numVec[index]);
-				});
+		debugDisp("N == ", 6);
+		for_each_index < std::size_t{ 6 } > ([&](const size_t index)
+			{
+				debugDisp(numVec[index]);
+			}); 
 
 			// 模板参数N必须是编译器常量，否则会编译报错；
 #if 0
-			size_t N0 = numVec.size();
-			for_each_index < std::size_t{ N0 } > ([&](auto index)
-				{
-					debugDisp(numVec[index]);
-				});
-#endif
-		}
+		size_t N0 = numVec.size();
+		for_each_index < std::size_t{ N0 } > ([&](auto index)
+			{
+				debugDisp(numVec[index]);
+			});
+#endif 
 
 		debugDisp("TEST_TEMPLATE::test4() finished.");
 	}
@@ -5060,15 +4153,1067 @@ namespace TEST_TEMPLATE
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////  类型萃取
+namespace TEST_TYPE_TRAITS
+{
+	// test0()——std::is_same<>;
+	template<typename T>
+	void foo(const T& data)
+	{
+		auto typeName = typeid(data).name();
+		const std::type_info& typeInfo = typeid(data);
+
+		if (std::is_same<T, int>::value)
+			debugDisp("输入数据为int类型");
+		else if (std::is_same<T, float>::value)
+			debugDisp("输入数据为int类型");
+		else if (std::is_same<T, double>::value)
+			debugDisp("输入数据为int类型");
+		else
+			debugDisp("输入数据为其他类型；");
+	}
+
+
+	//		打印输入vector的元素类型；std::is_same<T1, T2>::value实现
+	template <typename T>
+	void goo(const std::vector<T>& vec)
+	{
+		if (std::is_same<T, int>::value)
+			debugDisp("输入数据为int类型");
+		else if (std::is_same<T, float>::value)
+			debugDisp("输入数据为int类型");
+		else if (std::is_same<T, double>::value)
+			debugDisp("输入数据为int类型");
+		else
+			debugDisp("输入数据为其他类型；");
+	}
+
+
+	void test0()
+	{
+		{
+			std::vector<int> numVec1{ 11, 22, 0, 89, -3, 12, 999 };
+			auto iter = numVec1.begin();
+
+			// std::is_same<>()——编译期检测两个类型是否相同
+			int numI1 = 1;
+			double numD1 = 0.9;
+			auto ret11 = std::is_same<decltype(numI1), decltype(numD1)>();
+			auto ret12 = std::is_same<double, decltype(numD1)>();
+			debugDisp("std::is_same<decltype(numI1), decltype(numD1)>() == ", ret11);
+			debugDisp("std::is_same<double, decltype(numD1)>() == ", ret12);
+			debugDisp("return type11 == ", typeid(ret11).name());
+			debugDisp("return type12 == ", typeid(ret12).name());
+			debugDisp("\n\n");
+		}
+
+		{
+			int num1 = 1;
+			float num2 = 1.2f;
+			double num3 = 11.2;
+			std::vector<int> vec1;
+			std::vector<float> vec2;
+			std::vector<double> vec3;
+			//foo(num1);
+			//foo(num2);
+			//foo(num3);
+
+			goo(vec1);
+			goo(vec2);
+			goo(vec3);
+		}
+
+		debugDisp("TEST_TYPE_TRAITS::test0() finished.");
+	}
+
+
+	// test1()
+	union NumType
+	{
+		int i;
+		float f;
+
+		using FloatType = float;
+	};
+
+
+	void test1()
+	{
+		//NumType num;
+		//bool isInt = true; 
+
+		debugDisp("test1() finished.");
+	}
+
+
+	// test2()——类型映射(type mapping):
+	template <typename T>
+	const char* hoo(const T& elem)
+	{
+		// typeid()——返回
+		const std::type_info& typeInfo = typeid(T);
+		const char* typeName = typeid(T).name();
+
+		// std::type_info支持operator==
+		if (typeInfo == typeid(int))
+			debugDisp("this is a int.");
+
+		debugDisp("pause");
+		return typeName;
+	}
+
+	template <typename TypeOut, typename TypeIn>
+	bool ioo(TypeOut& out, const TypeIn& elem)
+	{
+		out = static_cast<TypeOut>(elem);
+		return true;
+	}
+
+
+	void test2()
+	{
+		int num = 3;
+		debugDisp(hoo(num));
+		debugDisp(hoo("asdf"));
+
+		int numI = 5;
+		double numD = 0;
+		ioo(numD, numI);
+		debugDisp("numD == ", numD);
+
+		debugDisp("test2 finished.");
+	}
+
+
+	// test3()——std::is_xxx<>()函数模板：编译期判断变量的属性；
+	void test3()
+	{
+		std::vector<int> numVec1{ 11, 22, 0, 89, -3, 12, 999 };
+		auto iter = numVec1.begin();
+		int numI1 = 1;
+		double numD1 = 0.9;
+		int* numPtr1 = nullptr;
+
+		// std::is_pointer<T>()：编译期检测一个对象是否是指针：
+		{
+			auto ret21 = std::is_pointer<decltype(numI1)>::value;
+			auto ret22 = std::is_pointer<decltype(numPtr1)>::value;
+			debugDisp("std::is_pointer<decltype(numI1)>::value == ", ret21);
+			debugDisp("std::is_pointer<decltype(numPtr1)>::value == ", ret22);
+			debugDisp();
+		}
+
+		// std::is_reference<>(), std::is_xxx_reference<>();
+		{
+			debugDisp("std::is_reference<int>::value == ", std::is_reference<int>::value);
+			debugDisp("std::is_reference<int&>::value == ", std::is_reference<int&>::value);
+			debugDisp("std::is_reference<int&&>::value == ", std::is_reference<int&&>::value);
+			debugDisp("std::is_lvalue_reference<int&>::value == ", std::is_lvalue_reference<int&>::value);
+			debugDisp("std::is_rvalue_reference<int&&>::value == ", std::is_rvalue_reference<int&&>::value);
+			debugDisp();
+
+			constexpr int num0{ -1 };
+			const int& num00 = num0;
+			std::vector<int> numVec0;
+			debugDisp("std::is_reference<decltype(num0)>::value == ", std::is_reference<decltype(num0)>::value);
+			debugDisp("std::is_reference<decltype(num00)>::value == ", std::is_reference<decltype(num00)>::value);
+			debugDisp("std::is_rvalue_reference<decltype(numVec0)>::value == ", std::is_rvalue_reference<decltype(numVec0)>::value);
+			debugDisp("std::is_rvalue_reference<decltype(std::move(numVec0))>::value == ", \
+				std::is_rvalue_reference<decltype(std::move(numVec0))>::value);
+			debugDisp("std::is_rvalue_reference<decltype(numVec0)>::value == ", std::is_rvalue_reference<decltype(numVec0)>::value);
+			// std::move()返回右值引用；numVec0被标记为将亡值，但是本身依然是左值引用；
+			debugDisp();
+		}
+
+		debugDisp("TEST_TYPE_TRAITS::test3() finished.");
+	}
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////// C++新特性：
+namespace MORDERN_CPP
+{
+	// test0()——使用using而不是typedef来创建类型别名
+	template <typename T>
+	using myPair = std::pair<T, T>;			// using可以创建模板的别名，typedef不可以
+
+	using VOIDP = void*;
+	using pVV = VOIDP(*)();			// 这里如果不将void*打包成VOIDP将会编译报错。
+	void* getNum()
+	{
+		int* pi = new int(999);
+		return reinterpret_cast<void*>(pi);
+	} 
+
+	void test0()
+	{
+		myPair<int> mp0 = std::make_pair(5, 6);
+		pVV pfuncV = nullptr;
+		pfuncV = getNum;
+
+		int* pi = nullptr;
+		pi = reinterpret_cast<int*>((*pfuncV)());
+		debugDisp("*pi == ", *pi);
+
+		debugDisp("MORDERN_CPP::test0() finished.");
+	}
+
+
+
+	////////////////////////////////////////////////////// 常量表达式constexpr ( c++11)
+	namespace TEST_CONSTEXPR
+	{
+		// 自定义类构造函数声明为constexpr
+		class Foo
+		{
+		public:
+			int m_num = 0;
+
+		public:
+			constexpr Foo() {}
+			constexpr Foo(const int num0) :m_num(num0) {}
+			Foo(const Foo& f) :m_num(f.m_num) {}
+			Foo& operator[](const Foo& f)
+			{
+				this->m_num = f.m_num;
+				return *this;
+			}
+		};
+
+
+		// 检测输入变量是否是常量表达式
+		template <typename T, T Value>
+		struct ConstantHolder
+		{
+			static constexpr T value = Value;
+		};
+
+
+		void test0()
+		{
+			constexpr int compile_time = 42;
+			int runtime = 42;
+			constexpr Foo compileTimeFoo{ 11 };
+			Foo runTimeFoo = compileTimeFoo;
+
+			// 使用编译时值实例化模板
+			auto result1 = ConstantHolder<decltype(compile_time), compile_time>::value;
+			//auto result2 = ConstantHolder<decltype(runtime), runtime>::value;			// 编译会失败；
+			//auto result3 = ConstantHolder<Foo, compileTimeFoo>::value;					// 对自定义类型使用会失败；
+			//auto result4 = ConstantHolder<decltype(runTimeFoo), runTimeFoo>::value;
+
+			debugDisp("TEST_CONSTEXPR::test0() finished.");
+		}
+
+
+		// test1——constexpr函数、函数模板：
+		template <std::size_t Index, typename T>
+		constexpr T getIndexElem(const T* arr)
+		{
+			return arr[Index];														// c++11中的constexpr函数最多只能有一个return语句；
+		}
+
+
+		// 递归终止：当N == 0时：
+		template <typename T, size_t N, typename Func>
+		constexpr typename std::enable_if<N == 0>::type
+			for_each_elem_impl(const T*, Func) {}
+
+
+		// 递归终止：当N == 1时：
+		template <typename T, size_t N, typename Func>
+		constexpr typename std::enable_if<N == 1>::type
+			for_each_elem_impl(const T* arr, Func func)
+		{
+			func(*arr);
+		}
+
+
+		// 递归递推：处理当前元素并继续处理剩余元素
+		template <typename T, size_t N, typename Func>
+		constexpr typename std::enable_if<(N > 1)>::type
+			for_each_elem_impl(const T* arr, Func func)
+		{
+			func(*arr);
+			for_each_elem_impl<T, N - 1, Func>(arr + 1, func);
+		}
+
+
+		// 主函数模板
+		template <typename T, size_t N, typename Func>
+		constexpr void for_each_elem(const T* arr, Func func)
+		{
+			for_each_elem_impl<T, N, Func>(arr, func);
+		}
+
+
+		// 递归终止：当Index == N - 1时：
+		template <typename T, size_t N, size_t Index, typename Func>
+		constexpr typename std::enable_if<Index == (N - 1)>::type
+			for_each_index_impl(std::vector<T>& vec, Func func)
+		{
+			func(Index);
+		}
+
+
+		// 递归终止：当Index > N - 1时：
+		template <typename T, size_t N, size_t Index, typename Func>
+		constexpr typename std::enable_if<(Index > N - 1)>::type
+			for_each_index_impl(std::vector<T>& vec, Func func)
+		{
+		}
+
+
+		// 递归递推：当Index < N - 1时：
+		template <typename T, size_t N, size_t Index, typename Func>
+		constexpr typename std::enable_if<(Index < N - 1)>::type
+			for_each_index_impl(std::vector<T>& vec, Func func)
+		{
+			func(Index);
+			for_each_index_impl<T, N, Index + 1>(vec, func);
+		}
+
+
+		// 外部接口：
+		template <typename T, size_t N, typename Func>
+		constexpr void for_each_index(std::vector<T>& vec, Func func)
+		{
+			for_each_index_impl<T, N, 0>(vec, func);
+		}
+
+
+		void test1()
+		{
+			std::vector<int> numVec{ 0, 1, 2, 3, 4 };					// c++11中STL容器无法被声明为编译期常量；
+			constexpr int numArr[5] = { 0, 1, 2, 3, 4 };
+
+			//const int* intPtr = &numVec[0];
+			//constexpr int num3 = getIndexElem<3, int>(intPtr);
+			constexpr int num3 = getIndexElem<3, int>(numArr);
+			for_each_elem<int, 5>(numArr, [](const int& x)
+				{
+					std::cout << x << ", ";
+					return x;
+				});
+			debugDisp();
+
+			std::vector<int> numVec2{ 15, 16, 17, 18 };
+			for_each_index_impl<int, 1, 0>(numVec2, [&](const size_t& idx)
+				{
+					debugDisp("at idx == ", idx, ", value == ", numVec2[idx]);
+				});
+			debugDisp("test for_each_index() : ");
+
+
+			for_each_index<int, 4>(numVec2, [&](const size_t idx)
+				{
+					debugDisp("at idx == ", idx, ", value == ", numVec2[idx]);
+				});
+
+			debugDisp("TEST_CONSTEXPR::test1() finished.");
+		}
+
+
+		template <size_t N, size_t Index, typename T>
+		constexpr typename std::enable_if<(Index > N - 1)>::type vecAdd_impl(\
+			std::vector<T>& vecOut, const std::vector<T>& vec1, const std::vector<T>& vec2)
+		{
+		}
+
+		template <size_t N, size_t Index, typename T>
+		constexpr typename std::enable_if<(Index == N - 1)>::type vecAdd_impl(\
+			std::vector<T>& vecOut, const std::vector<T>& vec1, const std::vector<T>& vec2)
+		{
+			vecOut[Index] = vec1[Index] + vec2[Index];
+		}
+
+		template <size_t N, size_t Index, typename T>
+		constexpr typename std::enable_if<(Index < N - 1)>::type vecAdd_impl(\
+			std::vector<T>& vecOut, const std::vector<T>& vec1, const std::vector<T>& vec2)
+		{
+			vecOut[Index] = vec1[Index] + vec2[Index];
+			vecAdd_impl<N, Index + 1, T>(vecOut, vec1, vec2);
+		}
+
+		template <size_t N, typename T>
+		constexpr void vecAdd(std::vector<T>& vecOut, const std::vector<T>& vec1, const std::vector<T>& vec2)
+		{
+			vecOut.resize(N);
+			vecAdd_impl<N, 0, T>(vecOut, vec1, vec2);
+		}
+
+
+		void test2()
+		{
+			std::vector<int> vec1{ 1,2,3,4,5 }, vec2{ 5,6,7,8,9 }, vecOut;
+			vecOut.resize(5);
+			vecAdd<5, int>(vecOut, vec1, vec2);
+			traverseSTL(vecOut, disp<int>{});
+
+			debugDisp("TEST_CONSTEXPR::test2() finished.");
+		}
+
+	}
+
+
+
+	//////////////////////////////////////////////////////  c++11移动语义、右值引用、万能引用、引用折叠、完美转发
+	namespace TEST_MOVING
+	{
+		/*
+			引用折叠（Reference Collapsing）
+				是模板类型推导和自动类型转换时处理引用的一套规则，主要用于解决 "引用的引用" 这种看似矛盾的语法问题。
+				当代码中出现 "引用的引用"（如int& &）时，C++ 不会直接报错，而是通过引用折叠规则将其简化为单一引用类型。
+				任何情况下，左值引用（&）与其他引用组合时，最终结果一定是左值引用（&）。
+				只有两个右值引用（&&）组合时，结果才是右值引用（&&）。
+				具体规则可总结为：
+						T& & → T&（左值引用的左值引用 → 左值引用）
+						T& && → T&（左值引用的右值引用 → 左值引用）
+						T&& & → T&（右值引用的左值引用 → 左值引用）
+						T&& && → T&&（右值引用的右值引用 → 右值引用）
+		
+		*/
+
+		// test0: 引用折叠(Reference Collapsing)、万能引用(Universal Reference)、完美转发（Perfect Forwarding）：
+
+		template<typename T>
+		void passReference(T&& arg)				 
+		{ 
+			if (std::is_reference<decltype(std::forward<T>(arg))>::value)
+			{
+				if (std::is_lvalue_reference<decltype(std::forward<T>(arg))>::value)						// <utility>
+					debugDisp("input type is left value reference.");
+				else if (std::is_rvalue_reference<decltype(std::forward<T>(arg))>::value)
+					debugDisp("input type is right value reference.");
+				else
+					debugDisp("??? should not be here.");
+			}
+			else
+				debugDisp("input type is not reference type."); 
+		}  
+
+		template<typename T>
+		void passReference_incorrect(const T&)
+		{
+			if (std::is_reference<T>::value)
+			{
+				if (std::is_lvalue_reference<T>::value)						// <utility>
+					debugDisp("input type left value reference.");
+				else if (std::is_rvalue_reference<T>::value)
+					debugDisp("input type is right value reference.");
+				else
+					debugDisp("??? should not be here.");
+			}
+			else
+				debugDisp("input type is not reference type.");
+		}
+
+
+		//		重载1: 打印输入参数的属性，左值引用版本
+		template<typename T>
+		void showAttr(T& num)
+		{
+			std::cout << "是一个左值" << std::endl;
+		}
+
+
+		//		重载2: 打印输入参数的属性，右值引用版本
+		template<typename T>
+		void showAttr(T&& num)
+		{
+			std::cout << "是一个右值" << std::endl;
+		}
+
+
+		//		输入参数为万能引用的转发函数——需要保证传入的引用转发之后性质不变。
+		template <typename T>
+		void passShowAttr(T&& num)
+		{
+			showAttr(std::forward<T>(num));
+		}
+
+		//
+		template <typename T>
+		void testRefAttr(T&& arg)
+		{			
+			if (std::is_lvalue_reference<decltype(arg)>::value)						// <utility>
+				std::cout << "是左值引用" << std::endl;
+			else if (std::is_rvalue_reference<decltype(arg)>::value)
+				std::cout << "是右值引用或右值" << std::endl;
+			else
+				std::cout << "？？？" << std::endl;
+		}
+
+
+		// 接收万能引用的函数要实现完美转发，需要用到std::forward()
+		void test0()
+		{
+#if 0
+			int a = 1;
+
+			testRefAttr(a);
+			testRefAttr(5);
+			testRefAttr(std::move(a));
+
+			passShowAttr(1);									// 是一个右值
+			passShowAttr(a);									// 是一个左值
+			passShowAttr(std::move(a));				// 是一个右值
+			passShowAttr(a);			// 是一个左值；std::move()内部做了强制转换，返回一个左值引用，但是并不改变变量a原先的类型。
+#else
+			int x = 10;
+			int& lref = x;									// 左值引用
+			auto&& rref = std::move(lref);			    // 右值引用
+
+			debugDisp("std::is_reference<decltype(rref)>() == ", std::is_reference<decltype(rref)>());
+			debugDisp("std::is_rvalue_reference<decltype(rref)>() == ", std::is_rvalue_reference<decltype(rref)>());
+
+			{
+				passReference(x);
+				passReference(10);
+				passReference(lref);
+				passReference(std::forward<decltype(rref)>(rref));
+				//passReference(rref);
+				passReference(std::move(lref));
+				//passReference(std::forward(x));
+				//passReference(lref);
+				//passReference(rref);
+			}
+#endif
+
+			debugDisp("TEST_MOVING::test0() finished.");
+		}
+
+
+		// auto&&一定是万能引用； 
+#if 0 
+		auto funcContainer = [](auto&& func, auto&& arg)	// 可以调用任意单参数函数的Lambda
+			{
+				return (std::forward<decltype(func)>(func))(std::forward<decltype(arg)>(arg));
+			};
+
+		void disp(const std::string& str)
+		{
+			std::cout << str << std::endl;
+		}
+
+		double Sqrt(double num)
+		{
+			return std::sqrt(num);
+		}
+
+		void test5()
+		{
+			funcContainer(disp, "hahahah");
+			std::cout << funcContainer(Sqrt, 100) << std::endl;
+		}
+#endif
+		 
+		// test1: 自己实现的带有移动构造的类。
+		class myString
+		{
+		private:
+			char* c_str;
+
+		public:
+			myString() = delete;			// 禁用无参构造
+
+
+			myString(const char* str)
+			{
+				size_t len = strlen(str);
+				this->c_str = new char[len + 1];
+				memcpy(c_str, str, len + 1);
+			}
+
+
+			myString(const myString& str0)			// 拷贝构造
+			{
+				std::cout << "拷贝构造函数被调用。" << std::endl;
+				char* pc = str0.getStr();
+				size_t num = strlen(pc) + 1;
+				this->c_str = new char[num];
+				memcpy(this->c_str, pc, num);
+
+			}
+
+
+			myString(myString&& str) noexcept		// 移动构造。
+			{
+				std::cout << "移动构造函数被调用" << std::endl;
+				this->c_str = str.getStr();
+				str.setStr(nullptr);
+			}
+
+
+			char* getStr() const
+			{
+				return this->c_str;
+			}
+
+
+			void setStr(char* pc)
+			{
+				this->c_str = pc;
+			}
+
+
+			void disp()
+			{
+				std::cout << this->c_str << std::endl;
+			}
+
+		};
+
+
+		void test1()
+		{
+			myString str1("hahawawawa");
+			myString str2(str1);
+			myString str3(std::move(myString("hello world")));
+
+			str1.disp();
+			str2.disp();
+			str3.disp();
+
+			myString str4(std::move(str1));
+			str4.disp();
+			str1.disp();
+
+
+			debugDisp("TEST_MOVING::test1() finished.");
+		} 
+
+	}
+
+
+
+	////////////////////////////////////////////////////// C++11之后的新特性
+	namespace BEYOND_CXX11
+	{
+		// test0：std::integer_sequence类模板(c++14) (beyond c++11);
+		namespace NEW_SEQUENCE // 手动实现std::integer_sequence类模板
+		{    
+			template<typename T, T... Ints>
+			struct integer_sequence
+			{
+				using value_type = T;
+				static constexpr std::size_t size() noexcept { return sizeof...(Ints); }
+			};
+
+			template<std::size_t... Ints>
+			using index_sequence = integer_sequence<std::size_t, Ints...>;
+
+
+			// 实现make_integer_sequence的辅助模板
+			namespace detail 
+			{
+				template<typename T, std::size_t N, T... Ints>
+				struct make_integer_sequence_impl;
+
+				template<typename T, T... Ints>
+				struct make_integer_sequence_impl<T, 0, Ints...>
+				{
+					using type = integer_sequence<T, Ints...>;
+				};
+
+				template<typename T, std::size_t N, T... Ints>
+				struct make_integer_sequence_impl {
+					static_assert(N > 0, "N must be positive");
+					using type = typename make_integer_sequence_impl<T, N - 1, N - 1, Ints...>::type;
+				};
+			}
+
+			template<typename T, std::size_t N>
+			using make_integer_sequence = typename detail::make_integer_sequence_impl<T, N>::type;
+
+			template<std::size_t N>
+			using make_index_sequence = make_integer_sequence<std::size_t, N>;
+
+			template<typename... T>
+			using index_sequence_for = make_index_sequence<sizeof...(T)>; 
+		}
+
+
+		namespace TEST_SEQUENCE 
+		{
+			// using namespace std;
+			using namespace NEW_SEQUENCE;
+
+
+			// 打印测试工具：打印序列内容
+			template <typename Seq>
+			struct PrintSequence;
+
+
+			// 偏特化：递归打印
+			template <typename T, T... Ints>
+			struct PrintSequence<integer_sequence<T, Ints...>>
+			{
+				static void print()
+				{
+					int arr[] = { (std::cout << Ints << " ", 0)... };
+					(void)arr; // 防止未使用警告
+					std::cout << "\n";
+				}
+			};
+			 
+
+			// 1. 测试 make_index_sequence<N>
+			void test_make_index_sequence()
+			{
+				std::cout << "Test make_index_sequence<5>: ";
+				using seq = make_index_sequence<5>;
+				PrintSequence<seq>::print(); // 期望输出: 0 1 2 3 4
+			}
+
+			// 2. 测试 index_sequence_for<Ts...>
+			template <typename... Ts>
+			void test_index_sequence_for()
+			{
+				std::cout << "Test index_sequence_for<...>: ";
+				using seq = index_sequence_for<Ts...>;
+				PrintSequence<seq>::print(); // 期望输出: 0 1 2 ... (sizeof...(Ts)-1)
+			}
+
+			// 3. 测试 size() 方法
+			void test_size()
+			{
+				using seq = make_index_sequence<7>;
+				std::cout << "Test size() for make_index_sequence<7>: ";
+				std::cout << seq::size() << "\n"; // 期望输出: 7
+			}
+
+			// 4. 实际展开应用：用 index_sequence 展开 tuple
+
+			template <typename Tuple, std::size_t... Is>
+			void print_tuple_impl(const Tuple& t, index_sequence<Is...>)
+			{
+				int arr[] = { (std::cout << std::get<Is>(t) << " ", 0)... };
+				(void)arr;
+				std::cout << "\n";
+			}
+
+			template <typename... Ts>
+			void print_tuple(const std::tuple<Ts...>& t)
+			{
+				print_tuple_impl(t, make_index_sequence<sizeof...(Ts)>{});
+			}
+
+			void test_tuple()
+			{
+				std::tuple<int, char, double> t(42, 'x', 3.14);
+				std::cout << "Test tuple expansion: ";
+				print_tuple(t); // 期望输出: 42 x 3.14
+			}
+		}
+
+
+		void test0() 
+		{
+			TEST_SEQUENCE::test_make_index_sequence();
+			TEST_SEQUENCE::test_index_sequence_for<int, double, char>();
+			TEST_SEQUENCE::test_size();
+			TEST_SEQUENCE::test_tuple();
+		
+			debugDisp("BEYOND_CXX11::test0() finished.");
+		}
+
+
+		// test1：C++14允许lambda中使用auto类型的参数； (c++14) (beyond c++11);
+		template <typename T, typename TypeCap>
+		struct myMultiplier						// 定义等价于下面带auto类型参数lambda的函数子类型；
+		{
+		private:
+			TypeCap capVal;
+
+		public:
+			explicit myMultiplier(const TypeCap& cv) : capVal(cv) {}
+
+			void operator()(T& elem) const
+			{
+				elem += static_cast<T>(capVal);
+			}
+		};
+
+
+		void test1()
+		{
+			constexpr float base0{ 100.0 };
+			constexpr int base1{ 1000 };
+			std::vector<int> numVec0{ 0, 1, 2, 3, 4, 5 };
+			std::vector<double> numVec1{ 0.0, 0.1, 0.2, 0.3, 0.4, 0.5 };
+			{
+				debugDisp("numVec0 == ");
+				traverseSTL(numVec0, disp<int>{});
+				debugDisp("numVec1 == ");
+				traverseSTL(numVec1, disp<double>{});
+				debugDisp();
+			}
+			 
+#ifdef _CXX14_SUPPORTED
+//#if 0 
+			// std::for_each()中传入处理容器元素的lambda
+			{
+				std::for_each(numVec0.begin(), numVec0.end(), [&base0](auto& elem)		// 参数类型为auto的lambda，相当于一个可捕获变量的函数模板； 
+					{
+						using ElemType = typename std::decay<decltype(elem)>::type;
+						elem += static_cast<ElemType>(base0);
+					});
+				std::for_each(numVec1.begin(), numVec1.end(), [&base1](auto& elem)
+					{
+						using ElemType = typename std::decay<decltype(elem)>::type;
+						elem += static_cast<ElemType>(base1);
+					});
+
+				debugDisp("numVec0 == ");
+				traverseSTL(numVec0, disp<int>{});
+				debugDisp("numVec1 == ");
+				traverseSTL(numVec1, disp<double>{});
+				debugDisp(); 
+			}
+
+			// lambda中捕获另一个lambda
+			{
+				std::vector<std::string> strVec{ "hahah", "123", "helloWorld" };
+
+				auto dispStrInfo = [](const std::string& str)->size_t
+					{
+						debugDisp(str, ";  string length == ", str.size());
+						return str.size();
+					};
+
+				auto mergeStr = [&strVec, &dispStrInfo](std::string& strOut)
+					{
+						strOut.clear();
+						for (const auto& str : strVec)
+						{
+							dispStrInfo(str);
+							strOut.append(str);
+						}
+					};
+				 
+				{
+					std::string strResult;
+					mergeStr(strResult);
+
+					debugDisp("strResult == ", strResult);
+					debugDisp();
+				} 
+			}
+
+#else
+			{
+				myMultiplier<int, typename std::decay<decltype(base0)>::type> mp0(base0);
+				myMultiplier<double, typename std::decay<decltype(base1)>::type> mp1(base1);		// 传入变量构造函数子，等价于lambda捕获变量；
+
+				std::for_each(numVec0.begin(), numVec0.end(), mp0);
+				std::for_each(numVec1.begin(), numVec1.end(), mp1);
+				debugDisp("numVec0 == ");
+				traverseSTL(numVec0, disp<int>{});
+				debugDisp("numVec1 == ");
+				traverseSTL(numVec1, disp<double>{});
+				debugDisp();
+			}
+#endif 
+
+			debugDisp("BEYOND_CXX11::test1() finished.");
+		}
+
+
+		// test2: lambda中使用auto类型的参数，更复杂的情形； (c++14) (beyond c++11);
+		template <typename T>
+		void dispSingle(const T& var) 
+		{
+			std::cout << var <<';' << std::endl;
+		}
+
+		template <typename T1, typename T2>
+		void dispDoublet(const T1& var1, const T2& var2)
+		{
+			std::cout << '(' << var1 << ", " << var2 << ");" << std::endl;
+		} 
+
+		template <typename FuncType, typename T>
+		void DoFuncParam1(FuncType&& function, T&& var)
+		{
+			function(std::forward<decltype(var)>(var));
+		} 
+		 
+//#ifdef _CXX14_SUPPORTED
+#if 0
+		template <typename FuncType, typename T1, typename T2>
+		void DoFuncParam2(FuncType&& function, T1&& var1, T2&& var2)
+		{
+			//auto LambdaOuter = [&function, &var2](auto&& v1)
+			auto LambdaOuter = [&](auto&& v1)
+				{
+					using ref1_t = decltype(v1);
+					//auto LambdaInner = [&function, &v1](auto&& v2)
+					auto LambdaInner = [&](auto&& v2)
+						{
+							function(std::forward<ref1_t>(v1), std::forward<decltype(v2)>(v2));
+						};
+
+					DoFuncParam1(LambdaInner, std::forward<decltype(var2)>(var2));
+				};
+
+			DoFuncParam1(LambdaOuter, std::forward<decltype(var1)>(var1));
+		}
+#else
+		 
+		template<typename FuncType, typename T1, typename T2>
+		struct FooInner 
+		{
+		private:
+			FuncType&& function;
+			T1&& v1;
+		public:
+			explicit FooInner(FuncType&& func0, T1&& v10) : function(func0), v1(std::forward<decltype(v10)>(v10)) {}
+			void operator()(T2&& v2) const 
+			{ 
+				function(std::forward<decltype(v1)>(v1), std::forward<decltype(v2)>(v2));
+			}
+		}; 
+
+
+		template<typename FuncType, typename T1, typename T2>
+		struct FooOuter
+		{
+		private:
+			FuncType&& function;
+			T2&& v2;
+		public:
+			explicit FooOuter(FuncType&& func0, T2&& v20) : function(func0), v2(std::forward<decltype(v20)>(v20)) {}
+			void operator()(T1&& v1) const
+			{
+				FooInner<FuncType, T1, T2> fi(function, std::forward<decltype(v1)>(v1));
+				DoFuncParam1(fi, std::forward<decltype(v2)>(v2));
+			}
+		};
+
+
+		template <typename FuncType, typename T1, typename T2>
+		void DoFuncParam2(FuncType&& function, T1&& var1, T2&& var2)
+		{
+			FooOuter<FuncType, T1, T2> fo(function, std::forward<decltype(var2)>(var2));
+			DoFuncParam1(fo, std::forward<decltype(var1)>(var1));
+		}
+#endif
+		 
+
+		void test2()
+		{
+			int num0 = 0;
+			float num1 = 1.f;
+			double num2 = 2.0;
+			double& num22 = num2;
+			double&& num222 = std::move(num2);
+			long double num3 = 3.0; 
+			std::string str0 = "hello world";
+			{
+				DoFuncParam1(dispSingle<decltype(num0)>, std::forward<decltype(num0)>(num0));
+				DoFuncParam1(dispSingle<decltype(num1)>, std::forward<decltype(num1)>(num1));
+				DoFuncParam1(dispSingle<decltype(num2)>, std::forward<decltype(num2)>(num2));
+				DoFuncParam2(dispDoublet<decltype(num0), decltype(num1)>, \
+					std::forward<decltype(num0)>(num0), std::forward<decltype(num1)>(num1));
+				DoFuncParam2(dispDoublet<decltype(num1), decltype(num2)>, \
+					std::forward<decltype(num1)>(num1), std::forward<decltype(num2)>(num2));
+				//DoFuncParam2(dispDoublet<decltype(num22), decltype(num222)>, \
+				//	std::forward<decltype(num22)>(num22), std::forward<decltype(num222)>(num222));
+				DoFuncParam2(dispDoublet<decltype(num2), decltype(num3)>, \
+					std::forward<decltype(num2)>(num2), std::forward<decltype(num3)>(num3));
+				DoFuncParam2(dispDoublet<decltype(num3), decltype(str0)>, \
+					std::forward<decltype(num3)>(num3), std::forward<decltype(str0)>(str0));
+
+				debugDisp();
+			}
+
+			debugDisp("BEYOND_CXX11::test2() finished.");
+		}
+
+
+
+		// test3()——auto返回类型(c++14) (beyond c++11)
+
+		template <typename T>
+		auto getNumber() 
+		{
+
+		}
+
+
+		// XXX_t (c++14) (beyond c++11);
+		/*
+			template< class T > using XXX_t = typename XXX<T>::type;
+			如decay_t<T> == decay<T>::type等等
+		*/
+		 
+
+		// 折叠表达式 (c++17) (beyond c++11)（fold expression）
+#if 0
+		namespace FOLDEXP
+		{
+			// 使用折叠表达式可以更加方便地实现可变参数模板
+			template <typename ... Ts>
+			auto mySum(Ts ... ts)
+			{
+				return (ts + ...);
+			}
+
+			void test0()
+			{
+				std::cout << mySum(1, 2, 3, 4, 5, 6) << std::endl;
+				std::cout << mySum(std::string{ "hello" }, std::string{ " " }, std::string{ "world" }) << std::endl;
+			}
+
+		}
+#endif 
+	}
+
+}using namespace MORDERN_CPP;
+ 
+ 
+
+template <std::size_t N>
+void dispTemplateArg() 
+{
+	debugDisp("N == ", N);
+}
+
+
+// 整型模板参数
+void tmpTestTemplateArg() 
+{
+	constexpr std::size_t num0 = 11;
+	std::size_t num1 = 22;
+	dispTemplateArg<33>();
+
+	//constexpr std::size_t M = 6;
+	//auto foo = [&](auto dim)
+	//	{
+	//		dispTemplateArg<dim>();
+	//	};
+	//foo(M);
+
+
+	debugDisp("finished.");
+}
+
+  
+
 int main()
-{   
-	TEST_CONSTEXPR::test2();
-
-	//TEST_TEMPLATE::test4();
-
+{ 
+	debugDisp("当前编译器：", getCompilerInfo());
 	 
+	//BEYOND_CXX11::test2();
+	//TEST_MOVING::test0();  
+
+	STL_ALGORITHM::test12();
+
 
 	debugDisp("main() finished."); 
+	getchar();
 
 	return 0;
 }
