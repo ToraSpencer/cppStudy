@@ -15,12 +15,12 @@ message(STATUS "CMAKE_CONFIGURATION_TYPES == ${CMAKE_CONFIGURATION_TYPES}")
 # 1. 导入源代码文件：
 #       include_directories()——指定源代码的头文件所在目录；
 include_directories(${PROJECT_SOURCE_DIR}/../)
-include_directories(C:/gitRepositories/TTTML/Auxiliary)       
+include_directories(E:/gitRepositories/TTTML/Auxiliary)       
 
 
 #       aux_source_directory()——查找某路径下所有源文件：
 aux_source_directory(${PROJECT_SOURCE_DIR} SRC_FILES)    # aux_source_directory(路径，存储源文件列表的变量)，PROJECT_SOURCE_DIR——此CMakeLists.txt所在目录；
-aux_source_directory(C:/gitRepositories/TTTML/Auxiliary SRC_FILES_AUXILIARY)  
+aux_source_directory(E:/gitRepositories/TTTML/Auxiliary SRC_FILES_AUXILIARY)  
   
 
 # 5. 预处理器

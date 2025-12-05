@@ -1,4 +1,4 @@
-# Install script for directory: C:/gitRepositories/cppStudy/CppStudy/cppTest
+# Install script for directory: E:/gitRepositories/cppStudy/CppStudy/cppTest
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -52,6 +52,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-  file(WRITE "C:/gitRepositories/cppStudy/CppStudy/cppTest/build_mingw64/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "E:/gitRepositories/cppStudy/CppStudy/cppTest/build_mingw64/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

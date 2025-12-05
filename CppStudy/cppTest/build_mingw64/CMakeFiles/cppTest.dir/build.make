@@ -52,10 +52,10 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\gitRepositories\cppStudy\CppStudy\cppTest
+CMAKE_SOURCE_DIR = E:\gitRepositories\cppStudy\CppStudy\cppTest
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64
+CMAKE_BINARY_DIR = E:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64
 
 # Include any dependencies generated for this target.
 include CMakeFiles/cppTest.dir/depend.make
@@ -70,48 +70,48 @@ include CMakeFiles/cppTest.dir/flags.make
 
 CMakeFiles/cppTest.dir/mainCppTest.cpp.obj: CMakeFiles/cppTest.dir/flags.make
 CMakeFiles/cppTest.dir/mainCppTest.cpp.obj: CMakeFiles/cppTest.dir/includes_CXX.rsp
-CMakeFiles/cppTest.dir/mainCppTest.cpp.obj: C:/gitRepositories/cppStudy/CppStudy/cppTest/mainCppTest.cpp
+CMakeFiles/cppTest.dir/mainCppTest.cpp.obj: E:/gitRepositories/cppStudy/CppStudy/cppTest/mainCppTest.cpp
 CMakeFiles/cppTest.dir/mainCppTest.cpp.obj: CMakeFiles/cppTest.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/cppTest.dir/mainCppTest.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cppTest.dir/mainCppTest.cpp.obj -MF CMakeFiles\cppTest.dir\mainCppTest.cpp.obj.d -o CMakeFiles\cppTest.dir\mainCppTest.cpp.obj -c C:\gitRepositories\cppStudy\CppStudy\cppTest\mainCppTest.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/cppTest.dir/mainCppTest.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cppTest.dir/mainCppTest.cpp.obj -MF CMakeFiles\cppTest.dir\mainCppTest.cpp.obj.d -o CMakeFiles\cppTest.dir\mainCppTest.cpp.obj -c E:\gitRepositories\cppStudy\CppStudy\cppTest\mainCppTest.cpp
 
 CMakeFiles/cppTest.dir/mainCppTest.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/cppTest.dir/mainCppTest.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\gitRepositories\cppStudy\CppStudy\cppTest\mainCppTest.cpp > CMakeFiles\cppTest.dir\mainCppTest.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\gitRepositories\cppStudy\CppStudy\cppTest\mainCppTest.cpp > CMakeFiles\cppTest.dir\mainCppTest.cpp.i
 
 CMakeFiles/cppTest.dir/mainCppTest.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cppTest.dir/mainCppTest.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\gitRepositories\cppStudy\CppStudy\cppTest\mainCppTest.cpp -o CMakeFiles\cppTest.dir\mainCppTest.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\gitRepositories\cppStudy\CppStudy\cppTest\mainCppTest.cpp -o CMakeFiles\cppTest.dir\mainCppTest.cpp.s
 
 CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.obj: CMakeFiles/cppTest.dir/flags.make
 CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.obj: CMakeFiles/cppTest.dir/includes_CXX.rsp
-CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.obj: C:/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp
+CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.obj: E:/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp
 CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.obj: CMakeFiles/cppTest.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.obj -MF CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp.obj.d -o CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp.obj -c C:\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.obj -MF CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp.obj.d -o CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp.obj -c E:\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp
 
 CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp > CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp > CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp.i
 
 CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/Auxiliary.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp -o CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp -o CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\Auxiliary.cpp.s
 
 CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.obj: CMakeFiles/cppTest.dir/flags.make
 CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.obj: CMakeFiles/cppTest.dir/includes_CXX.rsp
-CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.obj: C:/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp
+CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.obj: E:/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp
 CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.obj: CMakeFiles/cppTest.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.obj -MF CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp.obj.d -o CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp.obj -c C:\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.obj -MF CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp.obj.d -o CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp.obj -c E:\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp
 
 CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp > CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp > CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp.i
 
 CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cppTest.dir/C_/gitRepositories/TTTML/Auxiliary/AuxiliaryWin.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp -o CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp -o CMakeFiles\cppTest.dir\C_\gitRepositories\TTTML\Auxiliary\AuxiliaryWin.cpp.s
 
 # Object files for target cppTest
 cppTest_OBJECTS = \
@@ -129,7 +129,7 @@ cppTest.exe: CMakeFiles/cppTest.dir/build.make
 cppTest.exe: CMakeFiles/cppTest.dir/linkLibs.rsp
 cppTest.exe: CMakeFiles/cppTest.dir/objects1.rsp
 cppTest.exe: CMakeFiles/cppTest.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable cppTest.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=E:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable cppTest.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\cppTest.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -141,6 +141,6 @@ CMakeFiles/cppTest.dir/clean:
 .PHONY : CMakeFiles/cppTest.dir/clean
 
 CMakeFiles/cppTest.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\gitRepositories\cppStudy\CppStudy\cppTest C:\gitRepositories\cppStudy\CppStudy\cppTest C:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64 C:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64 C:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64\CMakeFiles\cppTest.dir\DependInfo.cmake "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" E:\gitRepositories\cppStudy\CppStudy\cppTest E:\gitRepositories\cppStudy\CppStudy\cppTest E:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64 E:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64 E:\gitRepositories\cppStudy\CppStudy\cppTest\build_mingw64\CMakeFiles\cppTest.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/cppTest.dir/depend
 
