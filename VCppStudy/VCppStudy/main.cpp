@@ -860,6 +860,62 @@ namespace GENERAL_VCPP
 	}
 }
 
+ 
+
+struct Task { int id; }; // 演示用：任务就是一个整数ID
+
+
+int test_IOCP()
+{
+	// 1) 创建完成端口（IOCP 队列）
+	HANDLE hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
+	if (!hIOCP) { std::cerr << "CreateIoCompletionPort failed\n"; return 1; }
+
+	const int workerCount = std::max(1u, std::thread::hardware_concurrency());
+	std::vector<std::thread> workers;
+
+	// 2) 启动工作线程：阻塞在 GetQueuedCompletionStatus 等待任务
+	for (int i = 0; i < workerCount; ++i) {
+		workers.emplace_back([hIOCP, i] {
+			for (;;) {
+				DWORD bytes = 0;
+				ULONG_PTR key = 0;
+				LPOVERLAPPED ov = nullptr;
+
+				BOOL ok = GetQueuedCompletionStatus(hIOCP, &bytes, &key, &ov, INFINITE);
+				// 退出哨兵：key=0 且 ov=nullptr（约定）
+				if (ok && key == 0 && ov == nullptr) break;
+
+				// 正常任务：key 携带 Task*
+				Task* t = reinterpret_cast<Task*>(key);
+				if (t) {
+					// 模拟处理
+					std::cout << "[worker " << i << "] handle task " << t->id << "\n";
+					delete t; // 示例里 new 出来，这里释放
+				}
+			}
+			std::cout << "[worker " << i << "] exit\n";
+			});
+	}
+
+	// 3) 主线程投递一些任务
+	for (int id = 1; id <= 10; ++id) {
+		Task* t = new Task{ id };
+		// bytes 参数随意（网络/文件I/O场景里通常表示传输字节数）；这里用0
+		PostQueuedCompletionStatus(hIOCP, 0, reinterpret_cast<ULONG_PTR>(t), nullptr);
+	}
+
+	// 4) 投递退出哨兵（每个工作线程一个）
+	for (int i = 0; i < workerCount; ++i) {
+		PostQueuedCompletionStatus(hIOCP, 0, 0, nullptr);
+	}
+
+	// 5) 等待线程收尾并关闭句柄
+	for (auto& th : workers) th.join();
+	CloseHandle(hIOCP);
+	return 0;
+}
+
 
 
 int main()
@@ -870,16 +926,7 @@ int main()
 
 	// MULTITHREAD::test2();
 
-	int hours = 0;
-	double weekly_pay = 0;
-	double rate = 0;
-
-	printf("请输入员工的小时工资：￥");
-	scanf("%lf", &rate);
-	printf("请输入员工的工作时数（小时）: ");
-	scanf("%d", &hours);
-	weekly_pay = rate * 40 + 2 * rate * (hours - 40);
-	printf("本周应支付薪水是：￥%.lf", weekly_pay);
+	test_IOCP();
 
     return 0;
 }
