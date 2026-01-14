@@ -7,8 +7,16 @@
 #include <tuple>
 #include <type_traits>
 #include <memory>
-#include <utility>			//	std::integer_sequence（C++14）
+#include <algorithm>
+#include <utility>						//	std::integer_sequence（C++14）
 #include <CString>						// std::memset(), std::memcpy();
+#include <chrono>  
+#include <random>
+
+
+#ifdef _CXX17_SUPPORTED
+#include <memory_resource>	// 多态内存资源库（C++17）
+#endif
 
 
 //  WINDOWS提供的时间相关的接口
@@ -3794,9 +3802,13 @@ namespace TEST_NAN_INFINITY
 			float num3 = NAN;					// C风格的not a number;
 			float num4 = -num3;
 
-			float num11 = std::numeric_limits<float>::infinity();			// C++风格的无穷大；
-			float num22 = -std::numeric_limits<float>::infinity();
-			float num33 = std::numeric_limits<float>::quiet_NaN();			// C++风格的not a number;
+			constexpr float num11 = std::numeric_limits<float>::infinity();			// C++风格的无穷大；
+			constexpr float num22 = -std::numeric_limits<float>::infinity();
+			constexpr float num33 = std::numeric_limits<float>::quiet_NaN();			// C++风格的not a number;
+			debugDisp("num11 == ", num11);
+			debugDisp("num22 == ", num22);
+			debugDisp("(num22 < 0.0) ==  ", num22 < 0.0);
+			debugDisp("(num22 < num11) ==  ", num22 < num11);
 
 			// 大小比较：常数和C风格的NAN比较，始终返回false; 但是C++风格的NAN貌似本质上还是个无穷大值； 
 			debugDisp("(3 > num1) == ", 3 > num1);
@@ -3824,6 +3836,7 @@ namespace TEST_NAN_INFINITY
 				std::numeric_limits<decltype(num33)>::quiet_NaN() == num33);
 		} 
 
+		// NaN——注意整型数没有NaN值；
 		{
 			constexpr std::uint64_t num1 = std::numeric_limits<std::uint64_t>::quiet_NaN();
 			constexpr int num2 = std::numeric_limits<int>::quiet_NaN();
@@ -5040,6 +5053,7 @@ namespace MORDERN_CPP
 			function(std::forward<decltype(var)>(var));
 		} 
 		 
+
 //#ifdef _CXX14_SUPPORTED
 #if 0
 		template <typename FuncType, typename T1, typename T2>
@@ -5134,14 +5148,24 @@ namespace MORDERN_CPP
 
 
 
-		// test3()——auto返回类型(c++14) (beyond c++11)
-
+		// test3()——auto返回类型(c++14) (beyond c++11)... to be finished.... 
 		template <typename T>
 		auto getNumber() 
 		{
 
 		}
 
+
+		// test4()——std::pmr
+#ifdef _CXX17_SUPPORTED
+		 
+
+		void test4() 
+		{ 
+
+			debugDisp("BEYOND_CXX11::test4() finished.");
+		}
+#endif
 
 		// XXX_t (c++14) (beyond c++11);
 		/*
@@ -5205,12 +5229,8 @@ void tmpTestTemplateArg()
 int main()
 { 
 	debugDisp("当前编译器：", getCompilerInfo());
-	 
-	//BEYOND_CXX11::test2();
-	//TEST_MOVING::test0();  
 
-	STL_ALGORITHM::test12();
-
+	BEYOND_CXX11::test4();
 
 	debugDisp("main() finished."); 
 	getchar();
