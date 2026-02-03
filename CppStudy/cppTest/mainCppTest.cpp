@@ -1562,7 +1562,6 @@ namespace TEST_STL
 		}
 
 
-
 		// test1()——std::thread线程类
 		float genRandFloat(const unsigned sleepTime)
 		{
@@ -1596,6 +1595,7 @@ namespace TEST_STL
 
 			return URD_i(e);
 		}
+
 
 		bool genMultiRandInt(std::vector<int>& vec, const unsigned sleepTime = 1000)
 		{
@@ -1749,48 +1749,100 @@ namespace TEST_STL
 		}
 
 
-		// 测试基于OpenMP的多线程并发：
+		// 比较基于OpenMP的多线程并发、基于C++线程库的多线程并发、单线程计算的速度；
 		void test22()
 		{
-			// VS中需要将项目属性 → C/C++ → 语言 → “OpenMP支持”的值设定为“是”
+			// notice: VS中需要将项目属性 → C/C++ → 语言 → “OpenMP支持”的值设定为“是”
 
+			// notice: 并行计算中线程数的合理选择。
+			/*
+				对于大多数计算密集型（Compute-Bound）的任务（如矩阵运算、图像处理、科学计算），
+						最高效的线程数通常等于 CPU 的物理核心数（Physical Cores），
+						而不是逻辑核心数（Logical Processors/Threads）。
+						因为这种场景中循环内部充满了浮点运算或密集整数运算，
+						两个线程在同一个物理核心上会争夺同一个计算单元（FPU/ALU）。
+						这会导致缓存竞争加剧，效率反而不如单线程独占物理核心高。
+
+				物理核心数（Physical Cores）： 能够真正独立执行指令的硬件单元。
+				逻辑核心数（Logical Processors）： 包含超线程（Hyper-Threading, SMT）。
+						超线程允许一个物理核心同时处理两个线程的上下文，但它们共享执行单元（如 ALU、FPU）。
+			*/
+
+			 
+			// 0. 生成一个大容量的向量，存放随机数：
+			int elemCount = 130000;
+			std::vector<float> numVec(elemCount, 0);
+			std::vector<float> randVec(elemCount); 
+			tiktok& tt = tiktok::getInstance();
 			{
 				int num_threads = omp_get_num_threads();
+				debugDisp("并行计算环境：");
 				printf("Number of threads: %d\n", num_threads);
 				printf("Available processors: %d\n", omp_get_num_procs());
 			}
 
-			// 生成一个大容量的向量，存放随机数：
-			int elemCount = 30000;
-			std::vector<float> numVec(elemCount, 0);
-			std::vector<float> randVec(elemCount);
-			std::default_random_engine e;									// 随机数生成器的引擎对象
-			std::uniform_real_distribution<float> URD_f(0, 1);
-			tiktok& tt = tiktok::getInstance();
+			// 1. 单线程计算： 
+#if 0
+			{
+				tt.start();
+				for (int i = 0; i < elemCount; ++i)
+				{
+					// f1. 生成随机数：
+					std::default_random_engine e;									// 随机数生成器的引擎对象 
+					std::uniform_real_distribution<float> URD_f(0, 1);
+					for (auto& num : randVec)
+						num = URD_f(e);
 
-			std::cout << "多线程测试开始：" << std::endl;			// 生成一组随机数，求和，赋值给numVec中的元素；
+					// f2. 耗时的计算：累加开方；
+					numVec[i] = static_cast<float>(std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0.0f)));
+				}
+				tt.endCout("单线程计算耗时：");
+			}
+#endif
+			 
+			// 2. 基于c++标准线程库的多线程并发；
+			{
+				const size_t elemCount0 = static_cast<size_t>(elemCount);
+				tt.start();
+				PARALLEL_FOR(0, elemCount0, [&randVec, &numVec](const size_t i)
+					{
+						// f1. 生成随机数：
+						std::default_random_engine e;									// 随机数生成器的引擎对象 
+						std::uniform_real_distribution<float> URD_f(0, 1);
+						for (auto& num : randVec)
+							num = URD_f(e);
+
+						// f2. 耗时的计算：累加开方；
+						numVec[i] = static_cast<float>(std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0.0f)));
+					}); 
+				tt.endCout("基于C++标准线程库的并行计算耗时：");
+			} 
+
+			// 3. 基于OpenMP的多线程并发：
 			tt.start();
 #pragma omp parallel for num_threads(omp_get_num_procs() - 1)  
 			for (int i = 0; i < elemCount; ++i)
 			{
+				std::default_random_engine e;									// 随机数生成器的引擎对象 
+				std::uniform_real_distribution<float> URD_f(0, 1);
 				for (auto& num : randVec)
 					num = URD_f(e);
 				numVec[i] = static_cast<float>(std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0.0f)));
 			}
-			tt.endCout("omp多线程耗时：");
+			tt.endCout("omp多线程耗时（线程数7）：");
 
-			// 单线程耗时为9s+
+			tt.start();
+#pragma omp parallel for num_threads(omp_get_num_procs())  
+			for (int i = 0; i < elemCount; ++i)
 			{
-				std::cout << "单线程测试开始：" << std::endl;
-				tt.start();
-				for (int i = 0; i < elemCount; ++i)
-				{
-					for (auto& num : randVec)
-						num = URD_f(e);
-					numVec[i] = static_cast<float>(std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0.0f)));
-				}
-				tt.endCout("单线程耗时：");
+				std::default_random_engine e;									// 随机数生成器的引擎对象 
+				std::uniform_real_distribution<float> URD_f(0, 1);
+				for (auto& num : randVec)
+					num = URD_f(e);
+				numVec[i] = static_cast<float>(std::sqrt(std::accumulate(randVec.begin(), randVec.end(), 0.0f)));
 			}
+			tt.endCout("omp多线程耗时（线程数8）：");
+
 
 			debugDisp("test22() finished.");
 		}
@@ -1847,7 +1899,6 @@ namespace TEST_STL
 
 			debugDisp("finished.");
 		}
-
 
 
 		// test4()——测试生产消费模式（互斥锁+条件变量）： 
@@ -3963,6 +4014,7 @@ namespace TEST_TEMPLATE
 		template <int... Vals> struct IntContainer; 
 	}
 
+
 	namespace TEMPLATE4
 	{
 		template <typename T>
@@ -3981,6 +4033,7 @@ namespace TEST_TEMPLATE
 
 		RemoveReferenceConst<const float&> value0 = 4;
 	}
+
 
 #if 0
 	namespace TEMPLATE5			// 分支结构
@@ -5230,7 +5283,8 @@ int main()
 { 
 	debugDisp("当前编译器：", getCompilerInfo());
 
-	BEYOND_CXX11::test4();
+	STD_THREAD::test22();
+	//BEYOND_CXX11::test4();
 
 	debugDisp("main() finished."); 
 	getchar();

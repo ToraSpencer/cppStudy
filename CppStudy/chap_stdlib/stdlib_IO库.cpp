@@ -291,6 +291,7 @@ namespace TEST_FILESTREAM
 	};
 }
 
+
 void stdlib_io_module::test1()
 {
 	// 输入、输出文件流对象。 
