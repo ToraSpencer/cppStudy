@@ -9,53 +9,7 @@
 
 #include "myDSA.h"
 
-
-////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
-namespace MY_DEBUG
-{
-	static std::string g_debugPath = "E:/";
-
-	// 函数子——打印std::cout支持的类型变量。
-	template <typename	T>
-	class disp
-	{
-	public:
-		void operator()(const T& arg)
-		{
-			std::cout << arg << ", ";
-		}
-	};
-
-
-	// 函数子——打印std::pair
-	template <typename pairType>
-	class dispPair
-	{
-	public:
-		void operator()(const pairType& p)
-		{
-			std::cout << "(" << p.first << ", " << p.second << "), ";
-		}
-	};
-
-
-	static void debugDisp()			// 递归终止
-	{						//		递归终止设为无参或者一个参数的情形都可以。
-		std::cout << std::endl;
-		return;
-	}
-
-
-	template <typename T, typename... Types>
-	static void debugDisp(const T& firstArg, const Types&... args)
-	{
-		std::cout << firstArg << " ";
-		debugDisp(args...);
-	} 
-}
-using namespace MY_DEBUG;
-
-
+ 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// 暂时不知如何分类：
 namespace TEST_UNKNOWN
@@ -1013,23 +967,10 @@ namespace TEST_MY_IO
 
 int main(int argc, char** argv)
 {
-	// RECURSION::test1(); 
+	TEST_TREE::test0();
 
-	TREE::test13();
-
-	// TEST_MY_IO::test0();
-
-	// STACK::test0();
-
-	//LIST::test0();
-	//ARRAY::test2();
-
-	// GRAPH::test5();
-
-	// GREEDY_DYNAMIC_BRUTAL::test0();
 
 	debugDisp("main finished.");
-
 
 	return 0;
 }

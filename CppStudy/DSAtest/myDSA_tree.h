@@ -10,6 +10,9 @@
 #include <exception>
 #include <stdexcept>
 
+#include "Auxiliary.h"
+#include "AuxiliaryWin.h"
+
 
 // Ä¿Â¼
 /*
@@ -1102,7 +1105,7 @@ TreeNode<T>* buildHeap(const std::vector<T>& valVec)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////// ²âÊÔº¯Êý£º
-namespace TREE 
+namespace TEST_TREE 
 {
 	void test0();
 	void test1();

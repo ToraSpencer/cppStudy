@@ -1921,6 +1921,7 @@ namespace TEST_STL
 
 	namespace STD_ARRAY 
 	{
+		// basic:
 		/* 
 			内置的数组有很多麻烦的地方，比如无法直接对象赋值，无法直接拷贝等等，
 			同时内置的数组又有很多比较难理解的地方，比如数组名是数组的起始地址等等。
@@ -5185,8 +5186,7 @@ int main()
 { 
 	//debugDisp("当前编译器：", getCompilerInfo());
 
-	STD_THREAD::test22();
-	//BEYOND_CXX11::test4();
+	STD_ARRAY::test0();
 	 
 
 	debugDisp("main() finished."); 

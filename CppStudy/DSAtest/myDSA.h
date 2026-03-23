@@ -6,6 +6,9 @@
 #include <unordered_map>
 #include <algorithm>
 
+#include "Auxiliary.h"
+#include "AuxiliaryWin.h"
+
 #include "triMesh.h"
 #include "myDSA_tree.h"
 #include "myDSA_stack.h"

@@ -33,6 +33,12 @@
     <ClCompile Include="triMesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\TTTML\Auxiliary\AuxiliaryWin.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\TTTML\Auxiliary\Auxiliary.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="myDSA_tree.h">
@@ -51,6 +57,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="triMesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\TTTML\Auxiliary\Auxiliary.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\TTTML\Auxiliary\AuxiliaryWin.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

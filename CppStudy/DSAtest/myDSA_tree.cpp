@@ -4,15 +4,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////// DEBUG 接口
 namespace MY_DEBUG
 {
-	static std::string g_debugPath = "E:/";
-
-	// lambda——打印std::cout支持的类型变量。
-	template <typename T>
-	static auto disp = [](const T& arg)
-	{
-		std::cout << arg << ", ";
-	};
-
 	template <typename T>
 	static auto dispCorrected = [](const T& arg)
 	{
@@ -21,39 +12,6 @@ namespace MY_DEBUG
 		else
 			std::cout << arg << ", ";
 	};
-
-
-	static void debugDisp()			// 递归终止
-	{						//		递归终止设为无参或者一个参数的情形都可以。
-		std::cout << std::endl;
-		return;
-	}
-
-
-	template <typename T, typename... Types>
-	static void debugDisp(const T& firstArg, const Types&... args)
-	{
-		std::cout << firstArg << " ";
-		debugDisp(args...);
-	}
-
-
-	// 传入函数子或函数指针遍历stl容器
-	template<typename T, typename F>
-	void traverseSTL(T& con, F f)
-	{
-		std::for_each(con.begin(), con.end(), f);
-		std::cout << std::endl;
-	}
-
-
-	// 反向遍历
-	template<typename T, typename F>
-	void revTraverseSTL(T& con, F f)
-	{
-		std::for_each(con.rbegin(), con.rend(), f);
-		std::cout << std::endl;
-	}
 }
 using namespace MY_DEBUG;
  
@@ -142,7 +100,7 @@ void printStrBT(TreeNode<std::string>* ptrNode)
 #endif
 
 
-namespace TREE
+namespace TEST_TREE
 {
 	// BT的最大深度：
 	void test0()
@@ -171,7 +129,7 @@ namespace TREE
 		debugDisp("ptrRoot->maxDepth() == ", ptrRoot->maxDepth());
 		debugDisp("isBST(ptrRoot) == ", isBST(ptrRoot));
 
-		debugDisp("test0 finished.");
+		debugDisp("TEST_TREE::test0 finished.");
 	}
 
 

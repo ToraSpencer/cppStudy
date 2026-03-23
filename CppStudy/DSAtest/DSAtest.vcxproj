@@ -74,7 +74,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)/Auxiliary/;$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>E:\gitRepositories\TTTML\Auxiliary;$(SolutionDir)/Auxiliary/;$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -84,7 +84,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)/Auxiliary/;$(SolutionDir)/Auxiliary/;$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>E:\gitRepositories\TTTML\Auxiliary;$(SolutionDir)/Auxiliary/;$(SolutionDir)/Auxiliary/;$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -130,7 +130,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -157,6 +157,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\TTTML\Auxiliary\Auxiliary.cpp" />
+    <ClCompile Include="..\..\..\TTTML\Auxiliary\AuxiliaryWin.cpp" />
     <ClCompile Include="triMesh.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="myDSA_graph.cpp" />
@@ -165,6 +167,8 @@
     <ClCompile Include="myDSA_tree.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\TTTML\Auxiliary\Auxiliary.h" />
+    <ClInclude Include="..\..\..\TTTML\Auxiliary\AuxiliaryWin.h" />
     <ClInclude Include="myDSA.h" />
     <ClInclude Include="myDSA_graph.h" />
     <ClInclude Include="myDSA_list.h" />
