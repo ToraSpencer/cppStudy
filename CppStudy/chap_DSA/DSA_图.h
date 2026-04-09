@@ -1544,6 +1544,7 @@ void MiniSpanTreeKruskal(const AdjMatrixUndirNetwork<ElemType, WeightType> &g)
 }
 #endif
 
+
 // 用Prim算法从u0出发构造网g的最小生成树
 template <class ElemType, class WeightType>
 void MiniSpanTreePrim(const AdjMatrixUndirNetwork<ElemType, WeightType> &g, int u0)

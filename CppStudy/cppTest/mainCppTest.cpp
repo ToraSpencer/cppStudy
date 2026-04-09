@@ -138,6 +138,7 @@ namespace TEST_WINDOWS_API
 }
  
 
+
 namespace TEST_WIN_API
 {
 	// 使用WINDOWS API调用.exe可执行程序:
@@ -221,6 +222,7 @@ namespace TEST_WIN_API
 }
  
 #endif 
+
 
  
 ////////////////////////////////////////////////////////////////////////////////////////////// 辅助类型&接口
@@ -5179,15 +5181,341 @@ void tmpTestTemplateArg()
 
 	debugDisp("finished.");
 }
+ 
 
-  
-
-int main()
+// Tora's toolkit
+namespace TTK 
 { 
-	//debugDisp("当前编译器：", getCompilerInfo());
+	namespace AUXILIARY_TTK
+	{ 
+		// 二进制输出流中写入布尔数据；
+		void writeStreamBool(std::ostream& os, const bool flag)
+		{
+			writeStreamData(os, flag ? char{ 1 } : char { 0 });
+		}
 
-	STD_ARRAY::test0();
+
+		// 二进制输入流中读取表示布尔数据的字节；
+		void readStreamBool(bool& bl, std::istream& is)
+		{
+			char chBool = 0;
+			readStreamData(chBool, is);
+			bl = chBool > 0 ? true : false;
+		}
+
+
+		struct FileStreamHead
+		{
+			std::string name;
+			bool binaryFlag;
+		};
+
+
+		// 判断文件是否为二进制文件
+		/*
+		 * @param filePath 文件路径
+		 * @param checkSize 检查的字节数，默认读取前 4096 字节
+		 * @return true 如果认为是二进制文件，false 认为是文本文件
+		 */
+		bool IsBinaryFile(const std::string& filePath, size_t checkSize = 4096)
+		{
+			std::ifstream file(filePath, std::ios::binary);
+			if (!file)
+			{
+				std::cerr << "无法打开文件: " << filePath << std::endl;
+				return false;
+			}
+
+			// 1. 读取缓冲区
+			std::vector<char> buffer(checkSize);
+			file.read(buffer.data(), checkSize);
+			std::streamsize bytesRead = file.gcount();
+			if (bytesRead == 0)
+				return false; // 空文件默认为文本
+
+			// 2.启发式检测逻辑
+			for (int i = 0; i < bytesRead; ++i)
+			{
+				unsigned char c = static_cast<unsigned char>(buffer[i]);
+
+				// 1. 如果包含空字符 '\0'，极大概率是二进制文件（如可执行文件、图片、网格数据）
+				if (c == '\0')
+					return true;
+
+				// 2. 检查非法控制字符 
+				if (c < 32 && c != 9 && c != 10 && c != 13) 	// 排除掉常见的文本控制字符：9(TAB), 10(LF), 13(CR)
+				{
+					// 在某些启发式算法中，如果非打印字符占比超过一定比例（如 30%），则判定为二进制 
+					return true;	// 这里为了严谨，检测到异常控制字符即返回 true
+				}
+			}
+
+			return false;
+		}
+
+	} using namespace AUXILIARY_TTK;
 	 
+
+	bool PackFiles(const std::string& outPath, const std::vector<std::string>& filePathVec, const char byteOffset)
+	{ 
+		// 0.
+		if (filePathVec.empty())
+			return false;
+
+		//1.
+		std::ofstream fileOut(outPath, std::ios::out | std::ios::binary);
+		if (!fileOut.is_open())
+			return false;
+
+		// 2.
+		const size_t filesCount = filePathVec.size();
+		for (size_t i = 0; i < filesCount; ++i)
+		{
+			// f0.
+			const bool blIsBinary = IsBinaryFile(filePathVec[i]);
+			std::ifstream fileIn;
+			{
+				// 文本文件也应该用二进制模式打开，以为在Windows等系统上，文本模式会自动将 \r\n 转换为 \n。
+
+				// 这会导致读取到的字节数少于文件实际大小，破坏二进制数据的结构。
+				fileIn.open(filePathVec[i], std::ios::in | std::ios::ate | std::ios::binary);// ate: at end，流指针指向流末尾；
+				if (!fileIn.is_open())
+				{
+					debugDisp("Error!!! ", filePathVec[i], " open failed.");
+					return false;
+				}
+			}
+
+			// f1. 
+			std::streampos size = fileIn.tellg();
+			if (size < 0)
+				return false; // 处理空文件或读取错误
+
+			// f2. 回到文件开头准备读取
+			fileIn.seekg(0, std::ios::beg);
+
+			// f3. 读文件：
+			std::string dataStr;
+			dataStr.resize(static_cast<size_t>(size));	// 预先分配内存（避免多次重新分配） 
+			if (!fileIn.read(&dataStr[0], size))
+				throw std::system_error(errno, std::generic_category(), "读取文件失败: " + filePathVec[i]);
+
+			// f4.
+			fileIn.close();
+
+			// 5. 字符偏移：
+			if (char{ 0 } != byteOffset)
+			{
+				const std::int64_t lenBuffer = static_cast<std::int64_t>(dataStr.size());
+#pragma omp parallel for
+				for (std::int64_t k = 0; k < lenBuffer; ++k)
+					dataStr[k] += byteOffset;
+			}
+
+			// 6. 生成文件头： 
+			FileStreamHead head;
+			{ 
+				head.name = ExtractFileName(filePathVec[i]);
+				head.binaryFlag = blIsBinary;
+			}
+
+			// 7. 输出：
+			{
+				std::string nameShifted = head.name;
+				for (auto& ch : nameShifted)
+					ch += byteOffset;
+				writeStreamStr(fileOut, nameShifted);
+				writeStreamBool(fileOut, head.binaryFlag);
+				writeStreamStr(fileOut, dataStr);
+			}
+		}
+
+		// 3. 
+		fileOut.close();
+
+		return true;
+	}
+
+
+	bool UnpackFiles(const std::string& outDir, const std::string& filePath, const char byteOffset)
+	{
+		auto unshift = [byteOffset](std::string& str)
+			{
+				for (auto& ch : str)
+					ch -= byteOffset;
+			};
+
+		// 1. 打开文件：
+		std::ifstream fileIn(filePath, std::ios::in | std::ios::binary | std::ios::ate);
+		if (!fileIn.is_open())
+		{
+			debugDisp("Error!!! ", filePath, " open failed.");
+			return false;
+		}
+
+		// 2. 读数据写文件的循环：
+		const std::streampos fileSize = fileIn.tellg();
+		fileIn.seekg(0, std::ios::beg);
+		while (fileIn.tellg() < fileSize)
+		{
+			// w1.读当前文件段：
+			FileStreamHead head;
+			std::string dataStr;
+			{ 
+				readStreamStr(head.name, fileIn);
+				unshift(head.name);
+				readStreamBool(head.binaryFlag, fileIn);
+				readStreamStr(dataStr, fileIn);
+				unshift(dataStr);
+			}
+
+			// w2. 写文件：
+			const std::string outPath = CorrectDirPath(outDir) + head.name;
+			std::ofstream fileOut;
+			std::ios_base::openmode mode = std::ios::out;
+			if (head.binaryFlag)
+				mode |= std::ios::binary;
+			fileOut.open(outPath, mode);
+			if (!fileOut.is_open())
+			{
+				debugDisp("Error!!! output file: ", outPath, " open failed."); 
+				return false;
+			}
+			fileOut << dataStr;
+			fileOut.close();
+		} 
+
+		// 3.
+		fileIn.close();
+
+		return true;
+	}
+	 
+
+#ifdef _WIN32
+	void Cmd_PackFiles(int argc, _TCHAR* argv[])
+#else
+	void Cmd_PackFiles(int argc, char** argv)
+#endif  
+	{ 
+		tiktok& tt{ tiktok::getInstance() };
+		debugDisp("pack files:");
+		tt.start();
+
+		// 0. 读取路径、参数； 
+		std::vector<std::string> filePathVec;          // inputFiles文件夹中所有文件的完整路径； 
+		std::string pathOutDir;
+		bool debugFlag = false; 
+		{
+			CString   cPath, fileConfig;
+			std::string pathRoot, pathDir;
+
+			// 0.1 获取当前进程加载的模块的路径。
+			GetModuleFileName(NULL, cPath.GetBufferSetLength(MAX_PATH + 1), MAX_PATH);
+			int nPos = cPath.ReverseFind('\\');
+			cPath = cPath.Left(nPos);
+			pathRoot = CT2CA{ cPath };
+			pathDir = pathRoot + "/inputFiles/";
+			pathOutDir = pathRoot + "/outputData/";
+			fileConfig = cPath + "/config.ini";
+
+			// 0.2 读取配置文件中的参数：       
+			unsigned debugInt = INIGetInt(TEXT("debugFlag"), fileConfig);
+			debugFlag = debugInt > 0 ? true : false;
+			if (debugFlag)
+				debugDisp("Debug mode: ");
+
+			// 0.3 读取所有输入文件路径：
+			GetFileNames(filePathVec, pathDir, false);  
+		} 
+
+		// 1. pack all files:
+		bool retFlag = PackFiles(pathOutDir + "packedFiles.dat", filePathVec, char{13});
+		if (!retFlag)
+			debugDisp("Error!!! PackFiles() failed.");
+		debugDisp(filePathVec.size(), "files packed.");
+		tt.endCout("PackFiles(): ");
+	} 
+
+
+#ifdef _WIN32
+	void Cmd_UnpackFiles(int argc, _TCHAR* argv[])
+#else
+	void Cmd_PackFiles(int argc, char** argv)
+#endif  
+	{
+		tiktok& tt{ tiktok::getInstance() };
+		debugDisp("pack files:");
+		tt.start();
+
+		// 0. 读取路径、参数； 
+		std::vector<std::string> filePathVec;          // inputFiles文件夹中所有文件的完整路径； 
+		std::string pathOutDir;
+		bool debugFlag = false;
+		{
+			CString   cPath, fileConfig;
+			std::string pathRoot, pathDir;
+
+			// 0.1 获取当前进程加载的模块的路径。
+			GetModuleFileName(NULL, cPath.GetBufferSetLength(MAX_PATH + 1), MAX_PATH);
+			int nPos = cPath.ReverseFind('\\');
+			cPath = cPath.Left(nPos);
+			pathRoot = CT2CA{ cPath };
+			pathDir = pathRoot + "/inputFiles/";
+			pathOutDir = pathRoot + "/outputData/";
+			fileConfig = cPath + "/config.ini";
+
+			// 0.2 读取配置文件中的参数：       
+			unsigned debugInt = INIGetInt(TEXT("debugFlag"), fileConfig);
+			debugFlag = debugInt > 0 ? true : false;
+			if (debugFlag)
+				debugDisp("Debug mode: "); 
+
+			// 0.3 读取所有输入文件路径：
+			GetFileNames(filePathVec, pathDir, false);
+		}
+
+		// 1. unpack files: 
+		if (1 != filePathVec.size())
+		{
+			debugDisp("Error!!! inputFiles目录中应该只有一个文件。");
+			return;
+		} 
+		if (!UnpackFiles(pathOutDir, filePathVec[0], char{13}))
+			debugDisp("Error!!! UnpackFiles() failed."); 
+		tt.endCout("UnpackFiles(): ");
+	}
+}
+
+
+#ifdef _WIN32
+int main(int argc, _TCHAR* argv[])
+#else
+int main(int argc, char** argv)
+#endif 
+{   
+	std::vector<std::string> filePathVec{ "C:\\Users\\34047\\Desktop\\数维地形开洞用户数据测试.7z",\
+		"C:\\Users\\34047\\Desktop\\新建文本文档.txt" };
+
+#if 0
+	{	
+		//bool retFlag = PackFile(g_debugPath + "outFile.dat", "C:\\Users\\34047\\Desktop\\数维地形开洞用户数据测试.7z", char{13});
+		bool retFlag = TTK::PackFile(g_debugPath + "outFile.dat", "C:\\Users\\34047\\Desktop\\新建文本文档.txt", char{ 13 });
+		bool retFlag2 = TTK::UnpackFile(g_debugPath, g_debugPath + "outFile.dat", char{ 13 });
+	}
+#endif
+
+#if 0
+	{
+		bool retFlag = TTK::PackFiles(g_debugPath + "outFile.dat", filePathVec, char{13});
+		bool retFlag2 = TTK::UnpackFiles(g_debugPath, g_debugPath + "outFile.dat", char{ 13 });
+
+		debugDisp("pause");
+	}
+#endif
+
+	//TTK::Cmd_PackFiles(argc, argv);
+	TTK::Cmd_UnpackFiles(argc, argv);
 
 	debugDisp("main() finished."); 
 	getchar();
