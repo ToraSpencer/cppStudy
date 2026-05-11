@@ -204,15 +204,15 @@ namespace TEST_WIN_API
 		// 定义源文件和目标文件路径
 		std::string sourceFile, destFile;
 		{
-			std::string sourceFile = "C:/myData/bunny.obj";
-			std::string destFile = "C:/myData/output/bunnyWrited.obj";
+			sourceFile = "C:/myData/bunny.obj";
+			destFile = "C:/myData/output/bunnyWrited.obj";
 			if (!CopyFileViaWinAPI(destFile, sourceFile))
 				debugDisp("Error!!!");
 		}
 		{
 			// 会自动创建文件夹：
-			std::string sourceFile = "C:/myData/bunny.obj";
-			std::string destFile = "C:/myData/output/newDir1/newDir11/bunnyWrited.obj";
+			sourceFile = "C:/myData/bunny.obj";
+			destFile = "C:/myData/output/newDir1/newDir11/bunnyWrited.obj";
 			if (!CopyFileViaWinAPI(destFile, sourceFile))
 				debugDisp("Error!!!");
 		}
@@ -833,12 +833,14 @@ namespace TEST_UNKNOWN
 		// 
 		void test0()
 		{
+#pragma warning(push)					 
+#pragma warning(disable: 4189)				// warning C4189: 局部变量已初始化但不引用
 			int a = 1;
-			assert(a != 0 && "a == 0 is not allowed!");
-
+			assert(a != 0 && "a == 0 is not allowed!"); 
 			assert(false && "should not be here.");
 
 			std::cout << "finished." << std::endl;
+#pragma warning(pop)		 
 		}
 
 	}
@@ -947,8 +949,10 @@ namespace TEST_UNKNOWN
 
 					// allocator<T>类模板
 			std::allocator<char> ch_allo;
+#pragma warning(push)					 
+#pragma warning(disable: 4189)				// warning C4189: 局部变量已初始化但不引用
 			char* tmpPtr = ch_allo.allocate(9);						// 开辟堆内存，大小为9个char
-
+#pragma warning(pop)		  
 		}
 
 
@@ -996,6 +1000,9 @@ namespace TEST_UNKNOWN
 		// 指针和智能指针的类型转换：
 		void test2()
 		{
+#pragma warning(push)					 
+#pragma warning(disable: 4189)				// warning C4189: 局部变量已初始化但不引用 
+
 			Base b{ 12 };
 			Derived d{ 13, 0.5 };
 
@@ -1031,6 +1038,7 @@ namespace TEST_UNKNOWN
 			std::shared_ptr<Derived> sd11 = std::reinterpret_pointer_cast<Derived>(sb1);			// 强行向下造型补上的成员变量貌似是随机值；
 #endif
 			debugDisp("test2() finished.");
+#pragma warning(pop)		 
 		}
 	}
 
@@ -1230,6 +1238,8 @@ namespace TEST_UNKNOWN
 		// 读写文件seekg(), tellg(), read(), write(), is_open()
 		void test1()
 		{
+#pragma warning(push)					 
+#pragma warning(disable: 4189)				// warning C4189: 局部变量已初始化但不引用
 			// 在文件中读写数组
 			int iarr[10] = { 1,2,3,4,5,6,7,8,9,10 };
 
@@ -1278,6 +1288,8 @@ namespace TEST_UNKNOWN
 			vlineRead[0].disp();
 			vlineRead[1].disp();
 			vlineRead[2].disp();
+
+#pragma warning(pop)		
 		}
 
 
@@ -1510,59 +1522,7 @@ namespace TEST_STL
 		 若bWaitAll参数为TRUE——函数成功则返回WAIT_OBJECT_0
 		 若bWaitAll为FALSE——函数成功则返回值指明是哪个内核对象收到通知。
 	*/
-
-
-	// CRITICAL_SECTION类——临界区锁类；
-
-		HANDLE g_hMutex = NULL;			// 互斥量
-
-		// 线程函数
-		DWORD WINAPI Fun1(LPVOID lpParamter)
-		{
-			for (int i = 0; i < 5; i++)
-			{
-				//请求一个互斥量锁
-				WaitForSingleObject(g_hMutex, INFINITE);
-				std::cout << "子线程得到互斥锁。 i == " << i << std::endl;
-				Sleep(100);
-
-				//释放互斥量锁
-				std::cout << "子线程释放互斥锁 " << std::endl;
-				ReleaseMutex(g_hMutex);
-			}
-
-			return 0L;//表示返回的是long型的0
-		}
-
-		void testWin1()
-		{
-			// 1. 创建一个子线程、互斥锁。
-			HANDLE hThread = CreateThread(NULL, 0, Fun1, NULL, 0, NULL);
-			g_hMutex = CreateMutex(NULL, FALSE, L"screen");
-
-			// 2. 关闭线程句柄
-			if (hThread != nullptr)
-				CloseHandle(hThread);
-
-			// 3. 主线程的执行路径
-			for (int i = 0; i < 5; i++)
-			{
-				// 请求获得一个互斥量锁
-				if (g_hMutex != nullptr)
-					WaitForSingleObject(g_hMutex, INFINITE);
-
-				std::cout << "！主线程得到互斥锁。 i == " << i << std::endl;
-				Sleep(100);
-
-				// 释放互斥量锁
-				if (g_hMutex != nullptr)
-				{
-					std::cout << "！主线程释放互斥锁 " << std::endl;
-					ReleaseMutex(g_hMutex);
-				}
-			}
-		}
-
+		 
 
 		// test1()——std::thread线程类
 		float genRandFloat(const unsigned sleepTime)
@@ -1934,6 +1894,9 @@ namespace TEST_STL
 		*/
 		void test0() 
 		{ 
+#pragma warning(push)					 
+#pragma warning(disable: 4189)				// warning C4189: 局部变量已初始化但不引用
+
 			// 1. 构造std::array: std::array<class _Ty, size_t _Size>，其中数组大小_Size必须是一个编译期常量；
 			{
 				size_t num2 = 2;
@@ -1969,6 +1932,8 @@ namespace TEST_STL
 			}
 			 
 			debugDisp("STD_ARRAY::test0() finished.");
+
+#pragma warning(pop)	
 		}
 
 		template <typename T, size_t M, size_t N>
@@ -2704,6 +2669,9 @@ namespace TEST_STL
 		// std::max(), std::max_element()
 		void test11()
 		{
+#pragma warning(push)					 
+#pragma warning(disable: 4189)				// warning C4189: 局部变量已初始化但不引用
+
 			std::vector<int> vec1{ 1,2,3,4,5 };
 			std::vector<int> vec2{ 1,2,2,3,4,5,5,5 };
 
@@ -2717,6 +2685,7 @@ namespace TEST_STL
 			auto ret22 = std::max_element(vec2.begin(), vec2.end());
 
 			debugDisp("test11 finished.");
+#pragma warning(pop)	
 		}
 
 
@@ -2892,262 +2861,7 @@ namespace TEST_OOP
 			return os;
 		}
 	};
-
-	// 多态
-	namespace POLYMORPHISM
-	{
-		class baseParser
-		{
-		protected:
-			char data[8];
-			const char* ptrParse;
-
-		public:
-			baseParser() : ptrParse(nullptr)
-			{
-				std::memset(data, 0, 8);
-			};
-			baseParser(const char* str) : ptrParse(str)
-			{
-				std::memset(data, 0, 8);
-			};
-
-			virtual void setPointer(const char* str) { this->ptrParse = str; }
-			virtual bool parse(char& output) { return false; }
-			virtual bool parse(unsigned short& output) { return false; }
-			virtual bool parse(unsigned& output) { return false; }
-			virtual bool parse(int& output) { return false; }
-			virtual bool parse(int64_t& output) { return false; }
-			virtual bool parse(float& output) { return false; }
-			virtual bool parse(double& output) { return false; }
-			virtual void* parse() { return nullptr; };
-			~baseParser() {}
-		};
-
-
-		template <typename T>
-		class dataParser : public baseParser
-		{
-		public:
-			dataParser() :baseParser() {}
-			dataParser(const char* str) : baseParser(str) {}
-
-			virtual bool parse(T& output)
-			{
-				if (nullptr == this->ptrParse)
-					return false;
-				output = *(reinterpret_cast<const T*>(this->ptrParse));
-				this->ptrParse += sizeof(T);
-				return true;
-			}
-
-			virtual void* parse()
-			{
-				if (nullptr == this->ptrParse)
-					return nullptr;
-				T output = *(reinterpret_cast<const T*>(this->ptrParse));
-				std::memcpy(this->data, &output, sizeof(T));
-				this->ptrParse += sizeof(T);
-
-				return reinterpret_cast<void*>(this->data);
-			}
-		};
-
-
-		class charParser : public baseParser
-		{
-		public:
-			charParser() :baseParser() {}
-			charParser(const char* str) :baseParser(str) {}
-			virtual bool parse(char& output)
-			{
-				if (nullptr == this->ptrParse)
-					return false;
-				output = *this->ptrParse;
-				this->ptrParse++;
-				return true;
-			}
-		};
-
-
-		class uShortParser : public baseParser
-		{
-		public:
-			uShortParser() :baseParser() {}
-			uShortParser(const char* str) : baseParser(str) {}
-			virtual bool parse(unsigned short& output)
-			{
-				if (nullptr == this->ptrParse)
-					return false;
-				output = *(reinterpret_cast<const unsigned short*>(this->ptrParse));
-				this->ptrParse += sizeof(unsigned short);
-				return true;
-			}
-		};
-
-
-		void test0()
-		{
-			std::string str;
-			baseParser* parser1 = nullptr;
-			baseParser* parser2 = nullptr;
-			char ch = 0;
-			unsigned short num = 0;
-			bool retFlag = true;
-			parser1 = new charParser();
-			parser2 = new uShortParser();
-
-			// 字符串序列
-			str = "123asdf8989zxcv";
-			{
-				parser1->setPointer(&str[0]);
-				parser2->setPointer(&str[0]);
-				retFlag = parser1->parse(ch);
-				debugDisp("retFlag == ", retFlag);
-				if (retFlag)
-					debugDisp("ch == ", ch);
-
-				retFlag = parser2->parse(ch);
-				debugDisp("retFlag == ", retFlag);
-				if (retFlag)
-					debugDisp("ch == ", ch);
-
-				parser1->setPointer(&str[0]);
-				parser2->setPointer(&str[0]);
-				retFlag = parser1->parse(num);
-				debugDisp("retFlag == ", retFlag);
-				if (retFlag)
-					debugDisp("num == ", num);
-				retFlag = parser2->parse(num);
-				debugDisp("retFlag == ", retFlag);
-				if (retFlag)
-					debugDisp("num == ", num);
-			}
-			debugDisp("\n\n");
-
-			// ushort序列：
-			std::vector<unsigned short> vec{ 99, 98, 1, 2, 3 };
-			str.resize(sizeof(unsigned short) * vec.size());
-			std::memcpy(&str[0], &vec[0], str.size());
-			{
-				parser1->setPointer(&str[0]);
-				parser2->setPointer(&str[0]);
-				retFlag = parser1->parse(ch);
-				debugDisp("retFlag == ", retFlag);
-				if (retFlag)
-					debugDisp("ch == ", ch);
-
-				retFlag = parser2->parse(ch);
-				debugDisp("retFlag == ", retFlag);
-				if (retFlag)
-					debugDisp("ch == ", ch);
-
-				parser1->setPointer(&str[0]);
-				parser2->setPointer(&str[0]);
-				retFlag = parser1->parse(num);
-				debugDisp("retFlag == ", retFlag);
-				if (retFlag)
-					debugDisp("num == ", num);
-				retFlag = parser2->parse(num);
-				debugDisp("retFlag == ", retFlag);
-				if (retFlag)
-					debugDisp("num == ", num);
-			}
-
-			debugDisp("test0 finished.");
-		}
-
-
-		void test1()
-		{
-			std::string str;
-			baseParser* parser1 = nullptr;
-			baseParser* parser2 = nullptr;
-			baseParser* parser3 = nullptr;
-			char ch = 0;
-			unsigned short num = 0;
-			int numInt = 0;
-			bool retFlag = true;
-
-			// ushort序列：
-			std::vector<unsigned short> vec{ 99, 98, 1, 2, 3, 10 };
-			str.resize(sizeof(unsigned short) * vec.size());
-			std::memcpy(&str[0], &vec[0], str.size());
-
-			// 
-			parser1 = new dataParser<char>();
-			parser2 = new uShortParser();
-			parser3 = new dataParser<unsigned short>();
-			parser1->setPointer(&str[0]);
-			parser2->setPointer(&str[0]);
-			parser3->setPointer(&str[0]);
-
-			// 解析：
-			const size_t stringLen = str.size();
-			for (size_t i = 0; i < stringLen; ++i)
-			{
-				parser1->parse(ch);
-				std::cout << ch << ", ";
-			}
-			debugDisp("\n");
-
-			for (size_t i = 0; i < stringLen / sizeof(unsigned short); ++i)
-			{
-				parser2->parse(num);
-				std::cout << num << ", ";
-			}
-			debugDisp("\n");
-
-			auto elem = vec[0];
-			elem = 0;
-			for (size_t i = 0; i < stringLen / sizeof(decltype(vec[0])); ++i)
-			{
-				parser3->parse(elem);
-				std::cout << elem << ", ";
-			}
-			debugDisp("\n");
-
-			debugDisp("test1 finished.");
-		}
-
-
-		void test2()
-		{
-			std::string str;
-			baseParser* parser1 = nullptr;
-			baseParser* parser2 = nullptr;
-			baseParser* parser3 = nullptr;
-			char ch = 0;
-			unsigned short num = 0;
-			int numInt = 0;
-			bool retFlag = true;
-
-			// ushort序列：
-			std::vector<unsigned short> vec{ 99, 98, 1, 2, 3, 10 };
-			str.resize(sizeof(unsigned short) * vec.size());
-			std::memcpy(&str[0], &vec[0], str.size());
-
-			// 
-			parser1 = new dataParser<char>();
-			parser2 = new dataParser<unsigned short>();
-			parser3 = new dataParser<size_t>();
-			parser1->setPointer(&str[0]);
-			parser2->setPointer(&str[0]);
-			parser3->setPointer(&str[0]);
-
-			// 解析：
-			const size_t stringLen = str.size();
-			ch = *(reinterpret_cast<char*>(parser1->parse()));
-			debugDisp("ch == ", ch);
-			num = *(reinterpret_cast<unsigned short*>(parser2->parse()));
-			debugDisp("num == ", num);
-
-
-			debugDisp("test2 finished.");
-		}
-
-	}
-
+	 
 	// 析沟
 	namespace DECONSTRUCTOR
 	{
@@ -5493,6 +5207,7 @@ namespace TTK
 // #pragma warning 指令：
 namespace PRAGMA_WARNING
 {
+	// #pragma warning
 	/*
 		#pragma warning 是MSVC编译器的预处理指令，用于控制编译器警告的启用/禁用。
 		基本语法：
@@ -5511,60 +5226,50 @@ namespace PRAGMA_WARNING
 			C4800 — 将int隐式转换为bool
 			C4512 — 类中有赋值运算但无法生成默认的operator=
 			C4706 — 条件表达式中使用了赋值运算符（if(x = 5)）
-	*/
+	*/ 
 
 
-	// 演示 #pragma warning(disable) 禁用指定警告：
-	void test0()
-	{
-		// C4996: 使用了deprecated函数。scanf在MSVC中被标记为不安全，建议使用scanf_s。
-		// 不加 #pragma warning(disable:4996) 时，编译器会产生如下警告：
-		//   warning C4996: 'scanf': This function or variable may be unsafe.
-		//   Consider using scanf_s instead.
 
-#pragma warning(push)
-#pragma warning(disable: 4996)
-		int val = 0;
-		scanf("%d", &val);					// 使用被标记为deprecated的函数，但因为disable了C4996，不会产生警告
-#pragma warning(pop)
-
-		// #pragma warning(pop) 之后，C4996警告恢复为默认状态；
-		
-		// 如果在下面再调用scanf，编译器将再次报告C4996警告。
-
-		debugDisp("scanf read val ==", val);
-		debugDisp("test0() finished.");
-	}
-
-
-	// 演示 #pragma warning(push/pop) 保存与恢复警告状态：
+	// #pragma warning(push/pop) 保存与恢复警告状态：
 	void test1()
 	{
 		// #pragma warning(push) 会将当前的警告状态压栈保存，
-		// #pragma warning(pop) 会恢复到push时的状态。
-		// 这种成对使用的模式特别适合在头文件中或第三方代码区域临时禁用警告，
+		// #pragma warning(pop) 会恢复到push时的状态。 
 		// 确保禁用范围有限，不会影响后续代码。
 
-#pragma warning(push)						// 保存当前警告状态
-#pragma warning(disable: 4100)				// 禁用"未引用的形参"警告
-#pragma warning(disable: 4244)				// 禁用"隐式类型转换可能丢失数据"警告
-
-		// 以下代码在正常情况下会产生C4100和C4244警告，但此处不会：
-		auto unusedParamFunc = [](int unusedParam)	// C4100: unusedParam未使用
+#if 1
+		// a. 测试禁用警告：
 		{
-			double d = 3.14;
-			int i = d;								// C4244: double→int隐式转换
-			return i;
-		};
-		unusedParamFunc(42);
+#pragma warning(push)								// 保存当前警告状态
+#pragma warning(disable: 4100 4244)			 
+			auto unusedParamFunc = [](int unusedParam)	// C4100: unusedParam未使用；警告等级4
+				{
+					double d = 3.14;
+					int i = d;														// C4244: double→int隐式转换；警告等级2
+					return i;
+				};
+			unusedParamFunc(42);
 
-#pragma warning(pop)							// 恢复之前的警告状态
+#pragma warning(pop)								// 恢复之前的警告状态
+		} 
+#else
+		// b. 测试不禁用警告：
+		{
+			auto unusedParamFunc = [](int unusedParam)	// C4100: unusedParam未使用；警告等级4
+				{
+					double d = 3.14;
+					int i = d;														// C4244: double→int隐式转换；警告等级2
+					return i;
+				};
+			unusedParamFunc(42);
+		}
+#endif
 
 		debugDisp("test1() finished.");
 	}
 
 
-	// 演示 #pragma warning(error) 将警告提升为错误：
+	// #pragma warning(error) 将警告提升为错误：
 	void test2()
 	{
 		// #pragma warning(error: 编号) 会将指定编号的警告提升为编译错误，
@@ -5585,48 +5290,7 @@ namespace PRAGMA_WARNING
 
 		debugDisp("test2() finished.");
 	}
-
-
-	// 演示 #pragma warning(default) 恢复警告为默认级别：
-	void test3()
-	{
-		// #pragma warning(default: 编号) 将指定编号的警告恢复到编译器默认的级别。
-		// 与pop不同，default只恢复单个警告编号，而不是整个警告状态。
-
-#pragma warning(disable: 4996)				// 禁用C4996
-		// 此处scanf不会产生C4996警告
-		int val = 0;
-		scanf("%d", &val);
-
-#pragma warning(default: 4996)				// 将C4996恢复为默认级别
-		// 如果此处再调用scanf，编译器将报告C4996警告
-
-		debugDisp("scanf read val ==", val);
-		debugDisp("test3() finished.");
-	}
-
-
-	// 演示多条 #pragma warning 组合使用：
-	void test4()
-	{
-		// 可以在一条 #pragma warning 中同时指定多个操作，用空格分隔：
-
-#pragma warning(push)
-#pragma warning(disable: 4100 4244 4996)		// 同时禁用多个警告
-
-		auto func = [](int unused)				// C4100: 未使用形参
-		{
-			double d = 2.718;
-			int n = d;							// C4244: 隐式转换
-			return n;
-		};
-		func(0);
-
-#pragma warning(pop)
-
-		debugDisp("test4() finished.");
-	}
-
+	 
 
 	// 演示 #pragma warning 的实际应用场景——第三方头文件：
 	void test5()
@@ -5654,9 +5318,8 @@ int main(int argc, _TCHAR* argv[])
 #else
 int main(int argc, char** argv)
 #endif
-{
-
-	PRAGMA_WARNING::test0();
+{ 
+	PRAGMA_WARNING::test1();
 
 	debugDisp("main() finished."); 
 	getchar();
