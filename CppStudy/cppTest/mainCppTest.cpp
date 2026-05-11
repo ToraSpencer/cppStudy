@@ -5488,34 +5488,175 @@ namespace TTK
 }
 
 
+
+
+// #pragma warning 指令：
+namespace PRAGMA_WARNING
+{
+	/*
+		#pragma warning 是MSVC编译器的预处理指令，用于控制编译器警告的启用/禁用。
+		基本语法：
+			#pragma warning(push)					// 保存当前警告状态到栈
+			#pragma warning(pop)					// 从栈中恢复之前保存的警告状态
+			#pragma warning(disable: 编号)			// 禁用指定编号的警告
+			#pragma warning(default: 编号)			// 将指定编号的警告恢复为默认级别
+			#pragma warning(error: 编号)			// 将指定编号的警告提升为错误（编译失败）
+			#pragma warning(level: 编号)			// 将指定编号的警告设置为指定级别（1-4）
+
+		常见警告编号：
+			C4100 — 未引用的形参
+			C4996 — 使用了被标记为deprecated的函数（如strcpy、scanf等）
+			C4244 — 隐式类型转换可能导致数据丢失（如double→int）
+			C4267 — 从size_t到较小整型的隐式转换（64位迁移问题）
+			C4800 — 将int隐式转换为bool
+			C4512 — 类中有赋值运算但无法生成默认的operator=
+			C4706 — 条件表达式中使用了赋值运算符（if(x = 5)）
+	*/
+
+
+	// 演示 #pragma warning(disable) 禁用指定警告：
+	void test0()
+	{
+		// C4996: 使用了deprecated函数。scanf在MSVC中被标记为不安全，建议使用scanf_s。
+		// 不加 #pragma warning(disable:4996) 时，编译器会产生如下警告：
+		//   warning C4996: 'scanf': This function or variable may be unsafe.
+		//   Consider using scanf_s instead.
+
+#pragma warning(push)
+#pragma warning(disable: 4996)
+		int val = 0;
+		scanf("%d", &val);					// 使用被标记为deprecated的函数，但因为disable了C4996，不会产生警告
+#pragma warning(pop)
+
+		// #pragma warning(pop) 之后，C4996警告恢复为默认状态；
+		
+		// 如果在下面再调用scanf，编译器将再次报告C4996警告。
+
+		debugDisp("scanf read val ==", val);
+		debugDisp("test0() finished.");
+	}
+
+
+	// 演示 #pragma warning(push/pop) 保存与恢复警告状态：
+	void test1()
+	{
+		// #pragma warning(push) 会将当前的警告状态压栈保存，
+		// #pragma warning(pop) 会恢复到push时的状态。
+		// 这种成对使用的模式特别适合在头文件中或第三方代码区域临时禁用警告，
+		// 确保禁用范围有限，不会影响后续代码。
+
+#pragma warning(push)						// 保存当前警告状态
+#pragma warning(disable: 4100)				// 禁用"未引用的形参"警告
+#pragma warning(disable: 4244)				// 禁用"隐式类型转换可能丢失数据"警告
+
+		// 以下代码在正常情况下会产生C4100和C4244警告，但此处不会：
+		auto unusedParamFunc = [](int unusedParam)	// C4100: unusedParam未使用
+		{
+			double d = 3.14;
+			int i = d;								// C4244: double→int隐式转换
+			return i;
+		};
+		unusedParamFunc(42);
+
+#pragma warning(pop)							// 恢复之前的警告状态
+
+		debugDisp("test1() finished.");
+	}
+
+
+	// 演示 #pragma warning(error) 将警告提升为错误：
+	void test2()
+	{
+		// #pragma warning(error: 编号) 会将指定编号的警告提升为编译错误，
+		// 这对于保证代码质量非常有用——某些警告虽然默认不会阻止编译，
+		// 但如果开发者认为该类问题必须修复，可以将其提升为错误。
+
+#pragma warning(push)
+#pragma warning(error: 4244)				// 将C4244提升为错误
+
+		// double d = 3.14; int i = d;			// 此行将产生编译错误而不仅仅是警告！
+
+		// 正确做法：显式转换，这样不会触发C4244：
+		double d = 3.14;
+		int i = static_cast<int>(d);			// 显式转换，不产生C4244
+		debugDisp("static_cast<int>(3.14) ==", i);
+
+#pragma warning(pop)
+
+		debugDisp("test2() finished.");
+	}
+
+
+	// 演示 #pragma warning(default) 恢复警告为默认级别：
+	void test3()
+	{
+		// #pragma warning(default: 编号) 将指定编号的警告恢复到编译器默认的级别。
+		// 与pop不同，default只恢复单个警告编号，而不是整个警告状态。
+
+#pragma warning(disable: 4996)				// 禁用C4996
+		// 此处scanf不会产生C4996警告
+		int val = 0;
+		scanf("%d", &val);
+
+#pragma warning(default: 4996)				// 将C4996恢复为默认级别
+		// 如果此处再调用scanf，编译器将报告C4996警告
+
+		debugDisp("scanf read val ==", val);
+		debugDisp("test3() finished.");
+	}
+
+
+	// 演示多条 #pragma warning 组合使用：
+	void test4()
+	{
+		// 可以在一条 #pragma warning 中同时指定多个操作，用空格分隔：
+
+#pragma warning(push)
+#pragma warning(disable: 4100 4244 4996)		// 同时禁用多个警告
+
+		auto func = [](int unused)				// C4100: 未使用形参
+		{
+			double d = 2.718;
+			int n = d;							// C4244: 隐式转换
+			return n;
+		};
+		func(0);
+
+#pragma warning(pop)
+
+		debugDisp("test4() finished.");
+	}
+
+
+	// 演示 #pragma warning 的实际应用场景——第三方头文件：
+	void test5()
+	{
+		// 在实际项目中，经常需要在include第三方头文件时临时禁用警告，
+		// 因为第三方代码可能触发大量警告而我们无法修改。
+		// 典型用法如下（此处用注释模拟）：
+
+		// #pragma warning(push)
+		// #pragma warning(disable: 4512 4702 4996)   // 第三方头文件可能触发的警告
+		// #include "SomeThirdPartyHeader.h"
+		// #pragma warning(pop)
+
+		// 这样做的关键点是push/pop确保了禁用范围被严格限制，
+		// 即使第三方头文件内部也有#pragma warning指令，
+		// pop也会恢复到push时的状态，不会影响我们自己的代码。
+
+		debugDisp("test5() finished.");
+	}
+}
+
+
 #ifdef _WIN32
 int main(int argc, _TCHAR* argv[])
 #else
 int main(int argc, char** argv)
-#endif 
-{   
-	std::vector<std::string> filePathVec{ "C:\\Users\\34047\\Desktop\\数维地形开洞用户数据测试.7z",\
-		"C:\\Users\\34047\\Desktop\\新建文本文档.txt" };
-
-#if 0
-	{	
-		//bool retFlag = PackFile(g_debugPath + "outFile.dat", "C:\\Users\\34047\\Desktop\\数维地形开洞用户数据测试.7z", char{13});
-		bool retFlag = TTK::PackFile(g_debugPath + "outFile.dat", "C:\\Users\\34047\\Desktop\\新建文本文档.txt", char{ 13 });
-		bool retFlag2 = TTK::UnpackFile(g_debugPath, g_debugPath + "outFile.dat", char{ 13 });
-	}
 #endif
+{
 
-#if 0
-	{
-		bool retFlag = TTK::PackFiles(g_debugPath + "outFile.dat", filePathVec, char{13});
-		bool retFlag2 = TTK::UnpackFiles(g_debugPath, g_debugPath + "outFile.dat", char{ 13 });
-
-		debugDisp("pause");
-	}
-#endif
-
-	//TTK::Cmd_PackFiles(argc, argv);
-	TTK::Cmd_UnpackFiles(argc, argv);
+	PRAGMA_WARNING::test0();
 
 	debugDisp("main() finished."); 
 	getchar();

@@ -1,3 +1,0 @@
-E:/gitRepositories/cppStudy/CppStudy/cppTest/build_mingw64/CMakeFiles/cppTest.dir
-E:/gitRepositories/cppStudy/CppStudy/cppTest/build_mingw64/CMakeFiles/edit_cache.dir
-E:/gitRepositories/cppStudy/CppStudy/cppTest/build_mingw64/CMakeFiles/rebuild_cache.dir
