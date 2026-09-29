@@ -2812,7 +2812,7 @@ namespace TEST_STL
 			std::cout << "std::numeric_limits<float>::infinity() == " << std::numeric_limits<float>::infinity() << std::endl;
 			std::cout << "std::numeric_limits<double>::infinity() == " << std::numeric_limits<double>::infinity() << std::endl;
 
-			std::cout << "finished." << std::endl;
+			debugDisp("STD_NUMERIC::test0() finished.");
 		}
 	}
 
@@ -5319,7 +5319,13 @@ int main(int argc, _TCHAR* argv[])
 int main(int argc, char** argv)
 #endif
 { 
-	PRAGMA_WARNING::test1();
+	//PRAGMA_WARNING::test1();
+	//STD_NUMERIC::test0();
+
+	const double theta = std::acos(1-1e-3);
+	debugDisp("theta == ", theta);
+	debugDisp(std::cos(theta));
+	debugDisp(theta/ 2.0/ M_PI * 360.0);
 
 	debugDisp("main() finished."); 
 	getchar();
